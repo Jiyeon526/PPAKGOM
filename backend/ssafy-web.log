@@ -1,0 +1,251 @@
+2021-08-03 11:45:09.097  INFO 20624 --- [restartedMain] com.ppakgom.GroupCallApplication         : Starting GroupCallApplication using Java 1.8.0_192 on DESKTOP-G8TTSK1 with PID 20624 (C:\Users\6lout\OneDrive\바탕 화면\ssafy\자기주도프로젝트_2학기 계절\Project02\S05P12B306\backend\bin\main started by 6lout in C:\Users\6lout\OneDrive\바탕 화면\ssafy\자기주도프로젝트_2학기 계절\Project02\S05P12B306\backend)
+2021-08-03 11:45:09.102  INFO 20624 --- [restartedMain] com.ppakgom.GroupCallApplication         : No active profile set, falling back to default profiles: default
+2021-08-03 11:45:09.177  INFO 20624 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2021-08-03 11:45:09.179  INFO 20624 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2021-08-03 11:45:10.975  INFO 20624 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-08-03 11:45:11.098  INFO 20624 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 113 ms. Found 5 JPA repository interfaces.
+2021-08-03 11:45:11.556  INFO 20624 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@3403e342' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-08-03 11:45:11.563  INFO 20624 --- [restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2021-08-03 11:45:11.919  INFO 20624 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8443 (https)
+2021-08-03 11:45:11.934  INFO 20624 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-08-03 11:45:11.935  INFO 20624 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.45]
+2021-08-03 11:45:12.068  INFO 20624 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-08-03 11:45:12.070  INFO 20624 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2889 ms
+2021-08-03 11:45:12.263 DEBUG 20624 --- [restartedMain] o.s.web.filter.CharacterEncodingFilter   : Filter 'characterEncodingFilter' configured for use
+2021-08-03 11:45:12.264 DEBUG 20624 --- [restartedMain] o.s.w.f.CommonsRequestLoggingFilter      : Filter 'commonsRequestLoggingFilter' configured for use
+2021-08-03 11:45:12.532  INFO 20624 --- [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-08-03 11:45:12.592  INFO 20624 --- [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.30.Final
+2021-08-03 11:45:12.816  INFO 20624 --- [restartedMain] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-08-03 11:45:12.955  INFO 20624 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2021-08-03 11:45:13.307  INFO 20624 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2021-08-03 11:45:13.323  INFO 20624 --- [restartedMain] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL57Dialect
+2021-08-03 11:45:14.646  INFO 20624 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-08-03 11:45:14.662  INFO 20624 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-08-03 11:45:14.736  INFO 20624 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2021-08-03 11:45:15.268  WARN 20624 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-08-03 11:45:15.434  INFO 20624 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'clientInboundChannelExecutor'
+2021-08-03 11:45:15.442  INFO 20624 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'clientOutboundChannelExecutor'
+2021-08-03 11:45:15.444  INFO 20624 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'brokerChannelExecutor'
+2021-08-03 11:45:15.908 DEBUG 20624 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerMapping : 18 mappings in 'requestMappingHandlerMapping'
+2021-08-03 11:45:16.297  INFO 20624 --- [restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+2021-08-03 11:45:16.561  INFO 20624 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@19bc9052, org.springframework.security.web.context.SecurityContextPersistenceFilter@7702c854, org.springframework.security.web.header.HeaderWriterFilter@322242d, org.springframework.web.filter.CorsFilter@1cac6740, org.springframework.security.web.authentication.logout.LogoutFilter@ff074e7, com.ppakgom.common.auth.JwtAuthenticationFilter@470dbfe2, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@e226a4, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7041d765, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7663f57e, org.springframework.security.web.session.SessionManagementFilter@4c97dd2, org.springframework.security.web.access.ExceptionTranslationFilter@3195af0d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@9a6d63f]
+2021-08-03 11:45:16.604  INFO 20624 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'messageBrokerTaskScheduler'
+2021-08-03 11:45:16.641 DEBUG 20624 --- [restartedMain] o.s.w.s.s.s.WebSocketHandlerMapping      : Patterns [/api/v1/ws/**] in 'stompWebSocketHandlerMapping'
+2021-08-03 11:45:16.694 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.p.a.c.AuthController:
+	
+2021-08-03 11:45:16.700 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.p.a.c.ChatMessageController:
+	{[MESSAGE],[/conferences/join]}: join(ChatMessage)
+	{[MESSAGE],[/conferences/send]}: message(ChatMessage)
+2021-08-03 11:45:16.702 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.p.a.c.ConferencesController:
+	
+2021-08-03 11:45:16.703 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	c.p.a.c.UserController:
+	
+2021-08-03 11:45:16.704 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	s.d.s.w.Swagger2ControllerWebMvc:
+	
+2021-08-03 11:45:16.704 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	s.d.s.w.ApiResourceController:
+	
+2021-08-03 11:45:16.705 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	s.d.o.w.OpenApiControllerWebMvc:
+	
+2021-08-03 11:45:16.707 DEBUG 20624 --- [restartedMain] .WebSocketAnnotationMethodMessageHandler : 
+	o.s.b.a.w.s.e.BasicErrorController:
+	
+2021-08-03 11:45:16.842 DEBUG 20624 --- [restartedMain] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2021-08-03 11:45:16.876  INFO 20624 --- [restartedMain] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [dist/index.html]
+2021-08-03 11:45:16.893 DEBUG 20624 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/swagger-ui/] in 'viewControllerHandlerMapping'
+2021-08-03 11:45:16.919 DEBUG 20624 --- [restartedMain] o.s.w.s.c.annotation.WebMvcConfigurer    : Default resource handling disabled
+2021-08-03 11:45:17.246 DEBUG 20624 --- [restartedMain] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/resources/**, /swagger-ui.html, /webjars/**, /css/**, /fonts/**, /icons/**, /img/**, /js/**, /swagger-ui/**] in 'resourceHandlerMapping'
+2021-08-03 11:45:17.260 DEBUG 20624 --- [restartedMain] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2021-08-03 11:45:18.298  INFO 20624 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8443 (https) with context path ''
+2021-08-03 11:45:18.695 DEBUG 20624 --- [restartedMain] org.springframework.web.SimpLogging      : clientOutboundChannel added SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2021-08-03 11:45:18.696 DEBUG 20624 --- [restartedMain] org.springframework.web.SimpLogging      : clientInboundChannel added WebSocketAnnotationMethodMessageHandler[prefixes=[/publish/]]
+2021-08-03 11:45:18.696  INFO 20624 --- [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2021-08-03 11:45:18.696 DEBUG 20624 --- [restartedMain] org.springframework.web.SimpLogging      : clientInboundChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@39cf93d3]
+2021-08-03 11:45:18.696 DEBUG 20624 --- [restartedMain] org.springframework.web.SimpLogging      : brokerChannel added SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@39cf93d3]
+2021-08-03 11:45:18.696  INFO 20624 --- [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@39cf93d3]]
+2021-08-03 11:45:18.696  INFO 20624 --- [restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2021-08-03 11:45:18.697 DEBUG 20624 --- [restartedMain] org.springframework.web.SimpLogging      : clientInboundChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2021-08-03 11:45:18.697 DEBUG 20624 --- [restartedMain] org.springframework.web.SimpLogging      : brokerChannel added UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2021-08-03 11:45:18.714  INFO 20624 --- [restartedMain] com.ppakgom.GroupCallApplication         : Started GroupCallApplication in 10.26 seconds (JVM running for 11.962)
+2021-08-03 11:45:30.900  INFO 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-08-03 11:45:30.901  INFO 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2021-08-03 11:45:30.902 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2021-08-03 11:45:30.902 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2021-08-03 11:45:30.902 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Detected FixedThemeResolver
+2021-08-03 11:45:30.905 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@c1f421e
+2021-08-03 11:45:30.906 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@346ac171
+2021-08-03 11:45:30.907 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2021-08-03 11:45:30.907  INFO 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 6 ms
+2021-08-03 11:45:30.950 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/", parameters={}
+2021-08-03 11:45:30.978 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.v.ContentNegotiatingViewResolver : Selected 'text/html' given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, application/signed-exchange;v=b3;q=0.9, */*;q=0.8]
+2021-08-03 11:45:30.978 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.servlet.view.InternalResourceView  : View name 'forward:', model {}
+2021-08-03 11:45:30.980 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.servlet.view.InternalResourceView  : Forwarding to [index.html]
+2021-08-03 11:45:30.983 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : "FORWARD" dispatch for GET "/index.html", parameters={}
+2021-08-03 11:45:30.985  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.PageNotFound             : No mapping for GET /index.html
+2021-08-03 11:45:30.998 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.ppakgom.common.exception.handler.NotFoundHandler#renderDefaultPage(NoHandlerFoundException)
+2021-08-03 11:45:31.011 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Found 'Content-Type:text/html' in response
+2021-08-03 11:45:31.012 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" conte (truncated)...]
+2021-08-03 11:45:31.021  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.NoHandlerFoundException: No handler found for GET /index.html]
+2021-08-03 11:45:31.022 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Exiting from "FORWARD" dispatch, status 200
+2021-08-03 11:45:31.026 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.032 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/", parameters={}
+2021-08-03 11:45:31.036 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.v.ContentNegotiatingViewResolver : Selected 'text/html' given [text/html, application/xhtml+xml, image/avif, image/webp, image/apng, application/xml;q=0.9, application/signed-exchange;v=b3;q=0.9, */*;q=0.8]
+2021-08-03 11:45:31.036 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.servlet.view.InternalResourceView  : View name 'forward:', model {}
+2021-08-03 11:45:31.036 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.servlet.view.InternalResourceView  : Forwarding to [index.html]
+2021-08-03 11:45:31.037 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : "FORWARD" dispatch for GET "/index.html", parameters={}
+2021-08-03 11:45:31.040  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.PageNotFound             : No mapping for GET /index.html
+2021-08-03 11:45:31.041 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.ppakgom.common.exception.handler.NotFoundHandler#renderDefaultPage(NoHandlerFoundException)
+2021-08-03 11:45:31.043 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Found 'Content-Type:text/html' in response
+2021-08-03 11:45:31.044 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" conte (truncated)...]
+2021-08-03 11:45:31.047  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.NoHandlerFoundException: No handler found for GET /index.html]
+2021-08-03 11:45:31.047 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Exiting from "FORWARD" dispatch, status 200
+2021-08-03 11:45:31.048 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.054 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/webjars/webrtc-adapter/release/adapter.js", parameters={}
+2021-08-03 11:45:31.058 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.063 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.064 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.066 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.072 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.118 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/group-call/js/kurento/lib/kurento-utils.js", parameters={}
+2021-08-03 11:45:31.120  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.web.servlet.PageNotFound             : No mapping for GET /group-call/js/kurento/lib/kurento-utils.js
+2021-08-03 11:45:31.121 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.ppakgom.common.exception.handler.NotFoundHandler#renderDefaultPage(NoHandlerFoundException)
+2021-08-03 11:45:31.124 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Found 'Content-Type:text/html' in response
+2021-08-03 11:45:31.124 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" conte (truncated)...]
+2021-08-03 11:45:31.127  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.NoHandlerFoundException: No handler found for GET /group-call/js/kurento/lib/kurento-utils.js]
+2021-08-03 11:45:31.127 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.131 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [application/signed-exchange;v=b3;q=0.9, */*;q=0.8] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.132 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.133 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/css/chunk-vendors.b8a9ac7a.css", parameters={}
+2021-08-03 11:45:31.135 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/css/]]
+2021-08-03 11:45:31.151 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.156 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/js/app.fb1d3348.js", parameters={}
+2021-08-03 11:45:31.158 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/js/]]
+2021-08-03 11:45:31.166 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.172 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-8] o.s.web.servlet.DispatcherServlet        : GET "/js/chunk-vendors.271ed45b.js", parameters={}
+2021-08-03 11:45:31.173 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.175 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-8] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/js/]]
+2021-08-03 11:45:31.179 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/group-call/js/kurento/lib/kurento-utils.js", parameters={}
+2021-08-03 11:45:31.180  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.web.servlet.PageNotFound             : No mapping for GET /group-call/js/kurento/lib/kurento-utils.js
+2021-08-03 11:45:31.181 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.ppakgom.common.exception.handler.NotFoundHandler#renderDefaultPage(NoHandlerFoundException)
+2021-08-03 11:45:31.182 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Found 'Content-Type:text/html' in response
+2021-08-03 11:45:31.182 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" conte (truncated)...]
+2021-08-03 11:45:31.184  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.NoHandlerFoundException: No handler found for GET /group-call/js/kurento/lib/kurento-utils.js]
+2021-08-03 11:45:31.184 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.191 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/webjars/webrtc-adapter/release/adapter.js", parameters={}
+2021-08-03 11:45:31.193 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.195 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.195 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.196 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.197 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.199 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.200 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.204 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.212 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/webjars/jquery/dist/jquery.min.js", parameters={}
+2021-08-03 11:45:31.213 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.214 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.215 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.216 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.217 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.219 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [application/signed-exchange;v=b3;q=0.9, */*;q=0.8] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.219 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.221 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.229 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/webjars/sockjs-client/sockjs.min..js", parameters={}
+2021-08-03 11:45:31.230 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.234 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.234 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.235 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.236 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.241 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [application/signed-exchange;v=b3;q=0.9, */*;q=0.8] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.241 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.243 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.248 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/webjars/jquery/dist/jquery.min.js", parameters={}
+2021-08-03 11:45:31.250 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.250 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.251 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.252 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.253 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.256 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.257 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.260 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-5] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.265 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/webjars/sockjs-client/sockjs.min..js", parameters={}
+2021-08-03 11:45:31.265 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.268 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.269 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.270 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.272 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.275 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.276 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.277 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-6] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.283 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/webjars/stomp-websocket/stomp.min.js", parameters={}
+2021-08-03 11:45:31.284 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.285 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.286 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.287 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.289 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.291 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json;q=0.8', given [application/signed-exchange;v=b3;q=0.9, */*;q=0.8] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.292 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.294 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-7] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.299 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/webjars/stomp-websocket/stomp.min.js", parameters={}
+2021-08-03 11:45:31.300 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [META-INF/resources/webjars/]]
+2021-08-03 11:45:31.300 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.w.s.r.ResourceHttpRequestHandler     : Resource not found
+2021-08-03 11:45:31.301 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
+2021-08-03 11:45:31.303 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={}
+2021-08-03 11:45:31.304 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2021-08-03 11:45:31.306 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2021-08-03 11:45:31.308 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Tue Aug 03 11:45:31 KST 2021, status=404, error=Not Found, message=No message available,  (truncated)...]
+2021-08-03 11:45:31.310 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 404
+2021-08-03 11:45:31.314 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.316 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/css/app.73ce8b1e.css", parameters={}
+2021-08-03 11:45:31.317 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/css/chunk-vendors.b8a9ac7a.css", parameters={}
+2021-08-03 11:45:31.317 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/css/]]
+2021-08-03 11:45:31.318 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/css/]]
+2021-08-03 11:45:31.322 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.324 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.329 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/js/app.fb1d3348.js", parameters={}
+2021-08-03 11:45:31.329 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/css/app.73ce8b1e.css", parameters={}
+2021-08-03 11:45:31.330 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/js/]]
+2021-08-03 11:45:31.330 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/css/]]
+2021-08-03 11:45:31.334 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.340 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/js/chunk-vendors.271ed45b.js", parameters={}
+2021-08-03 11:45:31.342 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/js/]]
+2021-08-03 11:45:31.347 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.448 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.594 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/img/ssafy-logo.74eec4f3.png", parameters={}
+2021-08-03 11:45:31.596 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/img/]]
+2021-08-03 11:45:31.600 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.690 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/fonts/SpoqaHanSansNeo-Regular.998877fd.ttf", parameters={}
+2021-08-03 11:45:31.691 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/fonts/SpoqaHanSansNeo-Bold.48d433af.ttf", parameters={}
+2021-08-03 11:45:31.693 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/fonts/]]
+2021-08-03 11:45:31.693 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped to ResourceHttpRequestHandler [Classpath [dist/fonts/]]
+2021-08-03 11:45:31.782 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.791 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:31.809 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/favicon.ico", parameters={}
+2021-08-03 11:45:31.810  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.web.servlet.PageNotFound             : No mapping for GET /favicon.ico
+2021-08-03 11:45:31.811 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.ppakgom.common.exception.handler.NotFoundHandler#renderDefaultPage(NoHandlerFoundException)
+2021-08-03 11:45:31.811 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Found 'Content-Type:text/html' in response
+2021-08-03 11:45:31.811 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing ["<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" conte (truncated)...]
+2021-08-03 11:45:31.825  WARN 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.servlet.NoHandlerFoundException: No handler found for GET /favicon.ico]
+2021-08-03 11:45:31.825 DEBUG 20624 --- [https-jsse-nio-127.0.0.1-8443-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2021-08-03 11:45:35.125  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2021-08-03 11:45:35.128 DEBUG 20624 --- [RMI TCP Connection(7)-127.0.0.1] org.springframework.web.SimpLogging      : clientOutboundChannel removed SubProtocolWebSocketHandler[StompSubProtocolHandler[v10.stomp, v11.stomp, v12.stomp]]
+2021-08-03 11:45:35.128 DEBUG 20624 --- [RMI TCP Connection(7)-127.0.0.1] org.springframework.web.SimpLogging      : clientInboundChannel removed WebSocketAnnotationMethodMessageHandler[prefixes=[/publish/]]
+2021-08-03 11:45:35.128  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2021-08-03 11:45:35.128  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@39cf93d3]]
+2021-08-03 11:45:35.128 DEBUG 20624 --- [RMI TCP Connection(7)-127.0.0.1] org.springframework.web.SimpLogging      : clientInboundChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@39cf93d3]
+2021-08-03 11:45:35.128 DEBUG 20624 --- [RMI TCP Connection(7)-127.0.0.1] org.springframework.web.SimpLogging      : brokerChannel removed SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@39cf93d3]
+2021-08-03 11:45:35.129  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2021-08-03 11:45:35.129 DEBUG 20624 --- [RMI TCP Connection(7)-127.0.0.1] org.springframework.web.SimpLogging      : clientInboundChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2021-08-03 11:45:35.129 DEBUG 20624 --- [RMI TCP Connection(7)-127.0.0.1] org.springframework.web.SimpLogging      : brokerChannel removed UserDestinationMessageHandler[DefaultUserDestinationResolver[prefix=/user/]]
+2021-08-03 11:45:35.151  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'messageBrokerTaskScheduler'
+2021-08-03 11:45:35.156  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'brokerChannelExecutor'
+2021-08-03 11:45:35.156  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'clientOutboundChannelExecutor'
+2021-08-03 11:45:35.157  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'clientInboundChannelExecutor'
+2021-08-03 11:45:35.158  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-08-03 11:45:35.164  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2021-08-03 11:45:35.179  INFO 20624 --- [RMI TCP Connection(7)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
