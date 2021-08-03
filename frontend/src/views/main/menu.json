@@ -1,0 +1,47 @@
+{
+  "main" : {
+    "name" : "메인페이지",
+    "hidden" : false,
+    "path" : "/",
+    "icon" : "el-icon-s-home",
+    "children" : []
+  },
+  "create" : {
+    "name" : "스터디 생성",
+    "hidden" : false,
+    "path" : "/create",
+    "icon" : "el-icon-s-home",
+    "children" : []
+  },
+  "home" : {
+    "name" : "스터디 모집",
+    "hidden" : false,
+    "path" : "/home",
+    "icon" : "el-icon-s-home",
+    "children" : []
+  },
+
+  "join" : {
+    "name" : "가입한 스터디",
+    "hidden" : false,
+    "path" : "/join",
+    "icon" : "el-icon-s-order",
+    "children" : []
+  },
+  "like" : {
+    "name" : "찜한 스터디",
+    "hidden" : false,
+    "path" : "/like",
+    "icon" : "el-icon-s-order",
+    "children" : []
+  },
+  "manage" : {
+    "name" : "방 관리",
+    "hidden" : false,
+    "path" : "/manage",
+    "icon" : "el-icon-s-order",
+    "children" : []
+  }
+
+
+}
