@@ -24,7 +24,4 @@ public class UserRegisterPostReq {
 	
 	@ApiModelProperty(name = "유저 Interest", example = "")
 	String[] interest;
-	
-	@ApiModelProperty(name = "유저 Profile Thumbnail", example = "SSAFY.png")
-	String profileThumbnail;
 }
