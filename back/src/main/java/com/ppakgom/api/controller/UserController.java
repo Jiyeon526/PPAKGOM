@@ -56,4 +56,17 @@ public class UserController {
 		
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "사용 가능한 닉네임입니다."));
 	}
+	
+	@GetMapping("/{userid}/userid")
+	@ApiOperation(value = "아이디 중복 체크", notes = "<strong>아이디</strong>중복 체크를 한다.")
+	public ResponseEntity<? extends BaseResponseBody> checkDuplicateId(
+			@PathVariable(value = "userid") @ApiParam(value="중복확인 ID", required = true) String userid){
+		
+		// 만약 해당 아이디가 있다면 400에러 발생
+		User user = userService.getUserByUserId(userid);
+		if(user != null)
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "이미 존재하는 아이디입니다."));
+		
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "사용 가능한 아이디입니다."));
+	}
 }
