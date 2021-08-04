@@ -11,10 +11,11 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Override
 	public User getUserByUserId(String userId) {
 		return userRepository.findUserById(userId);
+	
 	}
 
 }

@@ -56,7 +56,7 @@ public class UserController {
 	public ResponseEntity<LoginRes> login(@RequestBody @ApiParam(value="로그인 정보", required = true) LoginReq loginInfo) {
 		
 		User user;
-		LoginRes loginRes = new LoginRes();
+		LoginRes loginRes;
 		
 		try {
 //			존재하는 사용자이고
@@ -64,27 +64,22 @@ public class UserController {
 
 //			비밀번호가 맞는다면
 			if(passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
-				loginRes.setAccessToken(JwtTokenUtil.getToken(user.getUser_id()));
-				loginRes.setStatusCode(200);
-				loginRes.setMessage("로그인 완료");
+				loginRes = new LoginRes(200,"로그인 완료",JwtTokenUtil.getToken(user.getUser_id()));
 				return ResponseEntity.ok(loginRes);
 			}else {
-				loginRes.setStatusCode(404);
-				loginRes.setMessage("아이디 또는 비밀번호를 확인해주세요.");
+				loginRes = (LoginRes) new BaseResponseBody(404,"아이디 또는 비밀번호를 확인해 주세요.");
 				return ResponseEntity.status(404).body(loginRes);
 			}
 			
 //		아이디 없을 때 
 		} catch(NoSuchElementException e ) { 
 			e.printStackTrace();
-			loginRes.setStatusCode(404);
-			loginRes.setMessage("아이디 또는 비밀번호를 확인해주세요.");
+			loginRes = (LoginRes) new BaseResponseBody(404,"아이디 또는 비밀번호를 확인해 주세요.");
 			return ResponseEntity.status(404).body(loginRes);
 
 //			서버 문제
 		} catch(Exception e) {
-			loginRes.setStatusCode(500);
-			loginRes.setMessage("서버 오류");
+			loginRes = (LoginRes) new BaseResponseBody(500,"서버 오류");
 			return ResponseEntity.status(500).body(loginRes);
 		}
 		
