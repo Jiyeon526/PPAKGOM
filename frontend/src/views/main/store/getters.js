@@ -26,3 +26,12 @@ export function getTitle(state) {
   console.log(state.searchData);
   return state.searchData
 }
+
+export function getNaverAccessToken(state) {
+  return state.naveraccessToken;
+}
+
+export function isNaverLoggedIn(state) {
+  if (state.naveraccessToken) return true;
+  return false;
+}

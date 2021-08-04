@@ -80,8 +80,13 @@ export default {
         let menuArray = [];
         if (!isLoggedIn) {
           let menuObject = {};
+          menuObject.icon = MenuItems["main"].icon;
+          menuObject.title = MenuItems["main"].name;
+          menuArray.push(menuObject);
+          menuObject = {};
           menuObject.icon = MenuItems["home"].icon;
           menuObject.title = MenuItems["home"].name;
+
           menuArray.push(menuObject);
 
           return menuArray;

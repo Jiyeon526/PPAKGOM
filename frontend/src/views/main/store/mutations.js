@@ -34,3 +34,12 @@ export function titleSearch(state, payload) {
   state.searchData = payload.titleData
   console.log("mutate!!!", state.searchData)
 }
+
+export function setNaverAccessToken(state) {
+  state.naveraccessToken = localStorage.getItem('naveraccessToken')
+  console.log(state.naveraccessToken)
+}
+
+export function deleteNaverToken(state) {
+  state.naveraccessToken = ''
+}

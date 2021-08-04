@@ -2,7 +2,7 @@
 const menuData = require('@/views/main/menu.json')
 const accessToken = localStorage.getItem('accessToken') ? localStorage.getItem('accessToken') : ''
 const userId = localStorage.getItem('userId') ? localStorage.getItem('userId') : ''
-
+const naveraccessToken = localStorage.getItem('naveraccessToken') ? localStorage.getItem('naveraccessToken') : ''
 /**
  * 플랫폼 관련 정보로 데스크탑인지, 모바일인지 판별 - 하이브리드 앱 대비
  */
@@ -37,5 +37,6 @@ export default {
   menus: menuData,
   accessToken: accessToken,
   userId: userId,
-  searchData: ''
+  searchData: '',
+  naveraccessToken: naveraccessToken,
 }

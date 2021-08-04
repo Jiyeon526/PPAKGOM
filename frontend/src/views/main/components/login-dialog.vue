@@ -32,22 +32,74 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="clickLogin">로그인</el-button>
+        <el-button type="primary" @click="clickLogin">로그인</el-button><br />
+        <el-button type="text" @click="clickRegister">회원가입</el-button>
       </span>
+      <br />
+      <br />
+      <div style="text-align: center;">
+        <h3>간편 로그인</h3>
+      </div>
+
+      <div class="google-logo-wrapper" id="google-signin-btn"></div>
+      &nbsp; &nbsp;
+      <div class="kakao-logo-wrapper" @click="kakaoLogin"></div>
+
+      <div
+        class="naver-logo-wrapper"
+        id="naverIdLogin"
+        @click="naverlogin"
+      ></div>
+
+      <!-- <NaverLogin
+        client-id="2skX9k2csf4rw6XBSD_S"
+        callback-url="http://localhost:8083/naverlogin"
+        is-popup="true"
+        :callbackFunction="callbackFunction"
+      /> -->
+      <el-button type="primary" @click="kakaoLogout">카카오 로그아웃</el-button
+      ><br />
+      <el-button type="primary" @click="signOut">구글 로그아웃</el-button>
     </template>
   </el-dialog>
 </template>
 <style>
 .login-dialog {
-  width: 400px !important;
-  height: 300px;
+  width: 500px !important;
+  height: 600px;
+}
+
+.login-dialog .google-logo-wrapper {
+  width: 120px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  /* background-image: url("../../../assets/images/google.png"); */
+  display: inline-block;
+}
+
+.login-dialog .kakao-logo-wrapper {
+  width: 100px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("../../../assets/images/kakaologin.png");
+  display: inline-block;
+}
+
+.login-dialog .naver-logo-wrapper {
+  width: 50px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 .login-dialog .el-dialog__headerbtn {
   float: right;
 }
 .login-dialog .el-form-item__content {
   margin-left: 0 !important;
-  float: right;
+
   width: 200px;
   display: inline-block;
 }
@@ -62,12 +114,14 @@
   display: none;
 }
 .login-dialog .el-dialog__footer {
-  margin: 0 calc(50% - 80px);
+  margin: 0 calc(25% - 50px);
   padding-top: 0;
   display: inline-block;
+  align-self: center;
+  align-items: center;
 }
 .login-dialog .dialog-footer .el-button {
-  width: 120px;
+  width: 300px;
 }
 </style>
 <script>
@@ -75,6 +129,7 @@ import { reactive, computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+
 export default {
   name: "login-dialog",
 
@@ -90,6 +145,7 @@ export default {
     // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
     const loginForm = ref(null);
     const router = useRouter();
+    let naverLogin = null;
     /*
       // Element UI Validator
       // rules의 객체 키 값과 form의 객체 키 값이 같아야 매칭되어 적용됨
@@ -144,7 +200,66 @@ export default {
 
     onMounted(() => {
       // console.log(loginForm.value)
+      //설정정보를 초기화하고 연동을 준비
+      naverLogin = new window.naver.LoginWithNaverId({
+        clientId: "2skX9k2csf4rw6XBSD_S", //개발자센터에 등록한 ClientID
+        callbackUrl: "https://localhost:8083/", //개발자센터에 등록한 callback Url
+        isPopup: false, //팝업을 통한 연동처리 여부
+        loginButton: { color: "green", type: 2, height: 40 } //로그인 버튼의 타입을 지정
+      });
+      naverLogin.init();
+      naverLogin.getLoginStatus(status => {
+        if (status) {
+          console.log(status);
+          console.log(naverLogin.user);
+          //필수적으로 받아야하는 프로필 정보가 있다면 callback처리 시점에 체크
+          var email = naverLogin.user.getEmail();
+          if (email == undefined || email == null) {
+            alert("이메일은 필수정보입니다. 정보제공을 동의해주세요.");
+            //사용자 정보 재동의를 위하여 다시 네아로 동의페이지로 이동함
+            naverLogin.reprompt();
+            return;
+          }
+        } else {
+          console.log("callback 처리에 실패하였습니다.");
+        }
+      });
+      window.gapi.signin2.render("google-signin-btn", {
+        onsuccess: onSignIn
+      });
     });
+
+    const naverlogin = function() {
+      //console.log("accessToken", naverLogin.accessToken.accessToken);
+      naverLogin.getLoginStatus(status => {
+        if (status) {
+          console.log(status);
+          console.log(naverLogin.user);
+          //필수적으로 받아야하는 프로필 정보가 있다면 callback처리 시점에 체크
+          var email = naverLogin.user.getEmail();
+          if (email == undefined || email == null) {
+            alert("이메일은 필수정보입니다. 정보제공을 동의해주세요.");
+            //사용자 정보 재동의를 위하여 다시 네아로 동의페이지로 이동함
+            naverLogin.reprompt();
+            return;
+          }
+        } else {
+          console.log("callback 처리에 실패하였습니다.");
+        }
+      });
+      //console.log("accessToken", naverLogin.accessToken.accessToken);
+      localStorage.setItem(
+        "naveraccessToken",
+        naverLogin.accessToken.accessToken
+      );
+      //console.log("다시확인", naverLogin);
+      // const accessToken = naverLogin.accessToken.accessToken;
+      // console.log("logout accessToken", accessToken);
+      // const url = `https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=2skX9k2csf4rw6XBSD_S&client_secret=MFJnBhWD3K&access_token=${accessToken}&service_provider=NAVER`;
+      // axios.get(url).then(res => {
+      //   console.log("로그아웃결과", res.data);
+      // });
+    };
 
     const clickLogin = function() {
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
@@ -191,7 +306,77 @@ export default {
       emit("closeLoginDialog");
     };
 
-    return { loginForm, state, clickLogin, handleClose };
+    const clickRegister = function() {
+      emit("closeLoginDialog");
+      emit("openRegisterDialog");
+    };
+
+    const kakaoLogin = function() {
+      window.Kakao.Auth.login({
+        scope: "profile_nickname, account_email",
+        success: this.getKakaoAccount
+      });
+    };
+    const getKakaoAccount = function() {
+      window.Kakao.API.request({
+        url: "/v2/user/me",
+        success: res => {
+          const kakao_account = res.kakao_account;
+          const nickname = kakao_account.profile.nickname; //카카오 닉네임
+          const email = kakao_account.email; //카카오 이메일
+          console.log("nickname", nickname);
+          console.log("email", email);
+          //로그인 처리 구현
+          console.log(kakao_account);
+          console.log(window.Kakao.Auth.getAccessToken());
+          //this.$store.commit("user", kakao_account);
+          alert("로그인 성공!");
+        },
+        fail: error => {
+          // this.$router.push("/errorPage");
+          console.log(error);
+        }
+      });
+    };
+    const kakaoLogout = function() {
+      if (!window.Kakao.Auth.getAccessToken()) {
+        console.log("Not logged in.");
+        return;
+      }
+      window.Kakao.Auth.logout(response => {
+        //로그아웃
+        console.log("access token:", window.Kakao.Auth.getAccessToken());
+        console.log("log out:", response);
+      });
+    };
+    const onSignIn = function(googleUser) {
+      const profile = googleUser.getBasicProfile();
+      console.log("ID: " + profile.getId());
+      console.log("Full Name: " + profile.getName());
+      console.log("Given Name: " + profile.getGivenName());
+      console.log("Family Name: " + profile.getFamilyName());
+      console.log("Image URL: " + profile.getImageUrl());
+      console.log("Email: " + profile.getEmail());
+
+      const id_token = googleUser.getAuthResponse().id_token;
+      console.log("ID Token: " + id_token);
+    };
+    const signOut = function() {
+      window.gapi.auth2.getAuthInstance().disconnect();
+    };
+    return {
+      loginForm,
+      state,
+      clickLogin,
+      handleClose,
+      clickRegister,
+      kakaoLogin,
+      getKakaoAccount,
+      kakaoLogout,
+      naverlogin,
+      onSignIn,
+      signOut
+    };
   }
 };
 </script>

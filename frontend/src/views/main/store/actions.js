@@ -5,7 +5,7 @@ import $axios from 'axios'
 // 로그인
 export function requestLogin({ state }, payload) {
   console.log('requestLogin', state, payload)
-  const url = '/auth/login'
+  const url = '/users/login'
   let body = payload
   return $axios.post(url, body)
 }
@@ -107,18 +107,6 @@ export function requestSortConferenceList({ state }, payload) {
   return axios.get(url, { headers: headers })
 }
 
-// Infinite Scroll 데이터
-
-// 타이틀 검색
-// export function requestSearchConference({ state }, payload) {
-//   console.log('requestSearchConference', state, payload)
-//   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-//   const url = '/conferences/conferences'
-//   const params = payload
-
-//   return $axios.get(url, { params: params, headers: headers })
-// }
-
 export function requestCreateRoom({ state }, payload) {
   console.log('requestCreateRoom', state, payload)
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '', 'Content-Type': 'multipart/form-data' } // 토큰
@@ -134,4 +122,10 @@ export function requestRoomInfoDetail({ state }, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/conferences/${payload}`
   return $axios.get(url, { headers: headers })
+}
+
+export function requestNaverLogout({ state }) {
+  console.log('requestLogout', state)
+  localStorage.removeItem('naveraccessToken')
+  return
 }
