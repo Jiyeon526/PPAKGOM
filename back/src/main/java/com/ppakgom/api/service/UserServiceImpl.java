@@ -35,6 +35,11 @@ public class UserServiceImpl implements UserService {
 	String BASE_PATH = "../../../../../resources/image/";
 	
 	@Override
+	public User getUserByUserId(String userId) {
+		return userRepository.findUserById(userId);
+	}
+
+	@Override
 	public User createUser(UserRegisterPostReq registerInfo, MultipartFile thumbnail) { // 사용자 회원가입
 		
 		try {
@@ -85,7 +90,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean checkDuplicateName(String name) {
+	public boolean checkName(String name) {
 		Optional<User> user = userRepository.findByName(name);
 		
 		if(user.isPresent())
