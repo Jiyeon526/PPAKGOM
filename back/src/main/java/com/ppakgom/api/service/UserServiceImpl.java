@@ -84,4 +84,13 @@ public class UserServiceImpl implements UserService {
 		return null;
 	}
 
+	@Override
+	public boolean checkDuplicateName(String name) {
+		Optional<User> user = userRepository.findByName(name);
+		
+		if(user.isPresent())
+			return false;
+		return true;
+	}
+
 }
