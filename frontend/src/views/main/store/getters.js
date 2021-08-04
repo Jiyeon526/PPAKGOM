@@ -20,9 +20,3 @@ export function isLoggedIn(state) {
 export function userId(state) {
   return state.userId
 }
-
-// 검색한 문자열 반환
-export function getTitle(state) {
-  console.log(state.searchData);
-  return state.searchData
-}

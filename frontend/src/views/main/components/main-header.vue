@@ -5,21 +5,6 @@
         <div class="ic ic-logo" />
       </div>
       <div class="tool-wrapper">
-        <div class="search-field">
-          <el-input
-            placeholder="화상 컨퍼런스 제목 검색"
-            v-model="state.searchValue"
-            @keyup.enter="searchConference"
-          >
-            <template #append>
-              <el-button
-                icon="el-icon-search"
-                @click="searchConference"
-              ></el-button>
-            </template>
-          </el-input>
-        </div>
-
         <div class="button-wrapper">
           <div v-if="state.isLoggedIn">
             <!-- <el-button @click="clickLogout">로그아웃</el-button> -->
@@ -48,7 +33,6 @@
       <div class="logo-wrapper" @click="clickLogo">
         <div class="ic ic-logo" />
       </div>
-      <div class="menu-icon-wrapper"><i class="el-icon-search"></i></div>
       <div class="mobile-sidebar-wrapper" v-if="!state.isCollapse">
         <div class="mobile-sidebar">
           <div class="mobile-sidebar-tool-wrapper">
@@ -119,7 +103,6 @@ export default {
     const store = useStore();
     const router = useRouter();
     const state = reactive({
-      searchValue: "",
       isCollapse: true,
       isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
       userId: computed(() => store.getters["root/userId"]),
@@ -189,7 +172,7 @@ export default {
       emit("openStudydetailDialog");
     };
     const click5 = () => {
-      emit("openStduyscheduleDialog");
+      emit("openStudyscheduleDialog");
     };
 
     const clickLogout = () => {
@@ -222,19 +205,6 @@ export default {
       state.isCollapse = !state.isCollapse;
     };
 
-    // 검색한 문자열 home에 보내기
-    const searchConference = function() {
-      var cleanValue = state.searchValue.trim();
-      console.log(cleanValue);
-      if (cleanValue !== "") {
-        store.commit("root/titleSearch", {
-          titleData: cleanValue
-        });
-      } else {
-        state.searchValue = "";
-      }
-    };
-
     return {
       state,
       menuSelect,
@@ -244,7 +214,6 @@ export default {
       clickMypage,
       clickRegister,
       changeCollapse,
-      searchConference,
       clickRoomCreation,
       clicktestanswer,
       click1,
@@ -364,22 +333,10 @@ export default {
   cursor: pointer;
   margin-right: 1%;
 }
-.main-header .hide-on-small .tool-wrapper .search-field {
-  width: 50%;
-  height: 50px;
-  max-width: 400px;
-  margin-right: 2%;
-  display: inline-block;
-  background-color: white;
-}
-.main-header .hide-on-small .tool-wrapper .search-field .el-input {
-  width: 100%;
-  height: 100%;
-}
+
 .main-header
   .hide-on-small
   .tool-wrapper
-  .search-field
   .el-input
   .el-input__inner {
   /* width: 88%; */
@@ -389,7 +346,6 @@ export default {
 .main-header
   .hide-on-small
   .tool-wrapper
-  .search-field
   .el-input
   .el-input__prefix {
   top: 5px;

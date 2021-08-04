@@ -31,6 +31,6 @@ export function deleteToken(state) {
 
 // 검색한 문자열 업데이트
 export function titleSearch(state, payload) {
-  state.searchData = payload.titleData
+  state.searchData = payload.searchValue
   console.log("mutate!!!", state.searchData)
 }

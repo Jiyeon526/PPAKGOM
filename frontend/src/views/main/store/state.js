@@ -37,5 +37,4 @@ export default {
   menus: menuData,
   accessToken: accessToken,
   userId: userId,
-  searchData: ''
 }
