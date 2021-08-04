@@ -12,4 +12,8 @@ public class Interest extends BaseEntity{
 
 	String name;
 	
+	public Interest(String n) {
+		this.name = n;
+	}
+	
 }

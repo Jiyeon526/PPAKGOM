@@ -21,4 +21,9 @@ public class StudyInterest extends BaseEntity{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "study_id")
 	Study study;
+	
+	public StudyInterest(Long s, Long i) {
+		this.interest.setId(s);
+		this.study.setId(s);
+	}
 }

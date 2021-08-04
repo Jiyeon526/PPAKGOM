@@ -1,11 +1,13 @@
 package com.ppakgom.db.entity;
 
-import java.time.OffsetDateTime;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +22,9 @@ public class Study extends BaseEntity{
 	float temperature;
 	int population;
 	String study_thumbnail;
-
-	OffsetDateTime deadline;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	Date deadline;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id")
