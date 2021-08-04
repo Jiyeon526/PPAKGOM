@@ -2,6 +2,8 @@ package com.ppakgom.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -38,9 +40,21 @@ public class UserController {
 		
 		
 		if(user == null) // 회원가입이 실패한 경우
-			return ResponseEntity.status(201).body(BaseResponseBody.of(400, "다시 시도해주세요."));
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해주세요."));
 		
 		/* 회원가입 성공한 경우 */
 		return ResponseEntity.status(201).body(BaseResponseBody.of(201, "가입 승인 완료"));
+	}
+	
+	@GetMapping("/${name}/name")
+	@ApiOperation(value = "닉네임 중복 체크", notes = "<strong>닉네임</strong>중복 체크를 한다.")
+	public ResponseEntity<? extends BaseResponseBody> checkDuplicateName(
+			@PathVariable @ApiParam(value="중복확인 Name", required = true) String name){
+		
+		// 만약 해당 닉네임이 있다면 400에러 발생
+		if(userService.checkDuplicateName(name))
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "이미 존재하는 닉네임입니다."));
+		
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "사용 가능한 닉네임입니다."));
 	}
 }
