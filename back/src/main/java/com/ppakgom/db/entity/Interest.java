@@ -13,4 +13,10 @@ import lombok.Setter;
 public class Interest extends BaseEntity {
 	
 	String name;
+
+	public Interest(String name) {
+		super();
+		this.name = name;
+	}
+	
 }
