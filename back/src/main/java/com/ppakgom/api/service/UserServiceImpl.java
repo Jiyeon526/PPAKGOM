@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
 			
 			/* 프로필 이미지 저장
 			 닉네임-파일명으로 저장 */
-			String filePath = BASE_PATH + "user" + user.getName() + "-" + registerInfo.getProfileThumbnail();
+			String filePath = BASE_PATH + "user" + user.getName() + "-" + thumbnail.getOriginalFilename();
 			File dest = new File(filePath);
 			thumbnail.transferTo(dest);
 			
