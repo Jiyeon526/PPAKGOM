@@ -1,10 +1,11 @@
 package com.ppakgom.db.entity;
 
+import java.time.OffsetDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,16 +13,18 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class UserInterest extends BaseEntity{
+public class Study extends BaseEntity{
 	
+	String name;
+	String content;
+	float temperature;
+	int population;
+	String study_thumbnail;
+
+	OffsetDateTime deadline;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "owner_id")
 	User user;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "interest_id")
-	Interest interest;
-	
-	
-
 }
