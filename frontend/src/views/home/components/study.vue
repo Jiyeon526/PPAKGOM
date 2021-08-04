@@ -8,7 +8,7 @@
       </el-image>
     </div>
     <div style="text-align: left; padding: 14px;">
-      <span class="title">{{ studyData.name }}</span>
+      <span class="title">{{studyData.study_id}}번방 {{ studyData.name }}</span>
       <div class="bottom">
         <span>{{ studyData.content }}</span>
       </div>

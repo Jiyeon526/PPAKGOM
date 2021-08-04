@@ -82,6 +82,21 @@ export function requestRecommendStudyList({state}) {
   return $axios.get(url)
 }
 
+// 검색어 스터디 목록 가져오기
+export function requestSearchStudyList({state}, param) {
+  let url = '/study'
+  if (param.option === 1) {
+    url += `?studyId=${param.searchValue}`
+  }
+  if (param.option === 2) {
+    url += `?name=${param.searchValue}`
+  }
+  if (param.option === 3) {
+    url += `?interest=${param.searchValue}`
+  }
+  return $axios.get(url)
+}
+
 //방 상세 정보 얻어오기
 export function requestRoomInfoDetail({ state }, payload) {
   console.log('requestRoomInfoDetail', state)

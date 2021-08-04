@@ -28,9 +28,3 @@ export function deleteToken(state) {
   state.accessToken = ''
   state.userId = ''
 }
-
-// 검색한 문자열 업데이트
-export function titleSearch(state, payload) {
-  state.searchData = payload.searchValue
-  console.log("mutate!!!", state.searchData)
-}
