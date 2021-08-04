@@ -1,5 +1,6 @@
 package com.ppakgom.api.controller;
 
+import java.text.ParseException;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,29 +58,33 @@ public class StudyController {
 
 	/* 스터디 생성 */
 	@PostMapping("/")
-	@ApiOperation(value = "스터디 생성", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.")
+	@ApiOperation(value = "스터디 생성", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.", consumes = "multipart/form-data", produces = "multipart/form-data")
 	@ApiResponses({ @ApiResponse(code = 200, message = "성공", response = LoginRes.class),
 			@ApiResponse(code = 404, message = "사용자 없거나 인증 실패", response = BaseResponseBody.class),
 			@ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class), })
 	public ResponseEntity<StudyCreatePostRes> createStudy(
-			@RequestBody @ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
+			 @ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
 			@RequestPart("study_thumbnail") MultipartFile studyThumbnail, @ApiIgnore Authentication authentication) {
 		
 		Study study;
 		
 //		로그인한 사용자가 owner_id 가 됨.
-		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
-		String userId = userDetails.getUsername();
-		User user = userService.getUserByUserId(userId);
+//		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
+//		String userId = userDetails.getUsername();
+//		User user = userService.getUserByUserId(userId);
+		User user = null;
 		
 		try {
 			
 			study = studyService.createStudy(studyInfo, user, studyThumbnail);
 			
-		} catch (Exception e) {
-			System.err.println("파일 저장 에러");
+		} catch (ParseException e) {
+			System.err.println("날짜 파싱 에러");
 			e.printStackTrace();
 //			실패 응답
+		}catch (Exception e) {
+			System.err.println("파일 저장 에러");
+			e.printStackTrace();
 		}
 //		성공 응답 -> 아뒤
 		
