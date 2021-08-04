@@ -1,10 +1,12 @@
 package com.ppakgom.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +21,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Api(value = "유저 API", tags = {"User"})
 @RestController
@@ -30,11 +31,11 @@ public class UserController {
 	UserService userService;
 	
 	@PostMapping("/register")
-	@ApiOperation(value = "회원 가입", notes = "<strong>아이디와 패스워드</strong>를 통해 회원가입 한다.")
+	@ApiOperation(value = "회원가입 생성", notes = "회원가입", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> register(
-			@RequestBody @ApiParam(value="회원가입 정보", required = true) UserRegisterPostReq registerInfo,
-			@RequestPart("thumbnail") MultipartFile thumbnail ) {
-
+			@ApiParam(value = "생성할 방 정보", required = true) UserRegisterPostReq registerInfo,
+			@RequestPart("file") MultipartFile thumbnail) {
+		
 		/* 임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음. */
 		User user = userService.createUser(registerInfo, thumbnail);
 		
