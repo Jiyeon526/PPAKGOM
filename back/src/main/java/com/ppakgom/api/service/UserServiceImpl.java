@@ -31,8 +31,8 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
-	String BASE_PATH = "../../../../../resources/image/";
+
+	String BASE_PATH = System.getProperty("user.dir");
 	
 	@Override
 	public User getUserByUserId(String userId) {
@@ -55,7 +55,8 @@ public class UserServiceImpl implements UserService {
 			
 			/* 프로필 이미지 저장
 			 닉네임-파일명으로 저장 */
-			String filePath = BASE_PATH + "user" + user.getName() + "-" + thumbnail.getOriginalFilename();
+			BASE_PATH += "\\src\\main\\resources\\image";
+			String filePath = BASE_PATH + "\\user\\" + user.getName() + "-" + thumbnail.getOriginalFilename();
 			File dest = new File(filePath);
 			thumbnail.transferTo(dest);
 			
@@ -73,7 +74,8 @@ public class UserServiceImpl implements UserService {
 				s = s.replaceAll(" ", ""); // 해시태그 공백제거
 				Optional<Interest> exist = interestRepository.findByName(s); // 해당 단어가 관심사 테이블에 있는지 확인
 				if(!exist.isPresent()) { // 만약 관심사가 존재안한다면
-					interestRepository.save(s); // 관심사 insert
+					Interest interest = new Interest(s);
+					interestRepository.save(interest); // 관심사 insert
 					exist = interestRepository.findByName(s); // 다시 찾기
 				}
 				
