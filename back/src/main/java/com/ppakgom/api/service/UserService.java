@@ -8,5 +8,6 @@ import com.ppakgom.db.entity.User;
 public interface UserService {
 
 	User createUser(UserRegisterPostReq registerInfo, MultipartFile thumbnail);
+	boolean checkDuplicateName(String name);
 	
 }
