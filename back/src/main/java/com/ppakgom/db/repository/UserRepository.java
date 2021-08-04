@@ -12,6 +12,9 @@ import com.ppakgom.db.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	
 	// 아이디로 사용자 찾기
-	 @Query(value = "SELECT * FROM USER WHERE USER_ID = ?1",nativeQuery = true) 
-	 User findUserById(String userId);
+	@Query(value = "SELECT * FROM USER WHERE USER_ID = ?1",nativeQuery = true) 
+	User findUserById(String userId);
+	
+	// 닉네임으로 사용자 찾기
+	Optional<User> findByName(String name);
 }
