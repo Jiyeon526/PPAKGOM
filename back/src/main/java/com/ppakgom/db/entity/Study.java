@@ -29,5 +29,13 @@ public class Study extends BaseEntity{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "owner_id")
 	User user;
+
+	@Override
+	public String toString() {
+		return "Study [name=" + name + ", content=" + content + ", temperature=" + temperature + ", population="
+				+ population + ", study_thumbnail=" + study_thumbnail + ", deadline=" + deadline + ", user=" + user
+				+ "아뒤 = "+id+"]";
+	}
+	
 	
 }

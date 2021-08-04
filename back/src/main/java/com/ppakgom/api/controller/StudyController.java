@@ -66,8 +66,9 @@ public class StudyController {
 			 @ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
 			@RequestPart("study_thumbnail") MultipartFile studyThumbnail, @ApiIgnore Authentication authentication) {
 		
-		Study study;
+		Study study = null;
 		
+//		아직 로그인-회원가입 연결 안되있어서 여기 안해놓음
 //		로그인한 사용자가 owner_id 가 됨.
 //		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
 //		String userId = userDetails.getUsername();
@@ -81,13 +82,14 @@ public class StudyController {
 		} catch (ParseException e) {
 			System.err.println("날짜 파싱 에러");
 			e.printStackTrace();
-//			실패 응답
+			return (ResponseEntity<StudyCreatePostRes>) ResponseEntity.status(500);
 		}catch (Exception e) {
 			System.err.println("파일 저장 에러");
 			e.printStackTrace();
+			return (ResponseEntity<StudyCreatePostRes>) ResponseEntity.status(500);
 		}
 //		성공 응답 -> 아뒤
-		
-		return null;
+//		ne
+		return ResponseEntity.ok(new StudyCreatePostRes(study.getId()));
 	}
 }
