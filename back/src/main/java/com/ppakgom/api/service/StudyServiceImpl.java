@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class StudyServiceImpl implements StudyService {
 //		0.스터디 아이디 미리 뽑아두기
 		Long studyId = studyRepository.save(study).getId();
 
-//		2. 사진 관련 처리 -> image/study/방번호-파일명
+//		1. 사진 관련 처리 -> image/study/방번호-파일명
 //		if (studyThumbnail != null) {
 //		썸네일을 안보내면 에러가 나는 상태
 		String path = "C:/Users/multicampus/Desktop/real3rdGit/S05P13B306/back/src/main/resources/image/study";
@@ -60,7 +61,7 @@ public class StudyServiceImpl implements StudyService {
 //		}
 
 		if (studyInfo.getInterest() != null) {
-//		1. 관심사 테이블.
+//		2. 관심사 테이블.
 			ArrayList<Long> interestId = new ArrayList<Long>();
 			String[] interests = studyInfo.getInterest();
 			for (String interest : interests) {
@@ -73,7 +74,7 @@ public class StudyServiceImpl implements StudyService {
 			}
 
 			System.out.println(studyId);
-//		4. 관심사 - 스터디 테이블.
+//		3. 관심사 - 스터디 테이블.
 			for (Long iId : interestId) {
 				System.out.println(iId);
 				studyInterestRepository.save(new StudyInterest(studyId, iId));
@@ -86,6 +87,11 @@ public class StudyServiceImpl implements StudyService {
 		int idx = path.indexOf("image");
 		return path.substring(idx, path.length());
 
+	}
+
+	@Override
+	public List<Study> getAllStudy() {
+		return studyRepository.findAll();
 	}
 
 }

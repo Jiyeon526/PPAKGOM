@@ -1,14 +1,17 @@
 package com.ppakgom.api.controller;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 /* spring web */
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,8 +35,10 @@ import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
+
 import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
+import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 
@@ -89,7 +94,21 @@ public class StudyController {
 			return (ResponseEntity<StudyCreatePostRes>) ResponseEntity.status(500);
 		}
 //		성공 응답 -> 아뒤
-//		ne
 		return ResponseEntity.ok(new StudyCreatePostRes(study.getId()));
+	}
+	
+	/* 스터디 검색 */
+	@GetMapping("/")
+	@ApiOperation(value = "스터디 검색", notes = "전체 스터디 목록 검색")
+	public ResponseEntity<StudySearchGetRes> searchAllStudy() {
+		
+		StudySearchGetRes res = new StudySearchGetRes();
+		res.setStudyResult(new ArrayList<>());
+		
+		List<Study> resultSet = studyService.getAllStudy();
+		for(Study s : resultSet) {
+			res.getStudyResult().add(s);
+		}
+		return ResponseEntity.ok(res);
 	}
 }
