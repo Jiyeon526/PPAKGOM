@@ -3,6 +3,7 @@ package com.ppakgom.api.request;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
@@ -10,18 +11,19 @@ import lombok.Setter;
 @ApiModel("User Register Post Request Model")
 public class UserRegisterPostReq {
 	
-	@ApiModelProperty(name = "유저 ID", example = "SSAFY")
+	@ApiModelProperty(name = "userId", example = "SSAFY")
 	String userId;
 	
-	@ApiModelProperty(name = "유저 Password", example = "SSAFY")
+	@ApiModelProperty(name = "password", example = "SSAFY")
 	String password;
 	
-	@ApiModelProperty(name = "유저 Email", example = "SSAFY@naver.com")
+	@ApiModelProperty(name = "email", example = "SSAFY@naver.com")
 	String email;
 	
-	@ApiModelProperty(name = "유저 Name", example = "SSAFY")
+	@ApiModelProperty(name = "name", example = "SSAFY")
 	String name;
 	
-	@ApiModelProperty(name = "유저 Interest", example = "")
+	@ApiModelProperty(name = "interest", example = "")
 	String[] interest;
+	
 }
