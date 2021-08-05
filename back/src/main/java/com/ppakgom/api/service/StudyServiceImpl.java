@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,6 @@ public class StudyServiceImpl implements StudyService {
 	@Autowired
 	StudyInterestRepository studyInterestRepository;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Study createStudy(StudyCreatePostReq studyInfo, User user, MultipartFile studyThumbnail)
 			throws IllegalStateException, IOException, ParseException {

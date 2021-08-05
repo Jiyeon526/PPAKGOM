@@ -15,5 +15,5 @@ import lombok.Setter;
 @ApiModel("스터디 검색 결과")
 public class StudySearchGetRes{
 	
-	ArrayList<Study> studyResult;
+	ArrayList<StudyRes> studyResult;
 }

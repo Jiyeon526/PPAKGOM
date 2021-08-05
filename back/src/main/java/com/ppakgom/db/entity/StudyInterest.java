@@ -24,7 +24,7 @@ public class StudyInterest extends BaseEntity{
 	
 	public StudyInterest(Long s, Long i) {
 		this.interest = new Interest();
-		this.interest.setId(i);
+		this.getInterest().setId(i);
 		this.study = new Study();
 		this.study.setId(s);
 	}

@@ -1,5 +1,6 @@
 package com.ppakgom.api.controller;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.ppakgom.db.entity.User;
 
 import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
+import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
@@ -124,13 +126,15 @@ public class StudyController {
 		}
 
 //		관심사로 검색
-		if(interest != null) {
+		if (interest != null) {
 			resultSet = studyService.getStudyByInterest(interest);
 		}
-		
+
 		/* 검색 결과 삽입 */
 		for (Study s : resultSet) {
-			res.getStudyResult().add(s);
+			StudyRes studyRes = new StudyRes();
+			studyRes = studyRes.of(s);
+			res.getStudyResult().add(studyRes);
 		}
 		return ResponseEntity.ok(res);
 

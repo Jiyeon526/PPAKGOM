@@ -17,7 +17,6 @@ public class Interest extends BaseEntity{
 	}
 	
 	public Interest() {
-		
 	}
 
 	@Override
