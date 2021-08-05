@@ -169,14 +169,8 @@ public class UserController {
 		// 로그인된 사용자 정보 받아오기
 		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
 		
-		User user = userService.getUserByUserId(userDetails.getUsername());
-		List<String> interest = userService.getInterest(user.getId());
-		
-		System.out.println(user.getId() + " " + user.getName() + " " + user.getEmail() + " " + user.getProfile_thumbnail());
-		for(String s: interest) {
-			System.out.println(s);
-		}
-		
+		User user = userService.getUserByUserId(userDetails.getUsername()); // 사용자 정보
+		List<String> interest = userService.getInterest(user.getId()); // 관심사 리스트
 		
 		UserInfoRes userInfoRes = UserInfoRes.of(user, interest);
 
