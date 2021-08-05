@@ -1,7 +1,7 @@
 <template>
   <h2>가입한 스터디</h2>
   <br>
-  <div class="card-div" v-if="state.joinStudyListTest.length !== 0">
+  <div v-if="state.joinStudyListTest.length !== 0">
     <study
       class="study"
       v-for="i in state.joinStudyListTest.length" :key="i"
@@ -18,76 +18,8 @@
 </template>
 
 <style>
-.card-div {
-  display: inline-block;
-}
 .study {
   display: inline-block;
-
-  min-width: 345px;
-  max-width: 25%;
-}
-.el-card {
-  width: 320px;
-  margin: 0 8px;
-  margin-bottom: 40px;
-}
-.el-card .image-wrapper {
-  width: 100%;
-  height: 190px;
-}
-.el-card .title {
-  width: 100%;
-  display:-webkit-box;
-  font-weight: bold;
-  word-wrap:break-word;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.el-card .bottom {
-  margin-top: 10px;
-  display:-webkit-box;
-  word-wrap:break-word;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* 테블릿, 모바일의 경우 한 줄 말줄임표시 title */
-@media (max-width: 1269px) {
-  .el-card .title {
-    -webkit-line-clamp: 1;
-    height:20px;
-  }
-}
-/* 데스크탑의 경우 한 줄 말줄임표시 title */
-@media (min-width: 1270px) {
-  .el-card .title {
-    -webkit-line-clamp: 1;
-    height:20px;
-  }
-}
-
-/* 테블릿, 모바일의 경우 두 줄 말줄임표시 */
-@media (max-width: 1269px) {
-  .el-card .bottom {
-    -webkit-line-clamp: 2;
-    height:42px;
-  }
-}
-/* 데스크탑의 경우 세 줄 말줄임표시 */
-@media (min-width: 1270px) {
-  .el-card .bottom {
-    -webkit-line-clamp: 3;
-    height:60px;
-  }
-}
-
-/* 인원 왼쪽 정렬 */
-.popul-sort {
-  display: flex;
-  justify-content: left;
 }
 </style>
 <script>
