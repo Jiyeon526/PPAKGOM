@@ -1,6 +1,8 @@
 package com.ppakgom.api.controller;
 
+import java.util.HashMap;
 import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.UserRegisterPostReq;
+import com.ppakgom.api.service.EmailService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.User;
@@ -29,6 +32,7 @@ import io.swagger.annotations.ApiResponses;
 
 import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.api.response.LoginRes;
+import com.ppakgom.api.request.EmailReq;
 import com.ppakgom.api.request.LoginReq;
 
 /**
@@ -44,8 +48,12 @@ public class UserController {
 	UserService userService;
 	
 	@Autowired
+	EmailService emailService;
+	
+	@Autowired
 	PasswordEncoder passwordEncoder;
 	
+	HashMap<String, String> emailRepository = new HashMap<>();
 	
 /* 로그인 */
 	@PostMapping("/login")
@@ -125,5 +133,27 @@ public class UserController {
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "이미 존재하는 아이디입니다."));
 		
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "사용 가능한 아이디입니다."));
+	}
+	
+	@PostMapping("/email")
+	@ApiOperation(value = "이메일 인증 코드 보내기", notes = "<strong>이메일</strong>인증 코드 보내기.")
+	public ResponseEntity<? extends BaseResponseBody> sendEmailAuth(String email) throws Exception{
+		
+		String code = emailService.sendAuthMessage(email);
+		emailRepository.put(email, code); // 해당 사용자의 인증 코드 저장
+		
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "이메일 인증 코드를 보냈습니다."));
+	}
+	
+	@PostMapping("/verifyCode")
+	@ApiOperation(value = "이메일 인증 코드 검증", notes = "<strong>이메일</strong>인증 코드 검증하기.")
+	public ResponseEntity<? extends BaseResponseBody> verifyEmailCode(@RequestBody EmailReq emailReq){
+		
+		if(emailReq.getCode().length() != 0 && emailReq.getCode().equals(emailRepository.get(emailReq.getEmail()))) {
+			emailRepository.remove(emailReq.getEmail());
+			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "이메일 인증이 완료되었습니다."));
+		}
+		
+		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 	}
 }
