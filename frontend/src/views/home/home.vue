@@ -25,32 +25,28 @@
     </div>
   </div>
   <br>
-  <h4>회원님의 해시태그에 맞는 추천 스터디가 없습니다.</h4>
-  <el-alert v-if="state.recommendStudyList.length === 0"
-    title="회원님의 해시태그에 맞는 추천 스터디가 없습니다."
-    type="info"
-    effect="dark"
+  <h4 v-if="state.recommendStudyListTest.length === 0">회원님의 해시태그에 맞는 추천 스터디가 없습니다.</h4>
+  <el-carousel v-else :interval="4000" type="card" height="200px">
+    <el-carousel-item v-for="i in state.recommendStudyListTest.length" :key="i">
+      <h3 class="medium">{{ state.recommendStudyListTest[i-1].name }}</h3>
+    </el-carousel-item>
+  </el-carousel>
+  <div v-if="state.studyListTest">
+    <div v-for="i in state.studyListTest.length" :key="i" @click="onClickStudyList(i)" class="study" >
+      <study :studyData="state.studyListTest[i-1]"/>
+    </div>
+  </div>
+  <el-alert v-else
+    title="존재하는 스터디가 없습니다. 새롭게 스터디를 생성하시거나 다른 제목으로 스터디를 검색해주세요."
+    type="error"
     center
   >
   </el-alert>
-  <el-carousel v-else :interval="4000" type="card" height="200px">
-    <el-carousel-item v-for="i in recommendStudyList.length" :key="i">
-      <h3 class="medium">{{ recommendStudyList[i].name }}</h3>
-    </el-carousel-item>
-  </el-carousel>
-  <ul v-if="state.studyList.length !== 0">
-    <li v-for="i in state.studyList.length" @click="clickStudyList(i)" class="infinite-list-item" :key="i" >
-      <study :studyData="state.studyList[i-1]" />
-    </li>
-  </ul>
-    <el-alert v-else
-      title="존재하는 스터디가 없습니다. 새롭게 스터디를 생성하시거나 다른 제목으로 스터디를 검색해주세요."
-      type="error"
-      center
-      >
-    </el-alert>
 </template>
 <style>
+.study {
+  display: inline-block;
+}
 .search-bar {
   display: flex;
 }
@@ -63,31 +59,11 @@
   width: 80%;
 }
 
-.infinite-list {
-  padding-left: 0;
-  max-height: calc(100% - 35px);
-}
-
-@media (min-width: 701px) and (max-width: 1269px) {
-  .infinite-list {
-    min-width: 700px;
-  }
-}
-
-@media (min-width: 1270px) {
-  .infinite-list {
-    min-width: 1021px;
-  }
-}
-
-.infinite-list .infinite-list-item {
-  min-width: 345px;
-  max-width: 25%;
-  display: inline-block;
-  cursor: pointer;
-}
-
 /* carousel */
+.el-carousel {
+  margin: 50px 0px;
+}
+
 .el-carousel__item h3 {
   color: #475669;
   font-size: 14px;
@@ -124,7 +100,74 @@ export default {
     const state = reactive({
       isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
       studyList : [],
+      // Test 코드
+      studyListTest : [{
+        study_id: 1,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰1",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 3,
+        deadline: "2021-08-23"
+      },{
+        study_id: 2,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰2",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 2,
+        deadline: "2021-08-23"
+      },{
+        study_id: 3,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰3",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 1,
+        deadline: "2021-08-23"
+      },{
+        study_id: 4,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰4",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 4,
+        deadline: "2021-08-23"
+      }],
       recommendStudyList : [],
+      // Test 코드
+      recommendStudyListTest : [{
+        study_id: 11,
+        interest: ["프로그래밍","개발자"],
+        name: "추천1",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 3,
+        deadline: "2021-08-23"
+      },{
+        study_id: 12,
+        interest: ["프로그래밍","개발자"],
+        name: "추천2",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 2,
+        deadline: "2021-08-23"
+      },{
+        study_id: 13,
+        interest: ["프로그래밍","개발자"],
+        name: "추천3",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 1,
+        deadline: "2021-08-23"
+      }],
       searchValue : '',
       searchType : '',
       options: [{
@@ -139,11 +182,11 @@ export default {
         }],
     })
 
-    const clickstudyList = function (id) {
+    const onClickStudyList = function (id) {
       router.push({
         name: 'studydetail-dialog',
         params: {
-          studyId: state.studyList[id - 1].id
+          studyId: state.studyListTest[id - 1].study_id
         }
       })
     }
@@ -214,7 +257,7 @@ export default {
       }
     };
 
-    return { state, clickstudyList, searchStudy}
+    return { state, onClickStudyList, searchStudy}
   }
 }
 </script>

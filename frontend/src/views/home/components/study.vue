@@ -8,14 +8,14 @@
       </el-image>
     </div>
     <div style="text-align: left; padding: 14px;">
-      <span class="title">{{studyData.study_id}}번방 {{ studyData.name }}</span>
+      <span class="title">{{ studyData.name }}</span>
       <div class="bottom">
         <span>{{ studyData.content }}</span>
       </div>
     </div>
     <div>
       <el-input-data class="btn-sort">
-        <el-tag type=""> 2/{{ studyData.population }}</el-tag>
+        <el-tag type=""> {{ studyData.joined_population }}/{{ studyData.population }}</el-tag>
         <el-tag v-if="studyData.owner_id" type="success">입장</el-tag>
       </el-input-data>
     </div>
@@ -41,6 +41,7 @@
   -webkit-line-clamp: 1;
 }
 .el-card .bottom {
+  width: 345px;
   margin-top: 5px;
   display:-webkit-box;
   word-wrap:break-word;
