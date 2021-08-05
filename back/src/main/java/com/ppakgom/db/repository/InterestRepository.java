@@ -15,9 +15,11 @@ import com.ppakgom.db.entity.User;
 public interface InterestRepository extends JpaRepository<Interest,Long>{
 
 	@Query(value = "SELECT * FROM INTEREST WHERE NAME = ?1",nativeQuery = true)
-	Interest findByName(String interest);
-	
+	Interest findByInterest(String interest);
+
+	@Query(value = "SELECT * FROM INTEREST WHERE ID = ?1",nativeQuery = true)
+	Interest findByName(Long id);
+
 	@Query(value = "SELECT * FROM INTEREST WHERE NAME LIKE %?1%",nativeQuery = true)
-	List<Interest> findAllByName(String interest);
-	
+    List<Interest> findAllByName(String interest);
 }

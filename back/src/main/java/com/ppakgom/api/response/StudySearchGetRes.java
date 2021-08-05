@@ -2,6 +2,7 @@ package com.ppakgom.api.response;
 
 import java.util.ArrayList;
 
+
 import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.BaseEntity;
 import com.ppakgom.db.entity.Study;
