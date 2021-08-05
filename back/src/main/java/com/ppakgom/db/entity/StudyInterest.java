@@ -25,4 +25,5 @@ public class StudyInterest extends BaseEntity {
 		this.interest = i;
 		this.study = s;
 	}
+	public StudyInterest() {}
 }

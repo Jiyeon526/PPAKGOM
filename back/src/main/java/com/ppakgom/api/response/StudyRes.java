@@ -8,9 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
+import com.ppakgom.db.entity.StudyInterest;
+import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 
 import lombok.Getter;
@@ -29,33 +32,20 @@ public class StudyRes {
 	int joined_population; // 가입한 회원 수
 //	String deadline;// 마감날짜
 	
-	@Autowired
-	StudyInterestRepository studyInterestRepository;
 
-	@Autowired
-	InterestRepository interestRepository;
-
-	@Autowired
-	UserStudyRepository userStudyRepository;
-
-	public StudyRes of(Study study) {
+	public StudyRes of(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository) {
 
 		StudyRes res = new StudyRes();
-		System.out.println("@@@@@@@@@@@@@@@@@@@"+study);
 		
-//		1. study-interest 테이블에서 interest id 가져온다.
-		System.out.println("############# "+study.getId());
+//		1. study-interest 테이블에서 우리 스터디에 맞는 관심사들 가져옴.
+		List<StudyInterest> studyInterests = studyInterestRepository.findByStudyId(study.getId());
 		
-//		????????!!!!!!!!!!!
-		List<Object> ABCD = studyInterestRepository.findByStudyId(study.getId());
-		
-//		2. interest 배열에 interst id를 가지고 그 name을 가져오고, interest 배열 속성에 추가시킨답.
+//		2. studyInterest 객체에서 interest를 가져온 뒤, 그 name을 가져오고, interest 배열 속성에 추가시킨답.
 		res.setInterest(new ArrayList<>());
-		
-		for (Object id : ABCD) {
-			System.out.println("아뒤ㅣㅣ "+id);
-			Long iId1 = (Long)id;
-			res.getInterest().add(interestRepository.findById(iId1).get().getName());
+//		
+		for (StudyInterest si : studyInterests) {
+			System.out.println(si);
+			res.getInterest().add(si.getInterest().getName());
 		}
 
 //		3. name, content, population, study_thumbnail은 그대로 가져오기

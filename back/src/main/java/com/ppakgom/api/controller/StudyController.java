@@ -36,7 +36,8 @@ import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
-
+import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
@@ -62,13 +63,18 @@ public class StudyController {
 
 	@Autowired
 	StudyService studyService;
-
+	
+	@Autowired
+	StudyInterestRepository studyInterestRepository;
+	
+	@Autowired
+	UserStudyRepository userStudyRepository;
+	
+	private final StudyRes STUDY_RES = new StudyRes();
+	
 	/* 스터디 생성 */
 	@PostMapping("/")
 	@ApiOperation(value = "스터디 생성", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.", consumes = "multipart/form-data", produces = "multipart/form-data")
-	@ApiResponses({ @ApiResponse(code = 200, message = "성공", response = LoginRes.class),
-			@ApiResponse(code = 404, message = "사용자 없거나 인증 실패", response = BaseResponseBody.class),
-			@ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class), })
 	public ResponseEntity<StudyCreatePostRes> createStudy(
 			@ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
 			@RequestPart("study_thumbnail") MultipartFile studyThumbnail, @ApiIgnore Authentication authentication) {
@@ -129,9 +135,8 @@ public class StudyController {
 
 		/* 검색 결과 삽입 */
 		for (Study s : resultSet) {
-			StudyRes studyRes = new StudyRes();
-			studyRes = studyRes.of(s);
-			res.getStudyResult().add(studyRes);
+			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
+			res.getStudyResult().add(sr);
 		}
 		return ResponseEntity.ok(res);
 
