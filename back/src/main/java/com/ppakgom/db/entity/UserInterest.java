@@ -27,5 +27,7 @@ public class UserInterest extends BaseEntity {
 		this.user = user;
 		this.interest = interest;
 	}
+	
+	public UserInterest() {}
 
 }

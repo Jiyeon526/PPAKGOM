@@ -48,7 +48,6 @@ public class StudyRes {
 		res.setInterest(new ArrayList<>());
 //		
 		for (StudyInterest si : studyInterests) {
-			System.out.println(si);
 			res.getInterest().add(si.getInterest().getName());
 		}
 
@@ -74,7 +73,6 @@ public class StudyRes {
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
 		String str = dateFormat.format(deadline);
-		System.out.println("파싱 완"+str);
 		
 		return str;
 	}

@@ -39,7 +39,7 @@ public class StudyServiceImpl implements StudyService {
 
 	@Autowired
 	UserStudyRepository userStudyRepository;
-	
+
 	/* 스터디 생성 */
 	@Override
 	public Study createStudy(StudyCreatePostReq studyInfo, User user, MultipartFile studyThumbnail)
@@ -55,11 +55,11 @@ public class StudyServiceImpl implements StudyService {
 
 //		방 만든 사람이 방장!
 		study.setUser(user);
-		
+
 //		스터디 아이디 미리 뽑아두기
 		Study studyTmp = studyRepository.save(study);
 		Long studyId = studyTmp.getId();
-		
+
 //		 사진 관련 처리 -> image/study/방번호-파일명
 //		if (studyThumbnail != null) {
 //		썸네일을 안보내면 에러가 나는 상태
@@ -88,7 +88,7 @@ public class StudyServiceImpl implements StudyService {
 				studyInterestRepository.save(new StudyInterest(i, studyTmp));
 			}
 //		회원 - 스터디 테이블
-		userStudyRepository.save(new UserStudy(user,studyTmp));
+			userStudyRepository.save(new UserStudy(user, studyTmp));
 		}
 		return studyRepository.save(study);
 	}
@@ -122,29 +122,37 @@ public class StudyServiceImpl implements StudyService {
 //		하나의 스터디가 여러개 일 경우 대비 
 //		(예: 관심사 쿼리를  '면접' 이라고 전달했는데 스터디의 관심사가 '삼성면접', 'LG면접' 이면 하나의 스터디가 여러 개 들어감)
 		HashSet<Study> temp = new HashSet<>();
-		
+
 //		1. 관심사들 검색 -> like 쿼리 (복수)
 		List<Interest> interests = interestRepository.findAllByName(interest);
 
 //		2. 관심사가 있는 경우 -> 스터디 - 관심사 테이블에서 해당 관심사를 가지고 있는 스터디 가져오기
-		for(Interest i : interests) {
+
+		for (Interest i : interests) {
+			System.out.println("나감 ? ");
 //			스터디 아이디 가져오고
 			List<Long> studyIdWithInterest = studyInterestRepository.findByInterestId(i.getId());
-			
+
 //			스터디 테이블에서 스터디 아이디로 스터디 자체를 가져오기.
-			for(Long sId : studyIdWithInterest) {
+			for (Long sId : studyIdWithInterest) {
 				Optional<Study> s = studyRepository.findById(sId);
-				if(s.isPresent()) {
+				if (s.isPresent()) {
 					temp.add(s.get());
+					if (temp.size() == 3) {
+//						3. 집합을 리스트로(반환 위해서) -> 3개 초과할 경우.
+						for (Study study : temp) {
+							resultSet.add(study);
+						}
+						return resultSet;
+					}
 				}
 			}
 		}
-		
 //		3. 집합을 리스트로(반환 위해서)
-		for(Study s : temp) {
+		for (Study s : temp) {
 			resultSet.add(s);
 		}
-		
+
 		return resultSet;
 	}
 
