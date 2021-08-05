@@ -22,10 +22,8 @@ public class StudyInterest extends BaseEntity{
 	@JoinColumn(name = "study_id")
 	Study study;
 	
-	public StudyInterest(Long s, Long i) {
-		this.interest = new Interest();
-		this.interest.setId(i);
-		this.study = new Study();
-		this.study.setId(s);
+	public StudyInterest(Interest i, Study s) {
+		this.interest = i ;
+		this.study = s;
 	}
 }

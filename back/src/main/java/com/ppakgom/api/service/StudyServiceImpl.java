@@ -54,8 +54,8 @@ public class StudyServiceImpl implements StudyService {
 		study.setUser(user);
 		
 //		스터디 아이디 미리 뽑아두기
-		Study tmp = studyRepository.save(study);
-		Long studyId = tmp.getId();
+		Study studyTmp = studyRepository.save(study);
+		Long studyId = studyTmp.getId();
 		
 //		 사진 관련 처리 -> image/study/방번호-파일명
 //		if (studyThumbnail != null) {
@@ -69,25 +69,23 @@ public class StudyServiceImpl implements StudyService {
 
 		if (studyInfo.getInterest() != null) {
 //		 관심사 테이블.
-			ArrayList<Long> interestId = new ArrayList<Long>();
-			String[] interests = studyInfo.getInterest();
-			for (String interest : interests) {
+			ArrayList<Interest> interests = new ArrayList<>();
+			String[] interestsName = studyInfo.getInterest();
+			for (String interest : interestsName) {
 //			중복 검사 실시 -> 중복한다면 그 값을 가져오고, 중복하지 않는다면 insert해서 id를 가져온다.
 				Interest i;
 				i = interestRepository.findByName(interest);
 				if (i == null)
 					i = interestRepository.save(new Interest(interest));
-				interestId.add(i.getId());
+				interests.add(i);
 			}
 
-			System.out.println(studyId);
 //		 관심사 - 스터디 테이블.
-			for (Long iId : interestId) {
-				System.out.println(iId);
-				studyInterestRepository.save(new StudyInterest(studyId, iId));
+			for (Interest i : interests) {
+				studyInterestRepository.save(new StudyInterest(i, studyTmp));
 			}
 //		회원 - 스터디 테이블
-		userStudyRepository.save(new UserStudy(user,tmp));
+		userStudyRepository.save(new UserStudy(user,studyTmp));
 		}
 		return studyRepository.save(study);
 	}
