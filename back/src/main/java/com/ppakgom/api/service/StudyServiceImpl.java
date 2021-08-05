@@ -100,4 +100,9 @@ public class StudyServiceImpl implements StudyService {
 		return studyRepository.findById(studyId);
 	}
 
+	@Override
+	public List<Study> getStudyByName(String name) {
+		return studyRepository.findByName(name);
+	}
+
 }

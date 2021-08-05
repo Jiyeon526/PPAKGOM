@@ -17,4 +17,6 @@ public interface StudyService {
 	List<Study> getAllStudy();
 
 	Optional<Study> getStudyById(Long studyId);
+
+	List<Study> getStudyByName(String name);
 }

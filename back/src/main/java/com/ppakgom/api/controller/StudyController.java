@@ -54,10 +54,10 @@ import com.ppakgom.api.request.StudyCreatePostReq;
 @RestController
 @RequestMapping("api/v1/study")
 public class StudyController {
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	StudyService studyService;
 
@@ -68,27 +68,27 @@ public class StudyController {
 			@ApiResponse(code = 404, message = "사용자 없거나 인증 실패", response = BaseResponseBody.class),
 			@ApiResponse(code = 500, message = "서버 오류", response = BaseResponseBody.class), })
 	public ResponseEntity<StudyCreatePostRes> createStudy(
-			 @ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
+			@ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
 			@RequestPart("study_thumbnail") MultipartFile studyThumbnail, @ApiIgnore Authentication authentication) {
-		
+
 		Study study = null;
-		
+
 //		아직 로그인-회원가입 연결 안되있어서 여기 안해놓음
 //		로그인한 사용자가 owner_id 가 됨.
 //		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
 //		String userId = userDetails.getUsername();
 //		User user = userService.getUserByUserId(userId);
 		User user = null;
-		
+
 		try {
-			
+
 			study = studyService.createStudy(studyInfo, user, studyThumbnail);
-			
+
 		} catch (ParseException e) {
 			System.err.println("날짜 파싱 에러");
 			e.printStackTrace();
 			return (ResponseEntity<StudyCreatePostRes>) ResponseEntity.status(500);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			System.err.println("파일 저장 에러");
 			e.printStackTrace();
 			return (ResponseEntity<StudyCreatePostRes>) ResponseEntity.status(500);
@@ -96,29 +96,35 @@ public class StudyController {
 //		성공 응답 -> 아뒤
 		return ResponseEntity.ok(new StudyCreatePostRes(study.getId()));
 	}
-	
+
 	/* 스터디 검색 */
 	@GetMapping("/")
 	@ApiOperation(value = "스터디 검색", notes = "전체 스터디 목록 검색")
-	public ResponseEntity<StudySearchGetRes> searchStudyById
-	(@RequestParam(required = false) Long studyId,@RequestParam(required = false) String name, @RequestParam(required = false) String interest  ) {
-		
+	public ResponseEntity<StudySearchGetRes> searchStudyById(@RequestParam(required = false) Long studyId,
+			@RequestParam(required = false) String name, @RequestParam(required = false) String interest) {
+
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
 		List<Study> resultSet = new ArrayList<>();
-		
+		Optional<Study> study;
+
 //		스터디 전체 검색
-		if(studyId == null && name == null && interest == null)
+		if (studyId == null && name == null && interest == null)
 			resultSet = studyService.getAllStudy();
-		
+
 //		아이디로 검색
-		if(studyId != null) {
-			Optional<Study> study = studyService.getStudyById(studyId);
+		if (studyId != null) {
+			study = studyService.getStudyById(studyId);
 			resultSet.add(study.orElse(null));
 		}
-		
+
+//		스터디명으로 검색
+		if (name != null) {
+			resultSet = studyService.getStudyByName(name);
+		}
+
 		/* 검색 결과 삽입 */
-		for(Study s : resultSet) {
+		for (Study s : resultSet) {
 			res.getStudyResult().add(s);
 		}
 		return ResponseEntity.ok(res);
