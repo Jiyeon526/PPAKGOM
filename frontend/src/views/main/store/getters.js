@@ -35,3 +35,11 @@ export function isNaverLoggedIn(state) {
   if (state.naveraccessToken) return true;
   return false;
 }
+
+export function getKakaoIsLoggedIn(state) {
+  return state.kakaologin;
+}
+
+export function getGoogleIsLoggedIn(state) {
+  return state.googlelogin;
+}

@@ -48,6 +48,6 @@ export function setGoogleLogin(state, payload) {
   state.googlelogin = payload.login
 }
 
-export function kakaologin(state, payload) {
+export function setkakaologin(state, payload) {
   state.kakaologin = payload.login
 }

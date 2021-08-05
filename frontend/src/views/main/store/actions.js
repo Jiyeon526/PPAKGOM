@@ -10,6 +10,14 @@ export function requestLogin({ state }, payload) {
   return $axios.post(url, body)
 }
 
+// 소셜로그인
+export function requestSocialLogin({ state }, payload) {
+  console.log('requestLogin', state, payload)
+  const url = 'users/sociallogin'
+  let body = payload
+  return $axios.post(url, body)
+}
+
 //회원가입
 export function requestRegister({ state }, payload) {
   console.log('requestRegister', state, payload)
@@ -151,5 +159,7 @@ export function requestRoomInfoDetail({ state }, payload) {
 export function requestNaverLogout({ state }) {
   console.log('requestLogout', state)
   localStorage.removeItem('naveraccessToken')
+  localStorage.removeItem('com.naver.nid.access_token')
+  localStorage.removeItem('com.naver.nid.oauth.state_token')
   return
 }

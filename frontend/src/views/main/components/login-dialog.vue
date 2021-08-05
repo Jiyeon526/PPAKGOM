@@ -57,16 +57,13 @@
         is-popup="true"
         :callbackFunction="callbackFunction"
       /> -->
-      <el-button type="primary" @click="kakaoLogout">카카오 로그아웃</el-button
-      ><br />
-      <el-button type="primary" @click="signOut">구글 로그아웃</el-button>
     </template>
   </el-dialog>
 </template>
 <style>
 .login-dialog {
   width: 500px !important;
-  height: 600px;
+  height: 500px;
 }
 
 .login-dialog .google-logo-wrapper {
@@ -211,22 +208,6 @@ export default {
         loginButton: { color: "green", type: 2, height: 40 } //로그인 버튼의 타입을 지정
       });
       naverLogin.init();
-      naverLogin.getLoginStatus(status => {
-        if (status) {
-          console.log(status);
-          console.log(naverLogin.user);
-          //필수적으로 받아야하는 프로필 정보가 있다면 callback처리 시점에 체크
-          var email = naverLogin.user.getEmail();
-          if (email == undefined || email == null) {
-            alert("이메일은 필수정보입니다. 정보제공을 동의해주세요.");
-            //사용자 정보 재동의를 위하여 다시 네아로 동의페이지로 이동함
-            naverLogin.reprompt();
-            return;
-          }
-        } else {
-          console.log("callback 처리에 실패하였습니다.");
-        }
-      });
       window.gapi.signin2.render("google-signin-btn", {
         onsuccess: onSignIn
       });
@@ -240,21 +221,26 @@ export default {
           console.log(naverLogin.user);
           //필수적으로 받아야하는 프로필 정보가 있다면 callback처리 시점에 체크
           var email = naverLogin.user.getEmail();
+
           if (email == undefined || email == null) {
             alert("이메일은 필수정보입니다. 정보제공을 동의해주세요.");
             //사용자 정보 재동의를 위하여 다시 네아로 동의페이지로 이동함
             naverLogin.reprompt();
+            localStorage.setItem(
+              "naveraccessToken",
+              naverLogin.accessToken.accessToken
+            );
             return;
           }
         } else {
           console.log("callback 처리에 실패하였습니다.");
         }
+        localStorage.setItem(
+          "naveraccessToken",
+          naverLogin.accessToken.accessToken
+        );
       });
       //console.log("accessToken", naverLogin.accessToken.accessToken);
-      localStorage.setItem(
-        "naveraccessToken",
-        naverLogin.accessToken.accessToken
-      );
 
       handleClose();
     };
@@ -277,7 +263,11 @@ export default {
 
       const id_token = googleUser.getAuthResponse().id_token;
       console.log("ID Token: " + id_token);
-
+      console.log("전", store.getters["root/getGoogleIsLoggedIn"]);
+      store.commit("root/setGoogleLogin", {
+        login: true
+      });
+      console.log("후", store.getters["root/getGoogleIsLoggedIn"]);
       handleClose();
     };
     const clickLogin = function() {
@@ -305,7 +295,6 @@ export default {
             .catch(function(err) {
               alert(err.message);
             });
-          this.$store.state.loading = true;
         } else {
           alert("Validate error!");
         }
@@ -337,11 +326,41 @@ export default {
           const kakao_account = res.kakao_account;
           const nickname = kakao_account.profile.nickname; //카카오 닉네임
           const email = kakao_account.email; //카카오 이메일
+          let kakaoid = email.split("@");
           console.log("nickname", nickname);
           console.log("email", email);
           //로그인 처리 구현
           console.log(kakao_account);
           console.log(window.Kakao.Auth.getAccessToken());
+
+          console.log("submit");
+          console.log("파싱 아이디결과", kakaoid[0]);
+
+          console.log("전", store.getters["root/getKakaoIsLoggedIn"]);
+          store.commit("root/setkakaologin", {
+            login: true
+          });
+          console.log("후", store.getters["root/getKakaoIsLoggedIn"]);
+          // store
+          //   .dispatch("root/requestSocialLogin", {
+          //     id: kakaoid[0],
+          //     email: email
+          //   })
+          //   .then(function(result) {
+          //     //alert("accessToken: " + result.data.accessToken);
+          //     localStorage.setItem("accessToken", result.data.accessToken);
+          //     localStorage.setItem("userId", kakaoid[0]);
+          //     ElMessage({
+          //       message: "로그인 성공",
+          //       type: "success"
+          //     });
+          //     handleClose();
+          //     //console.log(store.getters['root/isLoggedIn'])
+          //     loginsuccess();
+          //   })
+          //   .catch(function(err) {
+          //     alert(err.message);
+          //   });
           //this.$store.commit("user", kakao_account);
           alert("로그인 성공!");
         },
@@ -351,21 +370,7 @@ export default {
         }
       });
     };
-    const kakaoLogout = function() {
-      if (!window.Kakao.Auth.getAccessToken()) {
-        console.log("Not logged in.");
-        return;
-      }
-      window.Kakao.Auth.logout(response => {
-        //로그아웃
-        console.log("access token:", window.Kakao.Auth.getAccessToken());
-        console.log("log out:", response);
-      });
-    };
 
-    const signOut = function() {
-      window.gapi.auth2.getAuthInstance().disconnect();
-    };
     return {
       loginForm,
       state,
@@ -374,10 +379,8 @@ export default {
       clickRegister,
       kakaoLogin,
       getKakaoAccount,
-      kakaoLogout,
       naverlogin,
-      onSignIn,
-      signOut
+      onSignIn
     };
   }
 };
