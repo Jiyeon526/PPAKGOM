@@ -129,7 +129,6 @@ public class StudyServiceImpl implements StudyService {
 //		2. 관심사가 있는 경우 -> 스터디 - 관심사 테이블에서 해당 관심사를 가지고 있는 스터디 가져오기
 
 		for (Interest i : interests) {
-			System.out.println("나감 ? ");
 //			스터디 아이디 가져오고
 			List<Long> studyIdWithInterest = studyInterestRepository.findByInterestId(i.getId());
 

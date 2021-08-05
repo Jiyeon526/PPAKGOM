@@ -44,7 +44,9 @@ import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
+import com.ppakgom.api.response.StudyDetailRes;
 import com.ppakgom.api.response.StudyRes;
+import com.ppakgom.api.response.StudySearchDetailGetRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
@@ -190,4 +192,25 @@ public class StudyController {
 		return ResponseEntity.ok(res);
 
 	}
+	
+	
+	/* 스터디 상세 정보 불러오기 */
+	@GetMapping("/{studyId}/detail")
+	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
+	public ResponseEntity<StudySearchDetailGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId) {
+		
+		StudySearchDetailGetRes res = new StudySearchDetailGetRes();
+		res.setStudyResult(new ArrayList<>()); //배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
+		
+		Optional<Study> study = studyService.getStudyById(studyId);
+		if(study.isPresent()) {
+			res.getStudyResult().add(new StudyDetailRes().of2(study.get(), studyInterestRepository, userStudyRepository));
+		}
+		return ResponseEntity.ok(res);
+		
+	}
+
+
+	
+	
 }

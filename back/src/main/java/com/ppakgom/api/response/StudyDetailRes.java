@@ -11,11 +11,20 @@ import lombok.Setter;
 @Setter
 @Getter
 public class StudyDetailRes extends StudyRes{
-
+	
+//	이거 하나 넣자고 만든건데 사실 넘 비효율적이라서 그냥 얘기 할걸 그랬다..
 	Long owner_id;
 
 	public StudyDetailRes of2(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository) {
-		super.of(study, studyInterestRepository, userStudyRepository);
+		StudyRes res = this.of(study, studyInterestRepository, userStudyRepository);
+		this.setStudy_id(res.getStudy_id());
+		this.setContent(res.getContent());
+		this.setDeadline(res.getDeadline());
+		this.setInterest(res.getInterest());
+		this.setJoined_population(res.getJoined_population());
+		this.setName(res.getName());
+		this.setPopulation(res.getPopulation());
+		this.setStudy_thumbnail(res.getStudy_thumbnail());
 		this.setOwner_id(study.getUser().getId());
 		return this;
 	}
