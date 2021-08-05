@@ -324,27 +324,28 @@ export default {
             }
           });
           console.log(interesting);
-          // store
-          //   .dispatch("root/requestRegister", {
-          //     email: state.form.email,
-          //     position: state.form.position,
-          //     name: state.form.name,
-          //     id: state.form.id,
-          //     password: state.form.password
-          //   })
-          //   .then(function(result) {
-          //     //alert("accessToken: " + result.data.accessToken);
-          //     //console.log(result);
-          //     //alert(result.data.message);
-          //     ElMessage({
-          //       message: "회원가입성공",
-          //       type: "success"
-          //     });
-          //     handleClose();
-          //   })
-          //   .catch(function(err) {
-          //     alert(err);
-          //   });
+
+          let body = new FormData();
+          body.append("file", state.uploading);
+          body.append("email", state.form.enail);
+          body.append("interest", interesting);
+          body.append("name", state.form.name);
+          body.append("password", state.form.password);
+          body.append("userId", state.form.id);
+          console.log(body);
+
+          store
+            .dispatch("root/requestRegister", body)
+            .then(function(result) {
+              ElMessage({
+                message: "회원가입성공",
+                type: "success"
+              });
+              handleClose();
+            })
+            .catch(function(err) {
+              alert(err);
+            });
         } else {
           alert("Validate error!");
         }
@@ -369,7 +370,7 @@ export default {
           console.log(result);
           state.duplicationCheck = 1; // 성공하면 초록색
           ElMessage({
-            message: "이메일인 인증 성공",
+            message: "이메일 인증 성공ㅎ",
             type: "success"
           });
         })
@@ -378,7 +379,7 @@ export default {
           state.duplicationCheck = 2; // 실패하면 빨간색
           //alert("이미 아이디가 존재합니다.");
           ElMessage({
-            message: "이메일 인증 실패",
+            message: "이메일 인증 실패ㅠ",
             type: "error"
           });
         });
@@ -387,12 +388,12 @@ export default {
     const checkName = function() {
       // axios 보냄
       store
-        .dispatch("root/requestCheckDuplicate", { id: state.form.id })
+        .dispatch("root/requestCheckDuplicate", { name: state.form.name })
         .then(function(result) {
           console.log(result);
           state.duplicationCheck = 1; // 성공하면 초록색
           ElMessage({
-            message: "이메일인 인증 성공",
+            message: "유일한 닉네임!",
             type: "success"
           });
         })
@@ -401,7 +402,7 @@ export default {
           state.duplicationCheck = 2; // 실패하면 빨간색
           //alert("이미 아이디가 존재합니다.");
           ElMessage({
-            message: "이메일 인증 실패",
+            message: "닉네임 중복",
             type: "error"
           });
         });

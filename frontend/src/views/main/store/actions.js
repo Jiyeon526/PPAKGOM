@@ -13,9 +13,10 @@ export function requestLogin({ state }, payload) {
 //회원가입
 export function requestRegister({ state }, payload) {
   console.log('requestRegister', state, payload)
+  const headers = {'Content-Type': 'multipart/form-data' } // 토큰
   const url = '/users/register'
   let body = payload
-  return $axios.post(url, body)
+  return $axios.post(url, body,{ headers: headers })
 }
 
 // 로그아웃
@@ -29,7 +30,14 @@ export function requestLogout({ state }) {
 //아이디 중복체크
 export function requestCheckDuplicate({ state }, payload) {
   console.log('requestCheckDuplicate', state, payload)
-  const url = `/users/${payload.id}`
+  const url = `/users/${payload.id}/userid`
+  return $axios.get(url)
+}
+
+//닉네임 중복체크
+export function requestNameCheckDuplicate({ state }, payload) {
+  console.log('requestNameCheckDuplicate', state, payload)
+  const url = `/users/${payload.id}/name`
   return $axios.get(url)
 }
 
