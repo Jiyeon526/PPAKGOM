@@ -1,11 +1,13 @@
 package com.ppakgom.api.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,17 +23,21 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ppakgom.api.request.UserRegisterPostReq;
 import com.ppakgom.api.service.EmailService;
 import com.ppakgom.api.service.UserService;
+import com.ppakgom.common.auth.SsafyUserDetails;
 import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.User;
+import com.ppakgom.db.repository.UserRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import springfox.documentation.annotations.ApiIgnore;
 
 import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.api.response.LoginRes;
+import com.ppakgom.api.response.UserInfoRes;
 import com.ppakgom.api.request.EmailReq;
 import com.ppakgom.api.request.LoginReq;
 
@@ -155,5 +161,25 @@ public class UserController {
 		}
 		
 		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+	}
+	
+	@GetMapping("/me")
+	@ApiOperation(value = "회원 본인 정보 조회", notes = "로그인한 회원 본인의 정보를 응답한다.")
+	public ResponseEntity<UserInfoRes> getUserInfo(@ApiIgnore Authentication authentication) {
+		// 로그인된 사용자 정보 받아오기
+		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
+		
+		User user = userService.getUserByUserId(userDetails.getUsername());
+		List<String> interest = userService.getInterest(user.getId());
+		
+		System.out.println(user.getId() + " " + user.getName() + " " + user.getEmail() + " " + user.getProfile_thumbnail());
+		for(String s: interest) {
+			System.out.println(s);
+		}
+		
+		
+		UserInfoRes userInfoRes = UserInfoRes.of(user, interest);
+
+		return ResponseEntity.status(200).body(userInfoRes);
 	}
 }
