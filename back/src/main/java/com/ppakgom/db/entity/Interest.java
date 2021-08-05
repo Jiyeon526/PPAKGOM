@@ -16,4 +16,13 @@ public class Interest extends BaseEntity{
 	public Interest(String n) {
 		this.name = n;
 	}
+	
+	public Interest() {
+	}
+
+	@Override
+	public String toString() {
+		return "Interest [name=" + name + " id="+id+"]";
+	}
+	
 }

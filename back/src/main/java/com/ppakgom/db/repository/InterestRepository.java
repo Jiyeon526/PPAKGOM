@@ -1,5 +1,6 @@
 package com.ppakgom.db.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,8 @@ public interface InterestRepository extends JpaRepository<Interest,Long>{
 
 	@Query(value = "SELECT * FROM INTEREST WHERE NAME = ?1",nativeQuery = true)
 	Interest findByName(String interest);
-
+	
+	@Query(value = "SELECT * FROM INTEREST WHERE NAME LIKE %?1%",nativeQuery = true)
+	List<Interest> findAllByName(String interest);
+	
 }

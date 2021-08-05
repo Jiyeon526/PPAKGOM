@@ -66,7 +66,7 @@ public class UserController {
 
 //			비밀번호가 맞는다면
 			if(passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
-				loginRes = new LoginRes(200,"로그인 완료",JwtTokenUtil.getToken(user.getUserId()));
+				loginRes = new LoginRes(200,"로그인 완료",JwtTokenUtil.getToken(user.getUserId()),user.getId());
 				return ResponseEntity.ok(loginRes);
 			}else {
 				loginRes = (LoginRes) new BaseResponseBody(404,"아이디 또는 비밀번호를 확인해 주세요.");

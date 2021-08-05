@@ -20,11 +20,15 @@ public class LoginRes extends BaseResponseBody{
 	
 	@ApiModelProperty(name="JWT 인증 토큰", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN...")
 	String accessToken;
-
-	public LoginRes(Integer statusCode, String message, String accessToken) {
+	
+	@ApiModelProperty(name="사용자 ID(PRIMARY KEY)", example="3")
+	Long id;
+	
+	public LoginRes(Integer statusCode, String message, String accessToken, Long id) {
 		this.setStatusCode(statusCode);
 		this.setMessage(message);
 		this.setAccessToken(accessToken);
+		this.setId(id);
 	}
 	
 	public LoginRes() {}

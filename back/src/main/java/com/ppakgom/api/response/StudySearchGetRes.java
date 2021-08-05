@@ -1,7 +1,10 @@
 package com.ppakgom.api.response;
 
+import java.util.ArrayList;
+
 import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.BaseEntity;
+import com.ppakgom.db.entity.Study;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
@@ -9,12 +12,8 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@ApiModel("스터디 생성 값")
-public class StudyCreatePostRes{
+@ApiModel("스터디 검색 결과")
+public class StudySearchGetRes{
 	
-	Long id;
-	
-	public StudyCreatePostRes(Long s) {
-		this.id = s;
-	}
+	ArrayList<StudyRes> studyResult;
 }
