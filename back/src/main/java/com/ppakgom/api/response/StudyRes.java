@@ -1,6 +1,9 @@
 package com.ppakgom.api.response;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -24,13 +27,14 @@ import lombok.Setter;
 @Getter
 public class StudyRes {
 
+	Long study_id;
 	ArrayList<String> interest;
 	String name;
 	String content;
 	int population;
 	String study_thumbnail;
 	int joined_population; // 가입한 회원 수
-//	String deadline;// 마감날짜
+	String deadline;// 마감날짜
 	
 
 	public StudyRes of(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository) {
@@ -48,17 +52,30 @@ public class StudyRes {
 			res.getInterest().add(si.getInterest().getName());
 		}
 
-//		3. name, content, population, study_thumbnail은 그대로 가져오기
+//		3. name, content, population, study_thumbnail, study_id은 그대로 가져오기
 		res.setName(study.getName());
 		if (study.getContent() != null)
 			res.setContent(study.getContent());
 		res.setPopulation(study.getPopulation());
 		if (study.getStudy_thumbnail() != null)
 			res.setStudy_thumbnail(study.getStudy_thumbnail());
-
-//		5. studyId를 가지고 user-study 에서 user의 수를 가져온다. -> joined_population 값 설정.
+		res.setStudy_id(study.getId());
+		
+//		4. studyId를 가지고 user-study 에서 user의 수를 가져온다. -> joined_population 값 설정.
 		res.setJoined_population(userStudyRepository.getJoinedUserByStudyId(study.getId()));
-
+		
+//		5.마감 날짜 파싱해서 집어넣기
+		res.setDeadline(parseDate(study.getDeadline()));
 		return res;
+	}
+
+//	날짜형 (시간 포함)을 문자열로
+	private String parseDate(Date deadline) {
+		
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+		String str = dateFormat.format(deadline);
+		System.out.println("파싱 완"+str);
+		
+		return str;
 	}
 }
