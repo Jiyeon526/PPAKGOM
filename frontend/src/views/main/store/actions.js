@@ -105,3 +105,9 @@ export function requestRoomInfoDetail({ state }, payload) {
   const url = `/conferences/${payload}`
   return $axios.get(url, { headers: headers })
 }
+
+// 가입한 스터디 목록 가져오기
+export function requestJoinStudyList({state}) {
+  const url = `study/join/${state.userId}`
+  return $axios.get(url)
+}

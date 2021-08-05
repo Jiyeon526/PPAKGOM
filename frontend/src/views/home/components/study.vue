@@ -16,6 +16,7 @@
     <div>
       <el-input-data class="btn-sort">
         <el-tag type=""> 2/{{ studyData.population }}</el-tag>
+        <el-tag v-if="studyData.owner_id" type="success">입장</el-tag>
       </el-input-data>
     </div>
   </el-card>
@@ -66,7 +67,8 @@
 /* 인원 왼쪽 정렬 */
 .btn-sort {
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
+  margin: 2px;
 }
 
 </style>
