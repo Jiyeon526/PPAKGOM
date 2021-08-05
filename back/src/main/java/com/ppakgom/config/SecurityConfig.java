@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/users/me").authenticated()       //인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정
                 .antMatchers(HttpMethod.PUT, "/api/v1/users/**").authenticated()                //인증이 필요한 URL과 필요하지 않은 URL에 대하여 설정, {userId:[]}
                 .antMatchers(HttpMethod.DELETE, "/api/v1/users/**").authenticated()
-                .antMatchers("/api/v1/conferences/**").authenticated()
+                .antMatchers(HttpMethod.POST,"/api/v1/study/**").authenticated()
     	        	    .anyRequest().permitAll()
                 .and().cors();
     }

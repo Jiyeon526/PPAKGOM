@@ -77,7 +77,7 @@ public class StudyController {
 	@ApiOperation(value = "스터디 생성", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<StudyCreatePostRes> createStudy(
 			@ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
-			@RequestPart("study_thumbnail") MultipartFile studyThumbnail, @ApiIgnore Authentication authentication) {
+			@RequestPart(value = "study_thumbnail",required = false) MultipartFile studyThumbnail, @ApiIgnore Authentication authentication) {
 
 		Study study = null;
 
