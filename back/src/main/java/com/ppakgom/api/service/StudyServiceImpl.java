@@ -49,7 +49,7 @@ public class StudyServiceImpl implements StudyService {
 //			중복 검사 실시 -> 중복한다면 그 값을 가져오고, 중복하지 않는다면 insert해서 id를 가져온다.
 			Interest i;
 			try {
-				i = interestRepository.findByName(interest);
+				i = interestRepository.findByInterest(interest);
 
 			} catch (NoSuchElementException e) {
 				i = interestRepository.save(new Interest(interest));
