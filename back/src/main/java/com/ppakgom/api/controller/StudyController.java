@@ -70,10 +70,9 @@ public class StudyController {
 		
 //		아직 로그인-회원가입 연결 안되있어서 여기 안해놓음
 //		로그인한 사용자가 owner_id 가 됨.
-//		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
-//		String userId = userDetails.getUsername();
-//		User user = userService.getUserByUserId(userId);
-		User user = null;
+		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
+		String userId = userDetails.getUsername();
+		User user = userService.getUserByUserId(userId);
 		
 		try {
 			

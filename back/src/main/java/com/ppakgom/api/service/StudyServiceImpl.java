@@ -45,11 +45,14 @@ public class StudyServiceImpl implements StudyService {
 		study.setTemperature(studyInfo.getTemperature());
 		study.setPopulation(studyInfo.getPopulation());
 		study.setDeadline(new SimpleDateFormat("yyyy-MM-dd").parse(studyInfo.getDeadline()));
-
-//		0.스터디 아이디 미리 뽑아두기
+		
+//		방 만든 사람이 방장!
+		study.setUser(user);
+		
+//		스터디 아이디 미리 뽑아두기
 		Long studyId = studyRepository.save(study).getId();
 
-//		2. 사진 관련 처리 -> image/study/방번호-파일명
+//		 사진 관련 처리 -> image/study/방번호-파일명
 //		if (studyThumbnail != null) {
 //		썸네일을 안보내면 에러가 나는 상태
 		String path = "C:/Users/multicampus/Desktop/real3rdGit/S05P13B306/back/src/main/resources/image/study";
@@ -60,7 +63,7 @@ public class StudyServiceImpl implements StudyService {
 //		}
 
 		if (studyInfo.getInterest() != null) {
-//		1. 관심사 테이블.
+//		 관심사 테이블.
 			ArrayList<Long> interestId = new ArrayList<Long>();
 			String[] interests = studyInfo.getInterest();
 			for (String interest : interests) {
@@ -73,7 +76,7 @@ public class StudyServiceImpl implements StudyService {
 			}
 
 			System.out.println(studyId);
-//		4. 관심사 - 스터디 테이블.
+//		 관심사 - 스터디 테이블.
 			for (Long iId : interestId) {
 				System.out.println(iId);
 				studyInterestRepository.save(new StudyInterest(studyId, iId));
