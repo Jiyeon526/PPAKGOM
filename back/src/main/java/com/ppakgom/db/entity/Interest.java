@@ -16,4 +16,10 @@ public class Interest extends BaseEntity{
 	public Interest(String n) {
 		this.name = n;
 	}
+
+	public Interest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 }
