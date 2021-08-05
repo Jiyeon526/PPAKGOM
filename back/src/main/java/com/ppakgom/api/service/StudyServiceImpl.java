@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -103,6 +105,40 @@ public class StudyServiceImpl implements StudyService {
 	@Override
 	public List<Study> getStudyByName(String name) {
 		return studyRepository.findByName(name);
+	}
+
+	@Override
+	public List<Study> getStudyByInterest(String interest) {
+
+		List<Study> resultSet = new LinkedList<>();
+
+//		하나의 스터디가 여러개 일 경우 대비 
+//		(예: 관심사 쿼리를  '면접' 이라고 전달했는데 스터디의 관심사가 '삼성면접', 'LG면접' 이면 하나의 스터디가 여러 개 들어감)
+		HashSet<Study> temp = new HashSet<>();
+		
+//		1. 관심사들 검색 -> like 쿼리 (복수)
+		List<Interest> interests = interestRepository.findAllByName(interest);
+
+//		2. 관심사가 있는 경우 -> 스터디 - 관심사 테이블에서 해당 관심사를 가지고 있는 스터디 가져오기
+		for(Interest i : interests) {
+//			스터디 아이디 가져오고
+			List<Long> studyIdWithInterest = studyInterestRepository.findByInterestId(i.getId());
+			
+//			스터디 테이블에서 스터디 아이디로 스터디 자체를 가져오기.
+			for(Long sId : studyIdWithInterest) {
+				Optional<Study> s = studyRepository.findById(sId);
+				if(s.isPresent()) {
+					temp.add(s.get());
+				}
+			}
+		}
+		
+//		3. 집합을 리스트로(반환 위해서)
+		for(Study s : temp) {
+			resultSet.add(s);
+		}
+		
+		return resultSet;
 	}
 
 }

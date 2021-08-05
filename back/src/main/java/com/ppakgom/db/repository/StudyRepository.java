@@ -15,4 +15,5 @@ public interface StudyRepository extends JpaRepository<Study,Long>{
 
 	@Query(value = "SELECT * FROM STUDY WHERE NAME Like %?1%",nativeQuery = true)
 	List<Study> findByName(String name);
+
 }

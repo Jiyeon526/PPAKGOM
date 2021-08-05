@@ -36,6 +36,6 @@ public class Study extends BaseEntity{
 				+ population + ", study_thumbnail=" + study_thumbnail + ", deadline=" + deadline + ", user=" + user
 				+ "아뒤 = "+id+"]";
 	}
-	
+
 	
 }

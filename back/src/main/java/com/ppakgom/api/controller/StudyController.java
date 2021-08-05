@@ -123,6 +123,11 @@ public class StudyController {
 			resultSet = studyService.getStudyByName(name);
 		}
 
+//		관심사로 검색
+		if(interest != null) {
+			resultSet = studyService.getStudyByInterest(interest);
+		}
+		
 		/* 검색 결과 삽입 */
 		for (Study s : resultSet) {
 			res.getStudyResult().add(s);
