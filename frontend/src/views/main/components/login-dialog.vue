@@ -152,6 +152,9 @@ export default {
       //
     */
     const state = reactive({
+      id: "",
+      email: "",
+      Token: "",
       form: {
         id: "",
         password: "",
@@ -252,15 +255,31 @@ export default {
         "naveraccessToken",
         naverLogin.accessToken.accessToken
       );
-      //console.log("다시확인", naverLogin);
-      // const accessToken = naverLogin.accessToken.accessToken;
-      // console.log("logout accessToken", accessToken);
-      // const url = `https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=2skX9k2csf4rw6XBSD_S&client_secret=MFJnBhWD3K&access_token=${accessToken}&service_provider=NAVER`;
-      // axios.get(url).then(res => {
-      //   console.log("로그아웃결과", res.data);
-      // });
-    };
 
+      handleClose();
+    };
+    const kakaoLogin = function() {
+      window.Kakao.Auth.login({
+        scope: "profile_nickname, account_email",
+        success: this.getKakaoAccount
+      });
+
+      handleClose();
+    };
+    const onSignIn = function(googleUser) {
+      const profile = googleUser.getBasicProfile();
+      console.log("ID: " + profile.getId());
+      console.log("Full Name: " + profile.getName());
+      console.log("Given Name: " + profile.getGivenName());
+      console.log("Family Name: " + profile.getFamilyName());
+      console.log("Image URL: " + profile.getImageUrl());
+      console.log("Email: " + profile.getEmail());
+
+      const id_token = googleUser.getAuthResponse().id_token;
+      console.log("ID Token: " + id_token);
+
+      handleClose();
+    };
     const clickLogin = function() {
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
       loginForm.value.validate(valid => {
@@ -311,12 +330,6 @@ export default {
       emit("openRegisterDialog");
     };
 
-    const kakaoLogin = function() {
-      window.Kakao.Auth.login({
-        scope: "profile_nickname, account_email",
-        success: this.getKakaoAccount
-      });
-    };
     const getKakaoAccount = function() {
       window.Kakao.API.request({
         url: "/v2/user/me",
@@ -349,18 +362,7 @@ export default {
         console.log("log out:", response);
       });
     };
-    const onSignIn = function(googleUser) {
-      const profile = googleUser.getBasicProfile();
-      console.log("ID: " + profile.getId());
-      console.log("Full Name: " + profile.getName());
-      console.log("Given Name: " + profile.getGivenName());
-      console.log("Family Name: " + profile.getFamilyName());
-      console.log("Image URL: " + profile.getImageUrl());
-      console.log("Email: " + profile.getEmail());
 
-      const id_token = googleUser.getAuthResponse().id_token;
-      console.log("ID Token: " + id_token);
-    };
     const signOut = function() {
       window.gapi.auth2.getAuthInstance().disconnect();
     };

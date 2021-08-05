@@ -43,3 +43,11 @@ export function setNaverAccessToken(state) {
 export function deleteNaverToken(state) {
   state.naveraccessToken = ''
 }
+
+export function setGoogleLogin(state, payload) {
+  state.googlelogin = payload.login
+}
+
+export function kakaologin(state, payload) {
+  state.kakaologin = payload.login
+}

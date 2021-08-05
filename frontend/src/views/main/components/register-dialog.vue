@@ -18,7 +18,11 @@
             label="아이디"
             :label-width="state.formLabelWidth"
           >
-            <el-input v-model="state.form.id" autocomplete="off"></el-input>
+            <el-input
+              v-model="state.form.id"
+              autocomplete="off"
+              clearable
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -57,11 +61,33 @@
             label="이메일"
             :label-width="state.formLabelWidth"
           >
-            <el-input v-model="state.form.email" autocomplete="off"></el-input>
+            <el-input
+              placeholder="Ex) example@naver.com"
+              v-model="state.form.email"
+              autocomplete="off"
+              clearable
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
           <el-button type="primary" @click="checkEmail">이메일 인증</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="18">
+          <el-form-item
+            prop="checkcode"
+            label="인증코드"
+            :label-width="state.formLabelWidth"
+          >
+            <el-input
+              v-model="state.form.checkcode"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-button type="primary" @click="checkCode">인증코드 확인</el-button>
         </el-col>
       </el-row>
 
@@ -72,7 +98,8 @@
             label="닉네임"
             :label-width="state.formLabelWidth"
           >
-            <el-input v-model="state.form.name" autocomplete="off"></el-input>
+            <el-input v-model="state.form.name" autocomplete="off" clearable>
+            </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -85,7 +112,12 @@
         label="관심사항"
         :label-width="state.formLabelWidth"
       >
-        <el-input v-model="state.form.interest" autocomplete="off"></el-input>
+        <el-input
+          placeholder="Ex) #관심사항1 #관심사항2"
+          v-model="state.form.interest"
+          autocomplete="off"
+          clearable
+        ></el-input>
       </el-form-item>
 
       <el-form-item
@@ -184,7 +216,8 @@ export default {
         password2: "",
         align: "left",
         interest: "",
-        thumbnail: []
+        thumbnail: [],
+        checkcode: ""
       },
       rules: {
         email: [
@@ -310,11 +343,6 @@ export default {
       registerForm.value.validate(valid => {
         if (valid) {
           console.log("submit");
-          console.log(state.form.email);
-          console.log(state.form.name);
-          console.log(state.form.id);
-          console.log(state.form.password);
-          console.log(state.uploading);
           var split = state.form.interest.split("#");
           var interesting = [];
           split.forEach(e => {
@@ -365,12 +393,12 @@ export default {
     const checkEmail = function() {
       // axios 보냄
       store
-        .dispatch("root/requestCheckDuplicate", { id: state.form.id })
+        .dispatch("root/requestEmail", { email: state.form.email })
         .then(function(result) {
           console.log(result);
           state.duplicationCheck = 1; // 성공하면 초록색
           ElMessage({
-            message: "이메일 인증 성공ㅎ",
+            message: "이메일 인증코드를 입력하세요",
             type: "success"
           });
         })
@@ -379,7 +407,33 @@ export default {
           state.duplicationCheck = 2; // 실패하면 빨간색
           //alert("이미 아이디가 존재합니다.");
           ElMessage({
-            message: "이메일 인증 실패ㅠ",
+            message: "이메일 인증보내기가 실패하였습니다",
+            type: "error"
+          });
+        });
+    };
+
+    const checkCode = function() {
+      // axios 보냄
+      store
+        .dispatch("root/requestEmailCode", {
+          email: state.form.email,
+          code: state.form.checkcode
+        })
+        .then(function(result) {
+          console.log(result);
+          state.duplicationCheck = 1; // 성공하면 초록색
+          ElMessage({
+            message: "이메일 인증 성공",
+            type: "success"
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          state.duplicationCheck = 2; // 실패하면 빨간색
+          //alert("이미 아이디가 존재합니다.");
+          ElMessage({
+            message: "이메일 인증 실패",
             type: "error"
           });
         });
@@ -432,7 +486,8 @@ export default {
       checkEmail,
       checkName,
       prevUpload,
-      toUpload
+      toUpload,
+      checkCode
     };
   }
 };

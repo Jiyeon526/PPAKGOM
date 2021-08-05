@@ -41,6 +41,22 @@ export function requestNameCheckDuplicate({ state }, payload) {
   return $axios.get(url)
 }
 
+// 이메일 인증
+export function requestEmail({ state }, payload) {
+  console.log('requestEmail', state, payload)
+  const url = '/users/email'
+  let body = payload
+  return $axios.post(url, body)
+}
+
+// 이메일 인증
+export function requestEmailCode({ state }, payload) {
+  console.log('requestEmailCode', state, payload)
+  const url = '/users/verifyCode'
+  let body = payload
+  return $axios.post(url, body)
+}
+
 // 내 프로필
 export function requestReadMyInfo({ state }) {
   console.log('requestMyInfo', state)

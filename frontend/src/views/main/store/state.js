@@ -39,4 +39,6 @@ export default {
   userId: userId,
   searchData: '',
   naveraccessToken: naveraccessToken,
+  googlelogin: false,
+  kakaologin: false,
 }
