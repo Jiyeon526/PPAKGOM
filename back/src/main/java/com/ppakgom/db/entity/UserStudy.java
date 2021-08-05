@@ -22,4 +22,9 @@ public class UserStudy extends BaseEntity{
 	@JoinColumn(name = "study_id")
 	Study study;
 	
+	public UserStudy(User u, Study s) {
+		this.user = u;
+		this.study = s;
+	}
+	
 }

@@ -17,9 +17,11 @@ import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyInterest;
 import com.ppakgom.db.entity.User;
+import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.StudyRepository;
+import com.ppakgom.db.repository.UserStudyRepository;
 
 @Service("StudyService")
 public class StudyServiceImpl implements StudyService {
@@ -33,7 +35,9 @@ public class StudyServiceImpl implements StudyService {
 	@Autowired
 	StudyInterestRepository studyInterestRepository;
 
-	@SuppressWarnings("deprecation")
+	@Autowired
+	UserStudyRepository userStudyRepository;
+	
 	@Override
 	public Study createStudy(StudyCreatePostReq studyInfo, User user, MultipartFile studyThumbnail)
 			throws IllegalStateException, IOException, ParseException {
@@ -50,8 +54,9 @@ public class StudyServiceImpl implements StudyService {
 		study.setUser(user);
 		
 //		스터디 아이디 미리 뽑아두기
-		Long studyId = studyRepository.save(study).getId();
-
+		Study tmp = studyRepository.save(study);
+		Long studyId = tmp.getId();
+		
 //		 사진 관련 처리 -> image/study/방번호-파일명
 //		if (studyThumbnail != null) {
 //		썸네일을 안보내면 에러가 나는 상태
@@ -81,6 +86,8 @@ public class StudyServiceImpl implements StudyService {
 				System.out.println(iId);
 				studyInterestRepository.save(new StudyInterest(studyId, iId));
 			}
+//		회원 - 스터디 테이블
+		userStudyRepository.save(new UserStudy(user,tmp));
 		}
 		return studyRepository.save(study);
 	}
