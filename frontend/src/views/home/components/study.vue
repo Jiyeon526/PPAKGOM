@@ -15,7 +15,7 @@
     </div>
     <div>
       <el-input-data class="btn-sort">
-        <el-tag type=""> 2/{{ studyData.population }}</el-tag>
+        <el-tag type=""> {{ studyData.joined_population }}/{{ studyData.population }}</el-tag>
       </el-input-data>
     </div>
   </el-card>
