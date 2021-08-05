@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,6 +93,11 @@ public class StudyServiceImpl implements StudyService {
 	@Override
 	public List<Study> getAllStudy() {
 		return studyRepository.findAll();
+	}
+
+	@Override
+	public Optional<Study> getStudyById(Long studyId) {
+		return studyRepository.findById(studyId);
 	}
 
 }

@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
+import java.util.Optional;
 
 /* spring web */
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,15 +100,28 @@ public class StudyController {
 	/* 스터디 검색 */
 	@GetMapping("/")
 	@ApiOperation(value = "스터디 검색", notes = "전체 스터디 목록 검색")
-	public ResponseEntity<StudySearchGetRes> searchAllStudy() {
+	public ResponseEntity<StudySearchGetRes> searchStudyById
+	(@RequestParam(required = false) Long studyId,@RequestParam(required = false) String name, @RequestParam(required = false) String interest  ) {
 		
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
+		List<Study> resultSet = new ArrayList<>();
 		
-		List<Study> resultSet = studyService.getAllStudy();
+//		스터디 전체 검색
+		if(studyId == null && name == null && interest == null)
+			resultSet = studyService.getAllStudy();
+		
+//		아이디로 검색
+		if(studyId != null) {
+			Optional<Study> study = studyService.getStudyById(studyId);
+			resultSet.add(study.orElse(null));
+		}
+		
+		/* 검색 결과 삽입 */
 		for(Study s : resultSet) {
 			res.getStudyResult().add(s);
 		}
 		return ResponseEntity.ok(res);
+
 	}
 }
