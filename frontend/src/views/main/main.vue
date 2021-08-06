@@ -10,7 +10,7 @@
       @openMakeworkbookDialog="onOpenMakeworkbookDialog"
       @openOtherpeopleDialog="onOpenOtherpeopleDialog"
       @openStudydetailDialog="onOpenStudydetailDialog"
-      @openStduyscheduleDialog="onOpenStudyscheduleDialog"
+      @openStudyscheduleDialog="onOpenStudyscheduleDialog"
     />
     <el-container class="main-container">
       <el-aside class="hide-on-small" width="240px">
@@ -25,6 +25,7 @@
   <login-dialog
     :open="loginDialogOpen"
     @closeLoginDialog="onCloseLoginDialog"
+    @openRegisterDialog="onOpenRegisterDialog"
   />
   <register-dialog
     :open="registerDialogOpen"
@@ -52,7 +53,7 @@
     @closeStudydetailDialog="onCloseStudydetailDialog"
   />
   <studyschedule-dialog
-    :open="stduyscheduleDialogOpen"
+    :open="studyscheduleDialogOpen"
     @closeStudyscheduleDialog="onCloseStudyscheduleDialog"
   />
   <room-dialog :open="roomDialogOpen" @closeRoomDialog="onCloseRoomDialog" />
@@ -74,7 +75,7 @@ import InviteDialog from "./components/invite-dialog";
 import AnswerworkbookDialog from "./components/answerworkbook-dialog";
 import MakeworkbookDialog from "./components/makeworkbook-dialog";
 import OtherpeopleDialog from "./components/otherpeople-dialog";
-import StudydetailDialog from "./components/stduydetail-dialog";
+import StudydetailDialog from "./components/studydetail-dialog";
 import StudyscheduleDialog from "./components/studyschedule-dialog";
 
 // 컴포넌트 추가
@@ -106,15 +107,15 @@ export default {
       makeworkbookDialogOpen: false,
       otherpeopleDialogOpen: false,
       studydetailDialogOpen: false,
-      stduyscheduleDialogOpen: false
+      studyscheduleDialogOpen: false
     };
   },
   methods: {
     onOpenStudyscheduleDialog() {
-      this.stduyscheduleDialogOpen = true;
+      this.studyscheduleDialogOpen = true;
     },
     onCloseStudyscheduleDialog() {
-      this.stduyscheduleDialogOpen = false;
+      this.studyscheduleDialogOpen = false;
     },
 
     onOpenStudydetailDialog() {

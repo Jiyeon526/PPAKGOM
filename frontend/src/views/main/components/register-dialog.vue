@@ -11,45 +11,25 @@
       ref="registerForm"
       :label-position="state.form.align"
     >
-      <el-form-item
-        prop="department"
-        label="소속"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.department" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item
-        prop="position"
-        label="직책"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.position" autocomplete="off"></el-input>
-      </el-form-item>
-
-      <el-form-item
-        prop="name"
-        label="이름"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.name" autocomplete="off"></el-input>
-      </el-form-item>
-
       <el-row :gutter="20">
-        <el-col :span="17">
+        <el-col :span="18">
           <el-form-item
             prop="id"
             label="아이디"
             :label-width="state.formLabelWidth"
           >
-            <el-input v-model="state.form.id" autocomplete="off"></el-input>
+            <el-input
+              v-model="state.form.id"
+              autocomplete="off"
+              clearable
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="checkId"
-            >아이디 중복 확인</el-button
-          >
+          <el-button type="primary" @click="checkId">아이디 중복</el-button>
         </el-col>
       </el-row>
+
       <el-form-item
         prop="password"
         label="비밀번호"
@@ -64,7 +44,7 @@
 
       <el-form-item
         prop="password2"
-        label="비밀번호 체크"
+        label="비밀번호 재확인"
         :label-width="state.formLabelWidth"
       >
         <el-input
@@ -73,10 +53,96 @@
           show-password
         ></el-input>
       </el-form-item>
+
+      <el-row :gutter="20">
+        <el-col :span="18">
+          <el-form-item
+            prop="email"
+            label="이메일"
+            :label-width="state.formLabelWidth"
+          >
+            <el-input
+              placeholder="Ex) example@naver.com"
+              v-model="state.form.email"
+              autocomplete="off"
+              clearable
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-button type="primary" @click="checkEmail">이메일 인증</el-button>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="18">
+          <el-form-item
+            prop="checkcode"
+            label="인증코드"
+            :label-width="state.formLabelWidth"
+          >
+            <el-input
+              v-model="state.form.checkcode"
+              autocomplete="off"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-button type="primary" @click="checkCode">인증코드 확인</el-button>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20">
+        <el-col :span="18">
+          <el-form-item
+            prop="name"
+            label="닉네임"
+            :label-width="state.formLabelWidth"
+          >
+            <el-input v-model="state.form.name" autocomplete="off" clearable>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-button type="primary" @click="checkName">닉네임 중복</el-button>
+        </el-col>
+      </el-row>
+
+      <el-form-item
+        prop="name"
+        label="관심사항"
+        :label-width="state.formLabelWidth"
+      >
+        <el-input
+          placeholder="Ex) #관심사항1 #관심사항2"
+          v-model="state.form.interest"
+          autocomplete="off"
+          clearable
+        ></el-input>
+      </el-form-item>
+
+      <el-form-item
+        prop="thumbnail"
+        label="프로필 사진"
+        :label-width="state.formLabelWidth"
+      >
+        <el-upload
+          class="upload-demo"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          accept=".png, .jpg, .jpeg, .gif"
+          list-type="picture"
+          limit="1"
+          :before-upload="prevUpload"
+          :auto-upload="false"
+          thumbnail-mode="true"
+          ref="toUpload"
+        >
+          <i class="el-icon-plus"></i>
+        </el-upload>
+      </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="clickRegister">회원가입</el-button>
+        <el-button type="primary" @click="clickRegister">가입하기</el-button>
       </span>
     </template>
   </el-dialog>
@@ -84,7 +150,7 @@
 <style>
 .register-dialog {
   width: 600px !important;
-  height: 600px;
+  height: 700px;
 }
 .register-dialog .el-dialog__headerbtn {
   float: right;
@@ -106,12 +172,12 @@
   display: none;
 }
 .register-dialog .el-dialog__footer {
-  margin: 0 calc(50% - 80px);
+  margin: 0 calc(20% - 80px);
   padding-top: 0;
   display: inline-block;
 }
 .register-dialog .dialog-footer .el-button {
-  width: 120px;
+  width: 500px;
 }
 </style>
 <script>
@@ -133,6 +199,7 @@ export default {
     const store = useStore();
     // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
     const registerForm = ref(null);
+    const toUpload = ref(null);
 
     /*
       // Element UI Validator
@@ -141,16 +208,19 @@ export default {
     */
     const state = reactive({
       form: {
-        department: "",
+        email: "",
         position: "",
         name: "",
         id: "",
         password: "",
         password2: "",
-        align: "left"
+        align: "left",
+        interest: "",
+        thumbnail: [],
+        checkcode: ""
       },
       rules: {
-        department: [
+        email: [
           {
             validator(rule, value) {
               var error = [];
@@ -236,7 +306,8 @@ export default {
         ]
       },
       dialogVisible: computed(() => props.open),
-      formLabelWidth: "130px"
+      formLabelWidth: "130px",
+      uploading: []
     });
 
     onMounted(() => {
@@ -268,21 +339,32 @@ export default {
 
     const clickRegister = function() {
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
+      toUpload.value.submit();
       registerForm.value.validate(valid => {
         if (valid) {
           console.log("submit");
+          var split = state.form.interest.split("#");
+          var interesting = [];
+          split.forEach(e => {
+            var temp = e.trim();
+            if (temp != "") {
+              interesting.push(temp);
+            }
+          });
+          console.log(interesting);
+
+          let body = new FormData();
+          body.append("file", state.uploading);
+          body.append("email", state.form.enail);
+          body.append("interest", interesting);
+          body.append("name", state.form.name);
+          body.append("password", state.form.password);
+          body.append("userId", state.form.id);
+          console.log(body);
+
           store
-            .dispatch("root/requestRegister", {
-              department: state.form.department,
-              position: state.form.position,
-              name: state.form.name,
-              id: state.form.id,
-              password: state.form.password
-            })
+            .dispatch("root/requestRegister", body)
             .then(function(result) {
-              //alert("accessToken: " + result.data.accessToken);
-              //console.log(result);
-              //alert(result.data.message);
               ElMessage({
                 message: "회원가입성공",
                 type: "success"
@@ -299,7 +381,7 @@ export default {
     };
 
     const handleClose = function() {
-      state.form.department = "";
+      state.form.email = "";
       state.form.position = "";
       state.form.name = "";
       state.form.id = "";
@@ -308,7 +390,105 @@ export default {
       emit("closeRegisterDialog");
     };
 
-    return { registerForm, state, clickRegister, handleClose, checkId };
+    const checkEmail = function() {
+      // axios 보냄
+      store
+        .dispatch("root/requestEmail", { email: state.form.email })
+        .then(function(result) {
+          console.log(result);
+          state.duplicationCheck = 1; // 성공하면 초록색
+          ElMessage({
+            message: "이메일 인증코드를 입력하세요",
+            type: "success"
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          state.duplicationCheck = 2; // 실패하면 빨간색
+          //alert("이미 아이디가 존재합니다.");
+          ElMessage({
+            message: "이메일 인증보내기가 실패하였습니다",
+            type: "error"
+          });
+        });
+    };
+
+    const checkCode = function() {
+      // axios 보냄
+      store
+        .dispatch("root/requestEmailCode", {
+          email: state.form.email,
+          code: state.form.checkcode
+        })
+        .then(function(result) {
+          console.log(result);
+          state.duplicationCheck = 1; // 성공하면 초록색
+          ElMessage({
+            message: "이메일 인증 성공",
+            type: "success"
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          state.duplicationCheck = 2; // 실패하면 빨간색
+          //alert("이미 아이디가 존재합니다.");
+          ElMessage({
+            message: "이메일 인증 실패",
+            type: "error"
+          });
+        });
+    };
+
+    const checkName = function() {
+      // axios 보냄
+      store
+        .dispatch("root/requestCheckDuplicate", { name: state.form.name })
+        .then(function(result) {
+          console.log(result);
+          state.duplicationCheck = 1; // 성공하면 초록색
+          ElMessage({
+            message: "유일한 닉네임!",
+            type: "success"
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          state.duplicationCheck = 2; // 실패하면 빨간색
+          //alert("이미 아이디가 존재합니다.");
+          ElMessage({
+            message: "닉네임 중복",
+            type: "error"
+          });
+        });
+    };
+
+    // 썸네일 데이터 가져오기
+    const prevUpload = function(file) {
+      const necessary = [];
+      necessary.push(file["name"]);
+      necessary.push(file["size"]);
+      state.form.thumbnail = necessary;
+
+      state.uploading = file;
+      console.log(
+        "111",
+        file,
+        state.form.thumbnail,
+        typeof state.form.thumbnail
+      );
+    };
+    return {
+      registerForm,
+      state,
+      clickRegister,
+      handleClose,
+      checkId,
+      checkEmail,
+      checkName,
+      prevUpload,
+      toUpload,
+      checkCode
+    };
   }
 };
 </script>
