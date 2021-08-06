@@ -169,9 +169,6 @@ export default {
       }],
       searchValue : '',
       searchType : '',
-      studyId : null,
-      name : '',
-      interest : '',
       options: [{
           value: 1,
           label: '방 번호'
@@ -228,7 +225,38 @@ export default {
       getStudyList()
     })
 
-    return { state, onClickStudyList }
+    // 검색한 내용으로 스터디 목록 가져오기
+    const searchStudy = function() {
+      let cleanValue = state.searchValue.trim();
+      console.log(cleanValue);
+      if (cleanValue !== "") {
+        if (!state.searchType) {
+          ElMessage({
+            type: 'info',
+            message: '검색하려는 분야를 선택해주세요',
+          })
+        }
+        else {
+          store
+          .dispatch('root/requestSearchStudyList', {
+            option : state.searchType,
+            searchValue : cleanValue,
+          })
+            .then(function(res) {
+              state.studyList = res.data.content
+              console.log('검색 스터디 목록 받아오기', state.studyList)
+            })
+            .catch(function(err) {
+              console.log('검색 스터디 목록 받아오기 에러', err)
+            })
+          }
+      }
+      else {
+        state.searchValue = "";
+      }
+    };
+
+    return { state, onClickStudyList, searchStudy}
   }
 };
 </script>
