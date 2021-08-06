@@ -1,5 +1,7 @@
 package com.ppakgom.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +20,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.UserRegisterPostReq;
+import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.common.model.response.BaseResponseBody;
+import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
+import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.UserStudyRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +36,8 @@ import io.swagger.annotations.ApiResponses;
 
 import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.api.response.LoginRes;
+import com.ppakgom.api.response.StudyRes;
+import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.request.LoginReq;
 
 /**
@@ -46,7 +55,14 @@ public class UserController {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	
+	@Autowired
+	StudyService studyService;
 	
+	@Autowired
+	StudyInterestRepository studyInterestRepository;
+	
+	@Autowired
+	UserStudyRepository userStudyRepository;
 /* 로그인 */
 	@PostMapping("/login")
 	@ApiOperation(value="jwt 로그인", notes="아이디와 패스워드를 받으면 로그인 성공 여부를 반환한다.")
@@ -126,4 +142,25 @@ public class UserController {
 		
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "사용 가능한 아이디입니다."));
 	}
+	
+	/* 찜한 스터디 가져오기 */
+	@GetMapping("/like/{userId}")
+	@ApiOperation(value = "찜한 스터디", notes = "사용자가 찜한 스터디를 가져온다")
+	public ResponseEntity<StudySearchGetRes> searchStudyByUserLike(@PathVariable(value="userId", required = false) Long userId) {
+		
+		StudySearchGetRes res = new StudySearchGetRes();
+		res.setStudyResult(new ArrayList<>());
+		
+		User user = userService.getUserById(userId);
+		List<Study> resultSet = studyService.getUserLikeStudy(user);
+
+		for(Study s : resultSet) {
+			StudyRes studyRes = new StudyRes();
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+		}
+		
+		return ResponseEntity.ok(res);
+		
+	}
+
 }

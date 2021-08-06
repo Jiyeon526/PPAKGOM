@@ -19,10 +19,12 @@ import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyInterest;
 import com.ppakgom.db.entity.User;
+import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.StudyRepository;
+import com.ppakgom.db.repository.UserLikeStudyRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 
 @Service("StudyService")
@@ -39,7 +41,10 @@ public class StudyServiceImpl implements StudyService {
 
 	@Autowired
 	UserStudyRepository userStudyRepository;
-
+	
+	@Autowired
+	UserLikeStudyRepository userLikeStudyRepository;
+	
 	/* 스터디 생성 */
 	@Override
 	public Study createStudy(StudyCreatePostReq studyInfo, User user, MultipartFile studyThumbnail)
@@ -152,6 +157,20 @@ public class StudyServiceImpl implements StudyService {
 			resultSet.add(s);
 		}
 
+		return resultSet;
+	}
+
+	@Override
+	public List<Study> getUserLikeStudy(User user) {
+		
+		List<UserLikeStudy> tmp = new ArrayList<>();
+		List<Study> resultSet = new ArrayList<>();
+		
+		tmp = userLikeStudyRepository.findByUserId(user.getId());
+		for(UserLikeStudy uls : tmp) {
+			resultSet.add(uls.getStudy());
+		}
+		
 		return resultSet;
 	}
 
