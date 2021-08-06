@@ -210,3 +210,4 @@ plugins.forEach(plugin => {
 })
 
 app.mount('#app')
+window.Kakao.init("16779f8dbe71d8f1328f92353c78c796");

@@ -1,279 +1,262 @@
 <template>
-  <ul v-if="state.responseConference" class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
-    <li class="grid-content el-button-group">
-      <el-button v-if="state.isSortTime === 'basic'" type="primary" icon="el-icon-sort" @click="clickFirstTimeSort">시간</el-button>
-      <el-button v-else-if="state.isSortTime" type="primary" icon="el-icon-sort-up" @click="clickTimeSort">시간</el-button>
-      <el-button v-else type="primary" icon="el-icon-sort-down" @click="clickTimeSort">시간</el-button>
-      <el-button v-if="state.isSortTitle === 'basic'" type="primary" icon="el-icon-sort" @click="clickFirstTitleSort">제목</el-button>
-      <el-button v-else-if="state.isSortTitle" type="primary" icon="el-icon-sort-up" @click="clickTitleSort">제목</el-button>
-      <el-button v-else type="primary" icon="el-icon-sort-down" @click="clickTitleSort">제목</el-button>
-    </li>
-    <li v-for="i in state.responseConference.length" @click="clickConference(i)" class="infinite-list-item" :key="i" >
-      <conference :conferenceData="state.responseConference[i-1]" />
-    </li>
-  </ul>
-  <h2 v-else>데이터 없음
-    <el-alert
-      title="error alert"
-      type="error">
-    </el-alert>
-  </h2>
+  <h1>스터디 모집</h1>
+  <div class="search-bar">
+    <el-select class="option" v-model="state.searchType" placeholder="Select">
+      <el-option
+        v-for="item in state.options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
+    <div class="search-field">
+      <el-input
+        placeholder="화상 컨퍼런스 제목 검색"
+        v-model="state.searchValue"
+        @keyup.enter="searchStudy"
+      >
+        <template #append>
+          <el-button
+            icon="el-icon-search"
+            @click="searchStudy"
+          ></el-button>
+        </template>
+      </el-input>
+    </div>
+  </div>
+  <br>
+  <h4 v-if="state.recommendStudyListTest.length === 0">회원님의 해시태그에 맞는 추천 스터디가 없습니다.</h4>
+  <el-carousel v-else :interval="4000" type="card" height="200px">
+    <el-carousel-item v-for="i in state.recommendStudyListTest.length" :key="i">
+      <h3 class="medium">{{ state.recommendStudyListTest[i-1].name }}</h3>
+    </el-carousel-item>
+  </el-carousel>
+  <div v-if="state.studyListTest">
+    <div v-for="i in state.studyListTest.length" :key="i" @click="onClickStudyList(i)" class="study" >
+      <study :studyData="state.studyListTest[i-1]"/>
+    </div>
+  </div>
+  <el-alert v-else
+    title="존재하는 스터디가 없습니다. 새롭게 스터디를 생성하시거나 다른 제목으로 스터디를 검색해주세요."
+    type="error"
+    center
+  >
+  </el-alert>
 </template>
 <style>
-.infinite-list {
-  padding-left: 0;
-  max-height: calc(100% - 35px);
-}
-
-@media (min-width: 701px) and (max-width: 1269px) {
-  .infinite-list {
-    min-width: 700px;
-  }
-}
-
-@media (min-width: 1270px) {
-  .infinite-list {
-    min-width: 1021px;
-  }
-}
-
-.infinite-list .infinite-list-item {
-  min-width: 345px;
-  max-width: 25%;
+.study {
   display: inline-block;
-  cursor: pointer;
 }
-
-/* .btn-right {
+.search-bar {
   display: flex;
-  justify-content: right;
-} */
-
-.el-button-group {
-  display: flex;
-  justify-content: flex-end;
-  /* float: right; */
-  margin: 10px;
 }
 
-.el-button-group > .el-button:first-child {
-  border-radius: 5px;
-  margin: 1px;
+.option {
+  width: 20%;
 }
 
-.el-button-group > .el-button:last-child {
-  border-radius: 5px;
-  margin: 1px;
+.search-field {
+  width: 80%;
 }
 
+/* carousel */
+.el-carousel {
+  margin: 50px 0px;
+}
+
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n+1) {
+  background-color: #d3dce6;
+}
 </style>
 <script>
-import Conference from './components/conference'
-import { onMounted, reactive, computed, onBeforeUpdate,  watch} from 'vue'
+import Study from './components/study'
+import { onMounted, reactive, computed} from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from "vuex"
 
 export default {
-  name: 'Home',
+  name: "Home",
 
   components: {
-    Conference
+    Study,
   },
 
-  setup () {
-    const store = useStore()
-    const router = useRouter()
+  setup() {
+    const store = useStore();
+    const router = useRouter();
     const state = reactive({
-      conference_category: '',
-      page: 0,
-      size: 20,
-      title: computed(() => store.getters["root/getTitle"]),
-      isSortTime: "basic",    //  기본 - 시간 정렬 없음
-      isSortTitle: "basic",   //  기본 - 제목 정렬 없음
-      sortType: '',   // 토글하기 위해 sortTime과 sortTitle을 분리하지 않음
-      order: false,
-      responseConference: [], // 컨퍼런스 목록 조회 응답
-      errorMessage: "존재하는 컨퍼런스가 없습니다. 새롭게 컨퍼런스를 생성하시거나 다른 제목으로 컨퍼런스를 검색해주세요.",
-      errTest: [],
-      isLastPage: false,
-    })
-    watch(()=>state.title,(title) =>{
-      console.log("watch",state.title);
-      state.page = 0;
-      getConferenceList()
+      isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
+      studyList : [],
+      // Test 코드
+      studyListTest : [{
+        study_id: 1,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰1",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 3,
+        deadline: "2021-08-23"
+      },{
+        study_id: 2,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰2",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 2,
+        deadline: "2021-08-23"
+      },{
+        study_id: 3,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰3",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 1,
+        deadline: "2021-08-23"
+      },{
+        study_id: 4,
+        interest: ["프로그래밍","개발자"],
+        name: "빡곰4",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 4,
+        deadline: "2021-08-23"
+      }],
+      recommendStudyList : [],
+      // Test 코드
+      recommendStudyListTest : [{
+        study_id: 11,
+        interest: ["프로그래밍","개발자"],
+        name: "추천1",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 3,
+        deadline: "2021-08-23"
+      },{
+        study_id: 12,
+        interest: ["프로그래밍","개발자"],
+        name: "추천2",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 2,
+        deadline: "2021-08-23"
+      },{
+        study_id: 13,
+        interest: ["프로그래밍","개발자"],
+        name: "추천3",
+        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+        population: 5,
+        study_thumbnail: "thumbnail.jpg",
+        joined_population: 1,
+        deadline: "2021-08-23"
+      }],
+      searchValue : '',
+      searchType : '',
+      options: [{
+          value: 1,
+          label: '방 번호'
+        }, {
+          value: 2,
+          label: '방 이름'
+        }, {
+          value: 3,
+          label: '해시태그'
+        }],
     })
 
-    const load = function () {
-      if (!state.isLastPage) {
-        console.log("로드 실행")
-        state.page += 1
-        addConferenceList()
-        console.log('페이지 카운트 증가', state.page)
-      }
-    }
-
-    const clickConference = function (id) {
+    const onClickStudyList = function (id) {
       router.push({
-        name: 'conference-detail',
+        name: 'studydetail-dialog',
         params: {
-          conferenceId: state.responseConference[id - 1].id
+          studyId: state.studyListTest[id - 1].study_id
         }
-      })
-    }
+      });
+    };
 
     // 방 목록 리스트 가져오기
-    const getConferenceList = function () {
-     // state.title = store.getters["root/getTitle"]  // 검색한 문자열 업데이트
-      console.log("getConferenceList")
-      console.log("title",state.title)
-      console.log("titlecheck",state.title_check)
+    const getStudyList = function () {
       store
-        .dispatch('root/requestConferenceList', {
-          conference_category: state.conference_category,
-          page: state.page,
-          size: state.size,
-          title: state.title,
-          sortType: state.sortType,
-          order: state.order
+        .dispatch('root/requestStudyList', {
         })
         .then(function(res) {
-          state.responseConference = res.data.content
-          console.log('컨퍼런스 목록 받아오기', state.responseConference)
+          console.log('스터디 목록 받아오기', state.studyList)
+          state.studyList = res.data.content  // 데이터 확인 필요
         })
         .catch(function(err) {
-          console.log(err)
+          console.log('스터디 목록 받아오기 에러', err)
+        })
+    }
+
+    // 추천 리스트 가져오기
+    const getRecommendStudyList = function () {
+      store
+        dispatch('root/requestRecommendStudyList', {
+        })
+        .then(function(res) {
+          console.log('추천 리스트 응답 결과', res)
+          state.recommendList = res.data.content    // 데이터 확인 필요
+        })
+        .catch(function(err) {
+          console.log('추천 리스트 응답 에러', err)
         })
     }
 
     onMounted(() => {
-      getConferenceList()
+      if (state.isLoggedIn) {
+        getRecommendStudyList()
+      }
+      getStudyList()
     })
 
-    // Infinite Scroll
-    const addConferenceList = function () {
-      store
-        .dispatch('root/requestConferenceList', {
-          conference_category: state.conference_category,
-          page: state.page,
-          size: state.size,
-          title: state.title,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // 마지막 페이지 체크
-          if (res.data.content.length < 20) {
-            state.isLastPage = true
+    // 검색한 내용으로 스터디 목록 가져오기
+    const searchStudy = function() {
+      let cleanValue = state.searchValue.trim();
+      console.log(cleanValue);
+      if (cleanValue !== "") {
+        if (!state.searchType) {
+          ElMessage({
+            type: 'info',
+            message: '검색하려는 분야를 선택해주세요',
+          })
+        }
+        else {
+          store
+          .dispatch('root/requestSearchStudyList', {
+            option : state.searchType,
+            searchValue : cleanValue,
+          })
+            .then(function(res) {
+              state.studyList = res.data.content
+              console.log('검색 스터디 목록 받아오기', state.studyList)
+            })
+            .catch(function(err) {
+              console.log('검색 스터디 목록 받아오기 에러', err)
+            })
           }
+      }
+      else {
+        state.searchValue = "";
+      }
+    };
 
-          for (let val of res.data.content) {
-            // Object.assign(state.responseConference, val)
-            let number = state.responseConference.length
-            state.responseConference[number] = val
-          }
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    // 처음 "시간 정렬"을 클릭 했을 경우
-    const clickFirstTimeSort = function() {
-      state.isSortTime = true
-      state.isSortTitle = 'basic'
-      state.sortType = 'timeSort'
-      state.order = true
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,  // Infinite Scroll로 받아온 데이터까지 같이 정렬하는 건지? -> 현재는 Front 데이터 받아오는 문제가 있음
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 시간 정렬', res)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    // 처음 이후 "시간 정렬" 클릭 시
-    const clickTimeSort = function() {
-      state.isSortTime = !state.isSortTime
-      state.isSortTitle = 'basic'
-      state.sortType = 'timeSort'
-      state.order = !state.order
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 이후 시간 정렬', res.data.content)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    // 처음 "제목 정렬"을 클릭 했을 경우
-    const clickFirstTitleSort = function() {
-      state.isSortTitle = true
-      state.isSortTime = 'basic'
-      state.sortType = 'titleSort'
-      state.order = true
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 제목 정렬', res.data.content)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    // 처음 이후 "제목 정렬" 클릭 시
-    const clickTitleSort = function() {
-      state.isSortTitle = !state.isSortTitle
-      state.isSortTime = 'basic'
-      state.sortType = 'titleSort'
-      state.order = !state.order
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 이후 제목 정렬', res.data.content)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    return { state, load, clickConference, clickFirstTimeSort, clickTimeSort, clickFirstTitleSort, clickTitleSort, addConferenceList }
+    return { state, onClickStudyList, searchStudy}
   }
-}
+};
 </script>

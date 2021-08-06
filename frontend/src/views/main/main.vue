@@ -25,6 +25,7 @@
   <login-dialog
     :open="loginDialogOpen"
     @closeLoginDialog="onCloseLoginDialog"
+    @openRegisterDialog="onOpenRegisterDialog"
   />
   <register-dialog
     :open="registerDialogOpen"
