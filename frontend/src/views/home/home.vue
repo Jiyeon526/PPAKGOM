@@ -6,7 +6,8 @@
         v-for="item in state.options"
         :key="item.value"
         :label="item.label"
-        :value="item.value">
+        :value="item.value"
+      >
       </el-option>
     </el-select>
     <div class="search-field">
@@ -16,27 +17,32 @@
         @keyup.enter="searchStudy"
       >
         <template #append>
-          <el-button
-            icon="el-icon-search"
-            @click="searchStudy"
-          ></el-button>
+          <el-button icon="el-icon-search" @click="searchStudy"></el-button>
         </template>
       </el-input>
     </div>
   </div>
-  <br>
-  <h4 v-if="state.recommendStudyListTest.length === 0">회원님의 해시태그에 맞는 추천 스터디가 없습니다.</h4>
+  <br />
+  <h4 v-if="state.recommendStudyListTest.length === 0">
+    회원님의 해시태그에 맞는 추천 스터디가 없습니다.
+  </h4>
   <el-carousel v-else :interval="4000" type="card" height="200px">
     <el-carousel-item v-for="i in state.recommendStudyListTest.length" :key="i">
-      <h3 class="medium">{{ state.recommendStudyListTest[i-1].name }}</h3>
+      <h3 class="medium">{{ state.recommendStudyListTest[i - 1].name }}</h3>
     </el-carousel-item>
   </el-carousel>
   <div v-if="state.studyListTest">
-    <div v-for="i in state.studyListTest.length" :key="i" @click="onClickStudyList(i)" class="study" >
-      <study :studyData="state.studyListTest[i-1]"/>
+    <div
+      v-for="i in state.studyListTest.length"
+      :key="i"
+      @click="onClickStudyList(i)"
+      class="study"
+    >
+      <study :studyData="state.studyListTest[i - 1]" />
     </div>
   </div>
-  <el-alert v-else
+  <el-alert
+    v-else
     title="존재하는 스터디가 없습니다. 새롭게 스터디를 생성하시거나 다른 제목으로 스터디를 검색해주세요."
     type="error"
     center
@@ -76,21 +82,21 @@
   background-color: #99a9bf;
 }
 
-.el-carousel__item:nth-child(2n+1) {
+.el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
 }
 </style>
 <script>
-import Study from './components/study'
-import { onMounted, reactive, computed} from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from "vuex"
+import Study from "./components/study";
+import { onMounted, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   name: "Home",
 
   components: {
-    Study,
+    Study
   },
 
   setup() {
@@ -98,92 +104,105 @@ export default {
     const router = useRouter();
     const state = reactive({
       isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
-      studyList : [],
+      studyList: [],
       // Test 코드
-      studyListTest : [{
-        study_id: 1,
-        interest: ["프로그래밍","개발자"],
-        name: "빡곰1",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: "thumbnail.jpg",
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },{
-        study_id: 2,
-        interest: ["프로그래밍","개발자"],
-        name: "빡곰2",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: "thumbnail.jpg",
-        joined_population: 2,
-        deadline: "2021-08-23"
-      },{
-        study_id: 3,
-        interest: ["프로그래밍","개발자"],
-        name: "빡곰3",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: "thumbnail.jpg",
-        joined_population: 1,
-        deadline: "2021-08-23"
-      },{
-        study_id: 4,
-        interest: ["프로그래밍","개발자"],
-        name: "빡곰4",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: "thumbnail.jpg",
-        joined_population: 4,
-        deadline: "2021-08-23"
-      }],
-      recommendStudyList : [],
+      studyListTest: [
+        {
+          study_id: 1,
+          interest: ["프로그래밍", "개발자"],
+          name: "빡곰1",
+          content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+          population: 5,
+          study_thumbnail: "thumbnail.jpg",
+          joined_population: 3,
+          deadline: "2021-08-23"
+        },
+        {
+          study_id: 2,
+          interest: ["프로그래밍", "개발자"],
+          name: "빡곰2",
+          content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+          population: 5,
+          study_thumbnail: "thumbnail.jpg",
+          joined_population: 2,
+          deadline: "2021-08-23"
+        },
+        {
+          study_id: 3,
+          interest: ["프로그래밍", "개발자"],
+          name: "빡곰3",
+          content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+          population: 5,
+          study_thumbnail: "thumbnail.jpg",
+          joined_population: 1,
+          deadline: "2021-08-23"
+        },
+        {
+          study_id: 4,
+          interest: ["프로그래밍", "개발자"],
+          name: "빡곰4",
+          content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+          population: 5,
+          study_thumbnail: "thumbnail.jpg",
+          joined_population: 4,
+          deadline: "2021-08-23"
+        }
+      ],
+      recommendStudyList: [],
       // Test 코드
-      recommendStudyListTest : [{
-        study_id: 11,
-        interest: ["프로그래밍","개발자"],
-        name: "추천1",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: "thumbnail.jpg",
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },{
-        study_id: 12,
-        interest: ["프로그래밍","개발자"],
-        name: "추천2",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: "thumbnail.jpg",
-        joined_population: 2,
-        deadline: "2021-08-23"
-      },{
-        study_id: 13,
-        interest: ["프로그래밍","개발자"],
-        name: "추천3",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: "thumbnail.jpg",
-        joined_population: 1,
-        deadline: "2021-08-23"
-      }],
-      searchValue : '',
-      searchType : '',
-      options: [{
+      recommendStudyListTest: [
+        {
+          study_id: 11,
+          interest: ["프로그래밍", "개발자"],
+          name: "추천1",
+          content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+          population: 5,
+          study_thumbnail: "thumbnail.jpg",
+          joined_population: 3,
+          deadline: "2021-08-23"
+        },
+        {
+          study_id: 12,
+          interest: ["프로그래밍", "개발자"],
+          name: "추천2",
+          content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+          population: 5,
+          study_thumbnail: "thumbnail.jpg",
+          joined_population: 2,
+          deadline: "2021-08-23"
+        },
+        {
+          study_id: 13,
+          interest: ["프로그래밍", "개발자"],
+          name: "추천3",
+          content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+          population: 5,
+          study_thumbnail: "thumbnail.jpg",
+          joined_population: 1,
+          deadline: "2021-08-23"
+        }
+      ],
+      searchValue: "",
+      searchType: "",
+      options: [
+        {
           value: 1,
-          label: '방 번호'
-        }, {
+          label: "방 번호"
+        },
+        {
           value: 2,
-          label: '방 이름'
-        }, {
+          label: "방 이름"
+        },
+        {
           value: 3,
-          label: '해시태그'
-        }],
-    })
+          label: "해시태그"
+        }
+      ]
+    });
 
-    const onClickStudyList = function (id) {
+    const onClickStudyList = function(id) {
       router.push({
-        name: 'studydetail-dialog',
+        name: "studydetail-dialog",
         params: {
           studyId: state.studyListTest[id - 1].study_id
         }
@@ -191,39 +210,38 @@ export default {
     };
 
     // 방 목록 리스트 가져오기
-    const getStudyList = function () {
+    const getStudyList = function() {
       store
-        .dispatch('root/requestStudyList', {
-        })
+        .dispatch("root/requestStudyList", {})
         .then(function(res) {
-          console.log('스터디 목록 받아오기', state.studyList)
-          state.studyList = res.data.content  // 데이터 확인 필요
+          console.log("스터디 목록 받아오기", state.studyList);
+          state.studyList = res.data.content; // 데이터 확인 필요
         })
         .catch(function(err) {
-          console.log('스터디 목록 받아오기 에러', err)
-        })
-    }
+          console.log("스터디 목록 받아오기 에러", err);
+        });
+    };
 
     // 추천 리스트 가져오기
-    const getRecommendStudyList = function () {
-      store
-        dispatch('root/requestRecommendStudyList', {
-        })
-        .then(function(res) {
-          console.log('추천 리스트 응답 결과', res)
-          state.recommendList = res.data.content    // 데이터 확인 필요
-        })
-        .catch(function(err) {
-          console.log('추천 리스트 응답 에러', err)
-        })
-    }
+    const getRecommendStudyList = function() {
+      // store
+      //   dispatch('root/requestRecommendStudyList', {
+      //   })
+      //   .then(function(res) {
+      //     console.log('추천 리스트 응답 결과', res)
+      //     state.recommendList = res.data.content    // 데이터 확인 필요
+      //   })
+      //   .catch(function(err) {
+      //     console.log('추천 리스트 응답 에러', err)
+      //   })
+    };
 
     onMounted(() => {
       if (state.isLoggedIn) {
-        getRecommendStudyList()
+        getRecommendStudyList();
       }
-      getStudyList()
-    })
+      getStudyList();
+    });
 
     // 검색한 내용으로 스터디 목록 가져오기
     const searchStudy = function() {
@@ -232,31 +250,29 @@ export default {
       if (cleanValue !== "") {
         if (!state.searchType) {
           ElMessage({
-            type: 'info',
-            message: '검색하려는 분야를 선택해주세요',
-          })
-        }
-        else {
+            type: "info",
+            message: "검색하려는 분야를 선택해주세요"
+          });
+        } else {
           store
-          .dispatch('root/requestSearchStudyList', {
-            option : state.searchType,
-            searchValue : cleanValue,
-          })
+            .dispatch("root/requestSearchStudyList", {
+              option: state.searchType,
+              searchValue: cleanValue
+            })
             .then(function(res) {
-              state.studyList = res.data.content
-              console.log('검색 스터디 목록 받아오기', state.studyList)
+              state.studyList = res.data.content;
+              console.log("검색 스터디 목록 받아오기", state.studyList);
             })
             .catch(function(err) {
-              console.log('검색 스터디 목록 받아오기 에러', err)
-            })
-          }
-      }
-      else {
+              console.log("검색 스터디 목록 받아오기 에러", err);
+            });
+        }
+      } else {
         state.searchValue = "";
       }
     };
 
-    return { state, onClickStudyList, searchStudy}
+    return { state, onClickStudyList, searchStudy };
   }
 };
 </script>

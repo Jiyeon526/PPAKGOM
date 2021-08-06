@@ -311,7 +311,7 @@ export default {
     const handleClose = function() {
       state.form.id = "";
       state.form.password = "";
-      emit("closeInviteDialog");
+      emit("closeLoginDialog");
     };
 
     const clickRegister = function() {
