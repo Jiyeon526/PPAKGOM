@@ -1,5 +1,6 @@
 package com.ppakgom.api.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,16 +19,21 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.UserRegisterPostReq;
+import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.EmailService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.common.auth.SsafyUserDetails;
 import com.ppakgom.common.model.response.BaseResponseBody;
+import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.UserInfoRes;
 import com.ppakgom.api.request.EmailReq;
 import com.ppakgom.api.request.LoginReq;
+import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.UserStudyRepository;
+import com.ppakgom.db.repository.UserRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,6 +43,8 @@ import io.swagger.annotations.ApiResponses;
 
 import springfox.documentation.annotations.ApiIgnore;
 
+import com.ppakgom.api.response.StudyRes;
+import com.ppakgom.api.response.StudySearchGetRes;
 
 /**
  * 회원 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -55,7 +64,16 @@ public class UserController {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
+	@Autowired
+	StudyService studyService;
+
+	@Autowired
+	StudyInterestRepository studyInterestRepository;
+
 	HashMap<String, String> emailRepository = new HashMap<>();
+
+	@Autowired
+	UserStudyRepository userStudyRepository;
 
 	/* 로그인 */
 	@PostMapping("/login")
@@ -131,6 +149,27 @@ public class UserController {
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "사용 가능한 아이디입니다."));
 	}
 
+	/* 찜한 스터디 가져오기 */
+	@GetMapping("/like/{userId}")
+	@ApiOperation(value = "찜한 스터디", notes = "사용자가 찜한 스터디를 가져온다")
+	public ResponseEntity<StudySearchGetRes> searchStudyByUserLike(
+			@PathVariable(value = "userId", required = false) Long userId) {
+
+		StudySearchGetRes res = new StudySearchGetRes();
+		res.setStudyResult(new ArrayList<>());
+
+		User user = userService.getUserById(userId);
+		List<Study> resultSet = studyService.getUserLikeStudy(user);
+
+		for (Study s : resultSet) {
+			StudyRes studyRes = new StudyRes();
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+		}
+
+		return ResponseEntity.ok(res);
+
+	}
+
 	@PostMapping("/email")
 	@ApiOperation(value = "이메일 인증 코드 보내기", notes = "<strong>이메일</strong>인증 코드 보내기.")
 	public ResponseEntity<? extends BaseResponseBody> sendEmailAuth(String email) throws Exception {
@@ -171,5 +210,29 @@ public class UserController {
 		UserInfoRes userInfoRes = UserInfoRes.of(user, interest);
 
 		return ResponseEntity.status(200).body(userInfoRes);
+	}
+
+	/* 가입한 스터디 가져오기 */
+	@GetMapping("/join/{userId}")
+	@ApiOperation(value = "가입한 스터디", notes = "사용자가 가입한 스터디를 가져온다")
+	public ResponseEntity<StudySearchGetRes> searchStudyByUserJoin(
+			@PathVariable(value = "userId", required = false) Long userId) {
+
+		StudySearchGetRes res = new StudySearchGetRes();
+		res.setStudyResult(new ArrayList<>());
+
+		User user = userService.getUserById(userId);
+//		존재하지 않는 사용자일 때
+		if (user == null)
+			return ResponseEntity.ok(res);
+		List<Study> resultSet = studyService.getUserJoinStudy(user);
+
+		for (Study s : resultSet) {
+			StudyRes studyRes = new StudyRes();
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+		}
+
+		return ResponseEntity.ok(res);
+
 	}
 }

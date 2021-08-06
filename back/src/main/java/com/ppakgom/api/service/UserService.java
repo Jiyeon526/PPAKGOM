@@ -13,6 +13,7 @@ public interface UserService {
 	User createUser(UserRegisterPostReq registerInfo, MultipartFile thumbnail);
 	boolean checkName(String name);
 	User getUserByUserId(String userId);
+	User getUserById(Long userId);
 	List<String> getInterest(Long userid);
 
 }

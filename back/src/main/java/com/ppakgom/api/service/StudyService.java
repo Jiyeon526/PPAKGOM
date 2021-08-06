@@ -21,4 +21,8 @@ public interface StudyService {
 	List<Study> getStudyByName(String name);
 
 	List<Study> getStudyByInterest(String interest);
+
+	List<Study> getUserLikeStudy(User user);
+
+	List<Study> getUserJoinStudy(User user);
 }
