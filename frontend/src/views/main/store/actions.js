@@ -144,6 +144,8 @@ export function requestNaverLogout({ state }) {
   localStorage.removeItem('com.naver.nid.access_token')
   localStorage.removeItem('com.naver.nid.oauth.state_token')
   return
+}
+
 // 가입한 스터디 목록 가져오기
 export function requestJoinStudyList({state}) {
   const url = `study/join/${state.userId}`
