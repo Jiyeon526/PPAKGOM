@@ -149,3 +149,9 @@ export function requestJoinStudyList({state}) {
   const url = `study/join/${state.userId}`
   return $axios.get(url)
 }
+
+// 찜한 스터디 목록 가져오기
+export function requestLikeStudyList({state}) {
+  const url = `study/like/${state.userId}`
+  return $axios.get(url)
+}
