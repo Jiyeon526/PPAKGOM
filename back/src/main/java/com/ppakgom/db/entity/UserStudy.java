@@ -27,4 +27,5 @@ public class UserStudy extends BaseEntity{
 		this.study = s;
 	}
 	
+	public UserStudy() {}
 }

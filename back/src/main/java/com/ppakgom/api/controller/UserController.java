@@ -222,6 +222,9 @@ public class UserController {
 		res.setStudyResult(new ArrayList<>());
 		
 		User user = userService.getUserById(userId);
+//		존재하지 않는 사용자일 때
+		if(user == null)
+			return ResponseEntity.ok(res);
 		List<Study> resultSet = studyService.getUserJoinStudy(user);
 
 		for(Study s : resultSet) {
