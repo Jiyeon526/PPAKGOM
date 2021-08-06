@@ -92,59 +92,26 @@ export function requestUpdateMyInfo({ state }, payload) {
   return $axios.patch(url, body, { headers: headers })
 }
 
-// 방 목록 가져오기
-export function requestConferenceList({ state }, payload) {
-  console.log("sea", payload)
-  let url = `conferences/conferences?page=${payload.page}&size=${payload.size}`
-  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  let order  // const로 하면 안됨
-  if (payload.conference_category) {
-    url += `&conference_category=${payload.conference_category}`
-  }
-  if (payload.title) {
-    url += `&title=${payload.title}`
-  }
-  if (payload.order) {   // order === ture 이면 오름차순
-    order = 'asc'
-  }
-  else {
-    order = 'desc'   // order === false 이면 내림차순
-  }
-  if (payload.timeSort) {
-    url += `&${payload.timeSort}=${order}`
-  }
-  if (payload.titleeSort) {
-    url += `&${payload.titleeSort}=${order}`
-  }
-  return $axios.get(url, { headers: headers })
-}
-
-
-// 방 목록 Sort
-export function requestSortConferenceList({ state }, payload) {
-  let url = `conferences/conferences?page=${payload.page}&size=${payload.size}`
-  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  let order  // const로 하면 안됨
-  if (payload.conference_category) {
-    url += `&conference_category=${payload.conference_category}`
-  }
-  if (payload.order) {   // order === ture 이면 오름차순
-    order = 'asc'
-  }
-  else {
-    order = 'desc'   // order === false 이면 내림차순
-  }
-  url += `&${payload.sortType}=${order}`
-
-  return axios.get(url, { headers: headers })
-}
-
+// 방 생성하기
 export function requestCreateRoom({ state }, payload) {
   console.log('requestCreateRoom', state, payload)
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '', 'Content-Type': 'multipart/form-data' } // 토큰
   const url = '/conferences/conferences'
   let body = payload
   return $axios.post(url, body, { headers: headers })
+}
+
+// 스터디 목록 가져오기
+export function requestStudyList({state}) {
+  console.log(state)
+  const url = '/study/'
+  return $axios.get(url)
+}
+
+// 추천 스터디 목록 가져오기
+export function requestRecommendStudyList({state}) {
+  const url = `/study/interest/${state.userId}`
+  return $axios.get(url)
 }
 
 //방 상세 정보 얻어오기

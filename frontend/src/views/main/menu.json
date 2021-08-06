@@ -20,8 +20,6 @@
     "icon" : "el-icon-s-home",
     "children" : []
   },
-
-
   "join" : {
     "name" : "가입한 스터디",
     "hidden" : false,
