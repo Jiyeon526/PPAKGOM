@@ -1,42 +1,55 @@
 <template>
   <el-dialog
-    custom-class="login-dialog"
-    title="로그인"
+    custom-class="otherpeople-dialog"
+    title="프로필"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-    <el-form
-      :model="state.form"
-      :rules="state.rules"
-      ref="loginForm"
-      :label-position="state.form.align"
-    >
-      <el-form-item
-        prop="id"
-        label="아이디"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.id" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item
-        prop="password"
-        label="비밀번호"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input
-          v-model="state.form.password"
-          autocomplete="off"
-          show-password
-        ></el-input>
-      </el-form-item>
-    </el-form>
+    <el-row :gutter="24">
+      <el-col :span="16">
+        <p>이름</p>
+        <p>{{state.passion}}</p>
+        <el-progress :stroke-width="20" :percentage="state.passion" :show-text='false'>
+        </el-progress>
+      </el-col>
+      <el-col :span="8">
+        <el-avatar :size="50" :src="state.circleUrl"></el-avatar>
+      </el-col>
+    </el-row>
+    <el-divider></el-divider>
+    <el-row>
+      <el-col>
+        <p>가입된 스터디</p>
+        <li v-for="std in state.studyList">
+          {{ std }}
+        </li>
+      </el-col>
+    </el-row>
     <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="clickLogin">로그인</el-button>
-      </span>
+      <span>1234</span>
     </template>
   </el-dialog>
 </template>
+<style>
+/* .login-dialog {
+  width: 500px !important;
+  height: 500px;
+}
+.login-dialog .el-dialog__headerbtn {
+  float: right;
+}
+.login-dialog .el-dialog__body {
+  height: 330px;
+}
+.login-dialog .el-dialog__footer {
+  border: solid;
+  text-align: left;
+  padding: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+} */
+
+</style>
 <script>
 import { reactive, computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
@@ -63,46 +76,15 @@ export default {
       //
     */
     const state = reactive({
-      form: {
-        id: "",
-        password: "",
-        align: "left"
-      },
-      rules: {
-        id: [
-          { required: true, message: "필수 입력 항목입니다", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              if (value.length > 16) {
-                error = ["최대 16자까지 입력 가능합니다."];
-              }
-              return error;
-            }
-          }
-        ],
-        password: [
-          { required: true, message: "필수 입력 항목입니다.", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              var number = value.search(/[0-9]/g);
-              var english = value.search(/[a-z]/gi);
-              var special = value.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
-              if (value.length < 9) {
-                error = ["최소 9글자를 입력해야 합니다."];
-              } else if (value.length > 16) {
-                error = ["최대 16 글자까지 입력가능합니다."];
-              } else if (number < 0 || english < 0 || special < 0) {
-                error = ["비밀번호는 영문, 숫자, 특수문자가 조합되어야합나다."];
-              }
-              return error;
-            }
-          }
-        ]
-      },
+
       dialogVisible: computed(() => props.open),
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      passion: 50,
+      studyList: [
+        'study1',
+        'study2'
+      ],
+      circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
     });
 
     const isDisabled = function() {
@@ -153,9 +135,8 @@ export default {
     };
 
     const handleClose = function() {
-      state.form.id = "";
-      state.form.password = "";
-      emit("closeOtherpeopleDialg");
+
+      emit("closeLoginDialog")
     };
 
     return { loginForm, state, clickLogin, handleClose };

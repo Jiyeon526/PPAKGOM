@@ -80,10 +80,19 @@ export default {
         let menuArray = [];
         if (!isLoggedIn) {
           let menuObject = {};
+          menuObject.icon = MenuItems["main"].icon;
+          menuObject.title = MenuItems["main"].name;
+          menuArray.push(menuObject);
+          menuObject = {};
           menuObject.icon = MenuItems["home"].icon;
           menuObject.title = MenuItems["home"].name;
           menuArray.push(menuObject);
-
+          // 스터디 생성 구현용
+          // menuObject = {};
+          // menuObject.icon = MenuItems["create"].icon;
+          // menuObject.title = MenuItems["create"].name;
+          // menuArray.push(menuObject);
+          //
           return menuArray;
         }
         for (let i = 0; i < keys.length - 3; ++i) {

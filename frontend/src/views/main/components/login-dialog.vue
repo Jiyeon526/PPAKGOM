@@ -37,39 +37,6 @@
     </template>
   </el-dialog>
 </template>
-<style>
-.login-dialog {
-  width: 400px !important;
-  height: 300px;
-}
-.login-dialog .el-dialog__headerbtn {
-  float: right;
-}
-.login-dialog .el-form-item__content {
-  margin-left: 0 !important;
-  float: right;
-  width: 200px;
-  display: inline-block;
-}
-.login-dialog .el-form-item {
-  margin-bottom: 20px;
-}
-.login-dialog .el-form-item__error {
-  font-size: 12px;
-  color: red;
-}
-.login-dialog .el-input__suffix {
-  display: none;
-}
-.login-dialog .el-dialog__footer {
-  margin: 0 calc(50% - 80px);
-  padding-top: 0;
-  display: inline-block;
-}
-.login-dialog .dialog-footer .el-button {
-  width: 120px;
-}
-</style>
 <script>
 import { reactive, computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
@@ -188,7 +155,7 @@ export default {
     const handleClose = function() {
       state.form.id = "";
       state.form.password = "";
-      emit("closeLoginDialog");
+      emit("closeInviteDialog");
     };
 
     return { loginForm, state, clickLogin, handleClose };

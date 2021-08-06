@@ -189,7 +189,7 @@ export default {
       emit("openStudydetailDialog");
     };
     const click5 = () => {
-      emit("openStduyscheduleDialog");
+      emit("openStudyscheduleDialog");
     };
 
     const clickLogout = () => {

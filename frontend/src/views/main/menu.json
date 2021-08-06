@@ -6,13 +6,6 @@
     "icon" : "el-icon-s-home",
     "children" : []
   },
-  "create" : {
-    "name" : "스터디 생성",
-    "hidden" : false,
-    "path" : "/create",
-    "icon" : "el-icon-s-home",
-    "children" : []
-  },
   "home" : {
     "name" : "스터디 모집",
     "hidden" : false,
@@ -20,7 +13,13 @@
     "icon" : "el-icon-s-home",
     "children" : []
   },
-
+  "create" : {
+    "name" : "스터디 생성",
+    "hidden" : false,
+    "path" : "/create",
+    "icon" : "el-icon-s-home",
+    "children" : []
+  },
   "join" : {
     "name" : "가입한 스터디",
     "hidden" : false,
