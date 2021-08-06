@@ -16,6 +16,7 @@
     <div>
       <el-input-data class="btn-sort">
         <el-tag type=""> {{ studyData.joined_population }}/{{ studyData.population }}</el-tag>
+        <el-tag v-if="studyData.owner_id" type="success">입장</el-tag>
       </el-input-data>
     </div>
   </el-card>
@@ -40,6 +41,7 @@
   -webkit-line-clamp: 1;
 }
 .el-card .bottom {
+  width: 345px;
   margin-top: 5px;
   display:-webkit-box;
   word-wrap:break-word;
@@ -66,7 +68,8 @@
 /* 인원 왼쪽 정렬 */
 .btn-sort {
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
+  margin: 2px;
 }
 
 </style>
