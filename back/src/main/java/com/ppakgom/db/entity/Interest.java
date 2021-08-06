@@ -17,8 +17,7 @@ public class Interest extends BaseEntity{
 		this.name = n;
 	}
 	
-	public Interest() {
-	}
+	public Interest() {}
 
 	@Override
 	public String toString() {

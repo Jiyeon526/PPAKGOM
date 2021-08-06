@@ -1,5 +1,7 @@
 package com.ppakgom.api.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,5 +14,6 @@ public interface UserService {
 	boolean checkName(String name);
 	User getUserByUserId(String userId);
 	User getUserById(Long userId);
+	List<String> getInterest(Long userid);
 
 }

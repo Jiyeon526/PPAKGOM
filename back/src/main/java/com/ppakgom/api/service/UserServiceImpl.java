@@ -1,12 +1,14 @@
 package com.ppakgom.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import com.ppakgom.db.entity.User;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +76,11 @@ public class UserServiceImpl implements UserService {
 			// 회원 관심사 정보
 			for (String s : registerInfo.getInterest()) {
 				s = s.replaceAll(" ", ""); // 해시태그 공백제거
-				Interest exist = interestRepository.findByName(s); // 해당 단어가 관심사 테이블에 있는지 확인
+				Interest exist = interestRepository.findByInterest(s); // 해당 단어가 관심사 테이블에 있는지 확인
 				if (exist == null) { // 만약 관심사가 존재안한다면
 					Interest interest = new Interest(s);
 					interestRepository.save(interest); // 관심사 insert
-					exist = interestRepository.findByName(s); // 다시 찾기
+					exist = interestRepository.findByInterest(s); // 다시 찾기
 				}
 
 				UserInterest userInterest = new UserInterest(user, exist); // 유저관심사 테이블에 저장
@@ -103,14 +105,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User getUserById(Long userId) {
+	public User getUserByUserId(String userId) {
 		return userRepository.findUserById(userId);
 	}
 
-	@Override
-	public User getUserByUserId(String userId) {
-		return userRepository.findUserById(userId);
+	public List<String> getInterest(Long userid) {
+		List<Long> interestIds = userInterestRepository.findByInterestId(userid);
+		List<String> res = new ArrayList<>();
 
+		for (Long id : interestIds) {
+			Interest name = interestRepository.findByName(id);
+			res.add(name.getName());
+		}
+
+		return res;
+	}
+
+	@Override
+	public User getUserById(Long userId) {
+		return userRepository.findUserById(userId);
 	}
 
 }

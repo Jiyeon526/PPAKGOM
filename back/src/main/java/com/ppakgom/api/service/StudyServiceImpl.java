@@ -44,6 +44,8 @@ public class StudyServiceImpl implements StudyService {
 	
 	@Autowired
 	UserLikeStudyRepository userLikeStudyRepository;
+
+	String BASE_PATH = System.getProperty("user.dir");
 	
 	/* 스터디 생성 */
 	@Override
@@ -66,14 +68,11 @@ public class StudyServiceImpl implements StudyService {
 		Long studyId = studyTmp.getId();
 
 //		 사진 관련 처리 -> image/study/방번호-파일명
-//		if (studyThumbnail != null) {
-//		썸네일을 안보내면 에러가 나는 상태
-		String path = "C:/Users/multicampus/Desktop/real3rdGit/S05P13B306/back/src/main/resources/image/study";
-		path += "/" + studyId + "-" + studyThumbnail.getOriginalFilename();
+		BASE_PATH += "\\src\\main\\resources\\image\\study\\";
+		String path = BASE_PATH + studyId + "-" + studyThumbnail.getOriginalFilename();
 		File dest = new File(path);
 		studyThumbnail.transferTo(dest);
 		study.setStudy_thumbnail(getShortFilePath(path));
-//		}
 
 		if (studyInfo.getInterest() != null) {
 //		 관심사 테이블.
@@ -82,7 +81,7 @@ public class StudyServiceImpl implements StudyService {
 			for (String interest : interestsName) {
 //			중복 검사 실시 -> 중복한다면 그 값을 가져오고, 중복하지 않는다면 insert해서 id를 가져온다.
 				Interest i;
-				i = interestRepository.findByName(interest);
+				i = interestRepository.findByInterest(interest);
 				if (i == null)
 					i = interestRepository.save(new Interest(interest));
 				interests.add(i);
