@@ -212,4 +212,24 @@ public class UserController {
 
 		return ResponseEntity.status(200).body(userInfoRes);
 	}
+	
+	/* 가입한 스터디 가져오기 */
+	@GetMapping("/join/{userId}")
+	@ApiOperation(value = "가입한 스터디", notes = "사용자가 가입한 스터디를 가져온다")
+	public ResponseEntity<StudySearchGetRes> searchStudyByUserJoin(@PathVariable(value="userId", required = false) Long userId) {
+		
+		StudySearchGetRes res = new StudySearchGetRes();
+		res.setStudyResult(new ArrayList<>());
+		
+		User user = userService.getUserById(userId);
+		List<Study> resultSet = studyService.getUserJoinStudy(user);
+
+		for(Study s : resultSet) {
+			StudyRes studyRes = new StudyRes();
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+		}
+		
+		return ResponseEntity.ok(res);
+		
+	}
 }

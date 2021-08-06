@@ -35,6 +35,7 @@ public class StudyRes {
 	String study_thumbnail;
 	int joined_population; // 가입한 회원 수
 	String deadline;// 마감날짜
+	Long owner_id;
 	
 
 	public StudyRes of(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository) {
@@ -51,7 +52,7 @@ public class StudyRes {
 			res.getInterest().add(si.getInterest().getName());
 		}
 
-//		3. name, content, population, study_thumbnail, study_id은 그대로 가져오기
+//		3. name, content, population, study_thumbnail, study_id,ower_id는 그대로 가져오기
 		res.setName(study.getName());
 		if (study.getContent() != null)
 			res.setContent(study.getContent());
@@ -59,6 +60,7 @@ public class StudyRes {
 		if (study.getStudy_thumbnail() != null)
 			res.setStudy_thumbnail(study.getStudy_thumbnail());
 		res.setStudy_id(study.getId());
+		res.setOwner_id(study.getUser().getId());
 		
 //		4. studyId를 가지고 user-study 에서 user의 수를 가져온다. -> joined_population 값 설정.
 		res.setJoined_population(userStudyRepository.getJoinedUserByStudyId(study.getId()));

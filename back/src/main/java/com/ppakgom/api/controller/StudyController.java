@@ -84,11 +84,12 @@ public class StudyController {
 	/* 스터디 생성 */
 	@PostMapping("/")
 	@ApiOperation(value = "스터디 생성", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.", consumes = "multipart/form-data", produces = "multipart/form-data")
-	public ResponseEntity<StudyCreatePostRes> createStudy(
+	public ResponseEntity<?> createStudy(
 			@ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
 			@RequestPart(value = "study_thumbnail", required = false) MultipartFile studyThumbnail,
 			@ApiIgnore Authentication authentication) {
 
+		
 		Study study = null;
 
 		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
@@ -102,14 +103,18 @@ public class StudyController {
 		} catch (ParseException e) {
 			System.err.println("날짜 파싱 에러");
 			e.printStackTrace();
-			return (ResponseEntity<StudyCreatePostRes>) ResponseEntity.status(500);
+			BaseResponseBody res = new BaseResponseBody(500, "서버 에러");
+			return ResponseEntity.status(500).body(res);
 		} catch (Exception e) {
 			System.err.println("파일 저장 에러");
 			e.printStackTrace();
-			return (ResponseEntity<StudyCreatePostRes>) ResponseEntity.status(500);
+			BaseResponseBody res = new BaseResponseBody(500, "서버 에러");
+			return ResponseEntity.status(500).body(res);
+
 		}
 //		성공 응답 -> 아뒤
-		return ResponseEntity.ok(new StudyCreatePostRes(study.getId()));
+		StudyCreatePostRes res= new StudyCreatePostRes(study.getId());
+		return ResponseEntity.ok(res);
 	}
 
 	/* 스터디 검색 */
