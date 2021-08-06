@@ -45,7 +45,7 @@ public class StudyServiceImpl implements StudyService {
 	@Autowired
 	UserLikeStudyRepository userLikeStudyRepository;
 
-	String BASE_PATH = System.getProperty("user.dir");
+	String BASE_PATH;
 	
 	/* 스터디 생성 */
 	@Override
@@ -68,6 +68,7 @@ public class StudyServiceImpl implements StudyService {
 		Long studyId = studyTmp.getId();
 
 //		 사진 관련 처리 -> image/study/방번호-파일명
+		BASE_PATH = System.getProperty("user.dir");
 		BASE_PATH += "\\src\\main\\resources\\image\\study\\";
 		/* 경로만 출력시키면 에러가 사라지는 매직... */
 //		System.out.println(BASE_PATH);
@@ -94,9 +95,10 @@ public class StudyServiceImpl implements StudyService {
 			for (Interest i : interests) {
 				studyInterestRepository.save(new StudyInterest(i, studyTmp));
 			}
-//		회원 - 스터디 테이블
-			userStudyRepository.save(new UserStudy(user, studyTmp));
 		}
+//		회원 - 스터디 테이블
+		userStudyRepository.save(new UserStudy(user, studyTmp));
+
 		return studyRepository.save(study);
 	}
 
