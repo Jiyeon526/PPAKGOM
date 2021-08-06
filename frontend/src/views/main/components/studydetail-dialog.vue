@@ -1,35 +1,31 @@
 <template>
   <el-dialog
-    custom-class="login-dialog"
-    title="로그인"
+    custom-class="studydetail-dialog"
+    :title="selectStudy.name"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-    <el-form
-      :model="state.form"
-      :rules="state.rules"
-      ref="loginForm"
-      :label-position="state.form.align"
-    >
-      <el-form-item
-        prop="id"
-        label="아이디"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.id" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item
-        prop="password"
-        label="비밀번호"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input
-          v-model="state.form.password"
-          autocomplete="off"
-          show-password
-        ></el-input>
-      </el-form-item>
-    </el-form>
+    <el-card :body-style="{ padding: '0px' }">
+    <div class="image-wrapper">
+      <el-image style="width: 100%; height: 190px"
+        :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
+        :fit="fit"
+        >
+      </el-image>
+    </div>
+    <div style="text-align: left; padding: 14px;">
+      <span class="title">{{ selectStudy.name }}</span>
+      <div class="bottom">
+        <span>{{ selectStudy.content }}</span>
+      </div>
+    </div>
+    <div>
+      <el-input-data class="btn-sort">
+        <el-tag type=""> {{ selectStudy.joined_population }}/{{ selectStudy.population }}</el-tag>
+        <el-tag v-if="selectStudy.owner_id" type="success">입장</el-tag>
+      </el-input-data>
+    </div>
+  </el-card>
     <template #footer>
       <span class="dialog-footer">
         <el-button type="primary" @click="clickLogin">로그인</el-button>
@@ -37,18 +33,75 @@
     </template>
   </el-dialog>
 </template>
+<style scoped>
+.studydetail-dialog {
+  width: 50%;
+}
+.el-card {
+  margin: 0 8px;
+  margin-bottom: 40px;
+}
+.el-card .image-wrapper {
+  width: 100%;
+  height: 190px;
+}
+.el-card .title {
+  width: 345px;
+  display:-webkit-box;
+  font-weight: bold;
+  word-wrap:break-word;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  -webkit-line-clamp: 1;
+}
+.el-card .bottom {
+  width: 345px;
+  margin-top: 5px;
+  display:-webkit-box;
+  word-wrap:break-word;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* 테블릿, 모바일의 경우 두 줄 말줄임표시 */
+@media (max-width: 1269px) {
+  .el-card .bottom {
+    -webkit-line-clamp: 2;
+    height:42px;
+  }
+}
+/* 데스크탑의 경우 세 줄 말줄임표시 */
+@media (min-width: 1270px) {
+  .el-card .bottom {
+    -webkit-line-clamp: 3;
+    height:60px;
+  }
+}
+
+/* 인원 왼쪽 정렬 */
+.btn-sort {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px;
+}
+</style>
 <script>
 import { reactive, computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 export default {
-  name: "login-dialog",
+  name: "studydetail-dialog",
 
   props: {
     open: {
       type: Boolean,
       default: false
+    },
+    selectStudy: {
+      type: Object,
     }
   },
 
