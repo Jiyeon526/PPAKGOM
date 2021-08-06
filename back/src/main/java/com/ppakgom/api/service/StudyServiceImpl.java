@@ -70,10 +70,7 @@ public class StudyServiceImpl implements StudyService {
 //		 사진 관련 처리 -> image/study/방번호-파일명
 		BASE_PATH = System.getProperty("user.dir");
 		BASE_PATH += "\\src\\main\\resources\\image\\study\\";
-		/* 경로만 출력시키면 에러가 사라지는 매직... */
-//		System.out.println(BASE_PATH);
 		String path = BASE_PATH + studyId + "-" + studyThumbnail.getOriginalFilename();
-//		System.out.println(path);
 		File dest = new File(path);
 		studyThumbnail.transferTo(dest);
 		study.setStudy_thumbnail(getShortFilePath(path));
