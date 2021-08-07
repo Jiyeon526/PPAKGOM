@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -199,5 +199,19 @@ public class UserController {
 		}
 		
 		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+	}
+	
+	@GetMapping("/{user_id}/profile")
+	@ApiOperation(value = "다른 회원 정보 확인", notes = "다른 회원 정보를 확인한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
+	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "user_id", required = true) String user_id) {
+		
+		User user = userService.getUserByUserId(user_id); // 사용자 정보
+		
+		if(user == null) return new ResponseEntity<UserInfoRes>(HttpStatus.BAD_REQUEST); // 해당 사용자가 없을 때
+		
+		List<String> interest = userService.getInterest(user.getId()); // 관심사 리스트
+		UserInfoRes userInfoRes = UserInfoRes.of(user, interest);
+
+		return ResponseEntity.status(200).body(userInfoRes);
 	}
 }
