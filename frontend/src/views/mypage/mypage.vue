@@ -18,26 +18,57 @@
           disabled="true"
         ></el-input>
       </el-form-item>
+
+      <el-form-item
+        prop="email"
+        label="이메일"
+        :label-width="state.formLabelWidth"
+      >
+        <el-input
+          v-model="state.form.email"
+          autocomplete="off"
+          clearable
+        ></el-input>
+      </el-form-item>
+
       <el-form-item
         prop="name"
-        label="이름"
+        label="닉네임"
         :label-width="state.formLabelWidth"
       >
         <el-input v-model="state.form.name" autocomplete="off"></el-input>
       </el-form-item>
+
       <el-form-item
-        prop="department"
-        label="소속"
+        prop="interest"
+        label="관심사항"
         :label-width="state.formLabelWidth"
       >
-        <el-input v-model="state.form.department" autocomplete="off"></el-input>
+        <el-input
+          v-model="state.form.interest"
+          autocomplete="off"
+          clearable
+        ></el-input>
       </el-form-item>
+
       <el-form-item
-        prop="position"
-        label="직책"
+        prop="thumbnail"
+        label="프로필 사진"
         :label-width="state.formLabelWidth"
       >
-        <el-input v-model="state.form.position" autocomplete="off"></el-input>
+        <el-upload
+          class="upload-demo"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          accept=".png, .jpg, .jpeg, .gif"
+          list-type="picture"
+          limit="1"
+          :before-upload="prevUpload"
+          :auto-upload="false"
+          thumbnail-mode="true"
+          ref="toUpload"
+        >
+          <i class="el-icon-plus"></i>
+        </el-upload>
       </el-form-item>
     </el-form>
   </el-container>
@@ -76,16 +107,17 @@ export default {
 
     const state = reactive({
       form: {
-        name: "",
-        department: "",
-        position: "",
         id: "",
+        email: "",
+        name: "",
+        interest: "",
+        thumbnail: [],
         align: "left"
       },
       rules: {
-        name: [{ required: true, validator: validateName, trigger: "blur" }],
-        department: [{ validator: validateDepartment, trigger: "blur" }],
-        position: [{ validator: validatePosition, trigger: "blur" }]
+        name: [{ validator: validateName, trigger: "blur" }],
+        // department: [{ validator: validateDepartment, trigger: "blur" }],
+        // position: [{ validator: validatePosition, trigger: "blur" }]
       },
       editMode: false,
       formLabelWidth: "120px"
@@ -123,9 +155,10 @@ export default {
         .then(function(result) {
           console.log(result);
           state.form.id = result.data.userId;
+          state.form.email = result.data.email;
           state.form.name = result.data.name;
-          state.form.department = result.data.department;
-          state.form.position = result.data.position;
+          state.form.interest = result.data.interest;
+          state.form.thumbnail = result.data.thumbnail;
         })
         .catch(function(err) {
           ElMessage.error(err);
@@ -140,8 +173,8 @@ export default {
           store
             .dispatch("root/requestUpdateMyInfo", {
               name: state.form.name,
-              department: state.form.department,
-              position: state.form.position
+              interest: state.form.interest,
+              thumbnail: state.form.thumbnail,
             })
             .then(function(result) {
               ElMessage({
@@ -179,12 +212,26 @@ export default {
         });
     };
 
+    const prevUpload = function(file) {
+      const necessary = [];
+      necessary.push(file["name"]);
+      necessary.push(file["size"]);
+      state.form.thumbnail = necessary;
+
+      state.uploading = file;
+      console.log(
+        "111",
+        file,
+        state.form.thumbnail,
+        typeof state.form.thumbnail
+      );
+    };
     // 페이지 진입시 불리는 훅
     onBeforeMount(() => {
       getUserInfo();
     });
 
-    return { editForm, state, clickUpdate, clickDelete };
+    return { editForm, state, clickUpdate, clickDelete, prevUpload };
   }
 };
 </script>

@@ -27,11 +27,30 @@
           </el-form-item>
 
           <el-form-item
-            label="분야"
-            prop="field"
+            label="관심사"
+            prop="dynamicTags"
             :label-width="state.formLabelWidth"
           >
-            <el-input v-model="state.form.field" autocomplete="off"></el-input>
+            <el-tag
+              :key="tag"
+              v-for="tag in state.form.dynamicTags"
+              closable
+              :disable-transitions="false"
+              @close="handleTagClose(tag)">
+              {{tag}}
+            </el-tag>
+            <el-input
+              class="input-new-tag"
+              v-if="state.inputVisible"
+              v-model="state.inputValue"
+              ref="saveTagInput"
+              size="mini"
+              @keyup.enter="handleInputConfirm"
+              @blur="handleInputConfirm"
+            >
+            </el-input>
+            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+            <!-- <el-input v-model="state.form.tag" autocomplete="off"></el-input> -->
           </el-form-item>
 
           <el-form-item
@@ -39,7 +58,11 @@
             prop="passion"
             :label-width="state.formLabelWidth"
           >
-            <el-input v-model="state.form.passion" autocomplete="off"></el-input>
+              <el-slider
+                v-model="state.form.passion"
+                max=70
+                :marks="state.marks">
+              </el-slider>
           </el-form-item>
 
           <el-form-item
@@ -76,6 +99,7 @@
               list-type="picture"
               :on-change="prevUpload"
               :auto-upload="false"
+              :limit="1"
               thumbnail-mode=true
               ref="toUpload"
             >
@@ -93,7 +117,7 @@
 </template>
 
 <script>
-import { computed, reactive, ref, onMounted } from "vue"
+import { computed, reactive, ref, onMounted, nextTick } from "vue"
 import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
 
@@ -104,13 +128,14 @@ export default {
     const store = useStore()
     const roomForm = ref(null)
     const toUpload = ref(null)
+    const saveTagInput = ref(null)
 
     const state = reactive({
       form: {
         title: '',
         description: '',
-        field: '',
-        passion: '',
+        dynamicTags: [],
+        passion: 36.5,
         num: 1,
         deadline: '',
         thumbnail: [],
@@ -156,6 +181,11 @@ export default {
         ],
       },
       uploading: [],
+      marks: {
+          36.5: '36.5°C',
+      },
+      inputVisible: false,
+      inputValue: '',
       formLabelWidth: "100px",
     })
 
@@ -213,15 +243,45 @@ export default {
       emit("closeRoomDialog")
     }
 
-    const numChange = function() {
-      // console.log(state.form.num)
+    const handleTagClose = function(tag) {
+      state.form.dynamicTags.splice(state.form.dynamicTags.indexOf(tag), 1);
     }
 
-    return { roomForm, toUpload, state, handleClose, clickCreateRoom, prevUpload, numChange }
+    const showInput = function() {
+      state.inputVisible = true
+      nextTick(() => {
+          saveTagInput.value.input.focus()
+        })
+    }
+
+    const handleInputConfirm = function() {
+      let inputValue = state.inputValue
+      if (inputValue) {
+        state.form.dynamicTags.push(state.inputValue)
+      }
+      state.inputVisible = false
+      state.inputValue = ''
+    }
+
+    return { roomForm, toUpload, saveTagInput, state, handleClose, clickCreateRoom, prevUpload, handleTagClose, showInput, handleInputConfirm }
   }
 }
 </script>
 
 <style>
-
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 </style>

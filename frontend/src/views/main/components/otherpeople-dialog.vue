@@ -31,23 +31,23 @@
   </el-dialog>
 </template>
 <style>
-/* .login-dialog {
+.otherpeople-dialog {
   width: 500px !important;
   height: 500px;
 }
-.login-dialog .el-dialog__headerbtn {
+.otherpeople-dialog .el-dialog__headerbtn {
   float: right;
 }
-.login-dialog .el-dialog__body {
+.otherpeople-dialog .el-dialog__body {
   height: 330px;
 }
-.login-dialog .el-dialog__footer {
+.otherpeople-dialog .el-dialog__footer {
   border: solid;
   text-align: left;
   padding: 10px;
   margin-left: 20px;
   margin-right: 20px;
-} */
+}
 
 </style>
 <script>
@@ -56,7 +56,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 export default {
-  name: "login-dialog",
+  name: "otherpeople-dialog",
 
   props: {
     open: {
@@ -68,7 +68,7 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
-    const loginForm = ref(null);
+    const otherpeopleForm = ref(null);
     const router = useRouter();
     /*
       // Element UI Validator
@@ -92,7 +92,7 @@ export default {
     };
 
     onMounted(() => {
-      // console.log(loginForm.value)
+      // console.log(otherpeopleForm.value)
     });
 
     const clickLogin = function() {
@@ -136,10 +136,10 @@ export default {
 
     const handleClose = function() {
 
-      emit("closeLoginDialog")
+      emit("closeOtherpeopleDialog")
     };
 
-    return { loginForm, state, clickLogin, handleClose };
+    return { otherpeopleForm, state, clickLogin, handleClose };
   }
 };
 </script>
