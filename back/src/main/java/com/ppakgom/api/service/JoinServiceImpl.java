@@ -69,4 +69,28 @@ public class JoinServiceImpl implements JoinService {
 		studyApplyRepository.deleteById(studyApply.getId());
 	}
 
+	@Override
+	public List<JoinApplyListRes> getJoinApplyOwnerList(Long userid) { // 가입 신청 현황 가져오기
+		
+		List<StudyApply> studyApply = studyApplyRepository.findByReceiver_Id(userid); // 가입 신청 리스트
+		List<JoinApplyListRes> res = new ArrayList<>();
+		
+		if(studyApply == null) return null; // 가입 신청 없으면 null 반환
+		
+		for(StudyApply study : studyApply) {
+			if(study.is_join() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
+			JoinApplyListRes list = new JoinApplyListRes();
+			// 스터디 정보 가져오기
+			Optional<Study> s = studyRepository.findById(study.getStudy().getId());
+			if(!s.isPresent()) continue; // 해당 스터디가 존재하지 않으면 넘기기
+			list.setStudy_id(s.get().getId()); // 스터디 순번 저장
+			list.setStudy_name(s.get().getName()); // 스터디 이름 저장
+			list.setOwner_user_name(s.get().getUser().getName()); // 스터디 신청 유저 닉네임 저장
+			list.setState(study.getState()); // 상태 저장
+			res.add(list);
+		}
+		
+		return res;
+	}
+
 }
