@@ -101,4 +101,19 @@ public class JoinController {
 		}
 
 	}
+	
+	@PutMapping("/request/reject/{userid}")
+	@ApiOperation(value="방장이 가입 거절", notes="방장이 가입 거절함")
+	public ResponseEntity<? extends BaseResponseBody> joinApplyRejectOwner(@PathVariable Long userid
+			, @RequestBody JoinApplyReq joinApplyReq) {
+		
+		// 해당 study_apply 정보 가져오기(어차피 하나밖에 없다)
+		StudyApply studyApply = joinService.getStudyApplyReceiver(userid, joinApplyReq);
+
+		if(studyApply == null)
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		
+		joinService.modifyJoinApply(studyApply);
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "가입 거절 완료"));
+	}
 }
