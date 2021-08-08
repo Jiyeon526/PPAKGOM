@@ -32,10 +32,9 @@ public class StudyRate{
    @JoinColumn(name = "study_member_id")
    User studyMember;
    
-   public StudyRate() {}
    
-   public StudyRate(Study study, User user, User studyMember) {
-	   this.setChecked(true);
+   public StudyRate(Study study, User user, User studyMember, boolean check) {
+	   this.setChecked(check);
 	   this.setStudy(study);
 	   this.setUser(user);
 	   this.setStudyMember(studyMember);

@@ -211,7 +211,7 @@ public class StudyServiceImpl implements StudyService {
 		updateTemperature(member, rateInfo.getRating());
 		
 //		평가 다 했다고 check
-		studyRateRepository.save(new StudyRate(study.get(),user,member));
+		studyRateRepository.save(new StudyRate(study.get(),user,member, true));
 	}
 	
 	//member의 열정도를 업데이트 하좌.

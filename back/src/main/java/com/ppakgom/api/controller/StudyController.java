@@ -222,4 +222,10 @@ public class StudyController {
 		}
 	}
 	
+	/* 평가 목록 불러오기 */
+	//내가 가입한 스터디 중 내가 평가 한 or 평가 해야 하는 스터디 목록이 쫘르르 나온다.
+//	스터디에 가입하면 스터디 - rate 테이블에 check false로 해서 추가시켜야 함.(나 - 현재 가입 회원들 , 현재 가입회원들 - 나)
+//	@GetMapping("/rating/{userId}")
+//	@ApiOperation(value = "평가할 스터디원 목록.", notes = "평가 했던 or 평가 해야할 스터디원 목록 불러오기")
+//	public ResponseEntity<>
 }
