@@ -1,56 +1,42 @@
 package com.ppakgom.api.controller;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
-/* spring web */
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/* swagger */
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.ppakgom.common.auth.SsafyUserDetails;
-/* response */
 import com.ppakgom.common.model.response.BaseResponseBody;
-import com.ppakgom.common.util.JwtTokenUtil;
-import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
-import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserInterestService;
-/* request */
-import com.ppakgom.api.request.LoginReq;
 import com.ppakgom.api.request.StudyCreatePostReq;
 
 /**
