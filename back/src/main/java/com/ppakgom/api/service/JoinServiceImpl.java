@@ -139,4 +139,10 @@ public class JoinServiceImpl implements JoinService {
 		return studyApply;
 	}
 
+	@Override
+	public void modifyJoinApply(StudyApply studyApply) { // 가입 거절, 상태 1로 바꾸기
+		studyApply.setState((short) 1);
+		studyApplyRepository.save(studyApply);
+	}
+
 }

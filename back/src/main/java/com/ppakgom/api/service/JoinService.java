@@ -14,5 +14,6 @@ public interface JoinService {
 	List<JoinApplyListRes> getJoinApplyOwnerList(Long userid);
 	String studyApplyOk(StudyApply studyApply);
 	StudyApply getStudyApplyReceiver(Long userid, JoinApplyReq joinApplyReq);
+	void modifyJoinApply(StudyApply studyApply);
 
 }
