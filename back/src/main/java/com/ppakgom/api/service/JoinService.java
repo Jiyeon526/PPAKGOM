@@ -10,5 +10,6 @@ public interface JoinService {
 
 	List<JoinApplyListRes> getJoinApplyList(Long user_id);
 	StudyApply getStudyApply(Long userid, JoinApplyCancelReq joinApplyCancelReq);
+	void deleteJoinApplyCancel(StudyApply studyApply);
 
 }

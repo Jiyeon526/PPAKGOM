@@ -24,7 +24,7 @@ public class JoinServiceImpl implements JoinService {
 	StudyRepository studyRepository;
 	
 	@Override
-	public List<JoinApplyListRes> getJoinApplyList(Long user_id) {
+	public List<JoinApplyListRes> getJoinApplyList(Long user_id) { // 가입 요청 현황 가져오기
 		
 		List<StudyApply> studyApply = studyApplyRepository.findBySender_Id(user_id); // 가입 요청 리스트
 		List<JoinApplyListRes> res = new ArrayList<>();
@@ -48,9 +48,9 @@ public class JoinServiceImpl implements JoinService {
 	}
 
 	@Override
-	public StudyApply getStudyApply(Long userid, JoinApplyCancelReq joinApplyCancelReq) {
+	public StudyApply getStudyApply(Long userid, JoinApplyCancelReq joinApplyCancelReq) { // 해당 study_apply 튜플 찾아오기
 		
-		// null 값이 들어 올 경우 
+		// null 값이 들어 올 경우  
 		if(userid == null || joinApplyCancelReq == null || 
 				joinApplyCancelReq.getReceiver_id() == null || joinApplyCancelReq.getStudy_id() == null)
 			return null;
@@ -62,6 +62,11 @@ public class JoinServiceImpl implements JoinService {
 						joinApplyCancelReq.getReceiver_id());
 		
 		return studyApply;
+	}
+
+	@Override
+	public void deleteJoinApplyCancel(StudyApply studyApply) { // 가입 취소하기
+		studyApplyRepository.deleteById(studyApply.getId());
 	}
 
 }
