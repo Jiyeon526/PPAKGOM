@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ppakgom.api.request.JoinApplyReq;
 import com.ppakgom.api.response.JoinApplyListRes;
+import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
@@ -31,12 +32,12 @@ public class JoinServiceImpl implements JoinService {
 	UserStudyRepository userStudyRepository;
 	
 	@Override
-	public List<JoinApplyListRes> getJoinApplyList(Long user_id) { // 가입 요청 현황 가져오기
+	public List<JoinApplyListRes> getJoinApplyList(Long user_id) { // 가입 신청 현황 가져오기
 		
-		List<StudyApply> studyApply = studyApplyRepository.findBySender_Id(user_id); // 가입 요청 리스트
+		List<StudyApply> studyApply = studyApplyRepository.findBySender_Id(user_id); // 가입 신청 리스트
 		List<JoinApplyListRes> res = new ArrayList<>();
 		
-		if(studyApply == null) return null; // 가입 요청 없으면 null 반환
+		if(studyApply == null) return null; // 가입 신청 없으면 null 반환
 		
 		for(StudyApply study : studyApply) {
 			if(study.is_join() == false) continue; // 초대이면 넘기기
@@ -77,12 +78,12 @@ public class JoinServiceImpl implements JoinService {
 	}
 
 	@Override
-	public List<JoinApplyListRes> getJoinApplyOwnerList(Long userid) { // 가입 신청 현황 가져오기
+	public List<JoinApplyListRes> getJoinApplyOwnerList(Long userid) { // 가입 요청 현황 가져오기
 		
-		List<StudyApply> studyApply = studyApplyRepository.findByReceiver_Id(userid); // 가입 신청 리스트
+		List<StudyApply> studyApply = studyApplyRepository.findByReceiver_Id(userid); // 가입 요청 리스트
 		List<JoinApplyListRes> res = new ArrayList<>();
 		
-		if(studyApply == null) return null; // 가입 신청 없으면 null 반환
+		if(studyApply == null) return null; // 가입 요청 없으면 null 반환
 		
 		for(StudyApply study : studyApply) {
 			if(study.is_join() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
@@ -143,6 +144,28 @@ public class JoinServiceImpl implements JoinService {
 	public void modifyJoinApply(StudyApply studyApply) { // 가입 거절, 상태 1로 바꾸기
 		studyApply.setState((short) 1);
 		studyApplyRepository.save(studyApply);
+	}
+
+	@Override
+	public List<StudyJoinApplyListRes> getStudyJoinApplyList(Long studyId) {
+		
+		List<StudyApply> studyApply = studyApplyRepository.findByStudy_Id(studyId); // 가입 요청 리스트
+		List<StudyJoinApplyListRes> res = new ArrayList<>();
+		
+		if(studyApply == null) return null; // 가입 요청 없으면 null 반환
+		
+		for(StudyApply study : studyApply) {
+			if(study.is_join() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
+			StudyJoinApplyListRes list = new StudyJoinApplyListRes();
+			// 스터디 신청한 사람들 정보 저장
+			list.setUser_id(study.getSender().getUserId()); // 아이디 저장
+			list.setName(study.getSender().getName()); // 닉네임 저장
+			list.setThumbnail(study.getSender().getProfile_thumbnail()); // 썸네일 저장
+			list.setTemperature(study.getSender().getTemperature()); // 온도 저장
+			res.add(list);
+		}
+		
+		return res;
 	}
 
 }
