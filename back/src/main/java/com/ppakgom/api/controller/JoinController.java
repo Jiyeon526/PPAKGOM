@@ -42,20 +42,31 @@ public class JoinController {
 	@DeleteMapping("/response/cancel/{userid}")
 	@ApiOperation(value="가입 신청 취소", notes="사용자의 가입 신청 취소")
 	public ResponseEntity<? extends BaseResponseBody> joinApplyCancel(@PathVariable Long userid, 
-			@RequestBody JoinApplyReq joinApplyCancelReq) {
+			@RequestBody JoinApplyReq joinApplyReq) {
 		
 		// 해당 study_apply 정보 가져오기(어차피 하나밖에 없다)
-		StudyApply studyApply = joinService.getStudyApply(userid, joinApplyCancelReq);
+		StudyApply studyApply = joinService.getStudyApply(userid, joinApplyReq);
 		
 		if(studyApply == null)
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		
-		joinService.deleteJoinApplyCancel(studyApply); // 해당 튜플 삭제
+		joinService.deleteJoinApply(studyApply); // 해당 튜플 삭제
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "가입 취소 완료"));
 
 	}
 	
 	@DeleteMapping("/response/reject/{userid}")
 	@ApiOperation(value="가입 신청 거절 결과", notes="사용자의 가입 신청 거절 결과")
-	
+	public ResponseEntity<? extends BaseResponseBody> joinApplyReject(@PathVariable Long userid, 
+			@RequestBody JoinApplyReq joinApplyReq) {
+		
+		// 해당 study_apply 정보 가져오기(어차피 하나밖에 없다)
+		StudyApply studyApply = joinService.getStudyApply(userid, joinApplyReq);
+		
+		if(studyApply == null)
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		
+		joinService.deleteJoinApply(studyApply); // 해당 튜플 삭제
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "가입이 거절됐습니다."));
+	}
 }
