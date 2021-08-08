@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ppakgom.api.request.JoinApplyCancelReq;
+import com.ppakgom.api.request.JoinApplyReq;
 import com.ppakgom.api.response.JoinApplyListRes;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
@@ -48,18 +48,18 @@ public class JoinServiceImpl implements JoinService {
 	}
 
 	@Override
-	public StudyApply getStudyApply(Long userid, JoinApplyCancelReq joinApplyCancelReq) { // 해당 study_apply 튜플 찾아오기
+	public StudyApply getStudyApply(Long userid, JoinApplyReq joinApplyCancelReq) { // 해당 study_apply 튜플 찾아오기
 		
 		// null 값이 들어 올 경우  
 		if(userid == null || joinApplyCancelReq == null || 
-				joinApplyCancelReq.getReceiver_id() == null || joinApplyCancelReq.getStudy_id() == null)
+				joinApplyCancelReq.getUser_id() == null || joinApplyCancelReq.getStudy_id() == null)
 			return null;
 		
 		StudyApply studyApply = 
 				studyApplyRepository.findBySender_IdAndStudy_IdAndReceiver_Id(
 						userid, 
 						joinApplyCancelReq.getStudy_id(),
-						joinApplyCancelReq.getReceiver_id());
+						joinApplyCancelReq.getUser_id());
 		
 		return studyApply;
 	}

@@ -2,6 +2,7 @@ package com.ppakgom.api.controller;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ppakgom.api.request.JoinApplyCancelReq;
+import com.ppakgom.api.request.JoinApplyReq;
 import com.ppakgom.api.response.JoinApplyListRes;
 import com.ppakgom.api.service.JoinService;
 import com.ppakgom.common.model.response.BaseResponseBody;
@@ -41,7 +42,7 @@ public class JoinController {
 	@DeleteMapping("/response/cancel/{userid}")
 	@ApiOperation(value="가입 신청 취소", notes="사용자의 가입 신청 취소")
 	public ResponseEntity<? extends BaseResponseBody> joinApplyCancel(@PathVariable Long userid, 
-			@RequestBody JoinApplyCancelReq joinApplyCancelReq) {
+			@RequestBody JoinApplyReq joinApplyCancelReq) {
 		
 		// 해당 study_apply 정보 가져오기(어차피 하나밖에 없다)
 		StudyApply studyApply = joinService.getStudyApply(userid, joinApplyCancelReq);
@@ -53,4 +54,8 @@ public class JoinController {
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "가입 취소 완료"));
 
 	}
+	
+	@DeleteMapping("/response/reject/{userid}")
+	@ApiOperation(value="가입 신청 거절 결과", notes="사용자의 가입 신청 거절 결과")
+	
 }

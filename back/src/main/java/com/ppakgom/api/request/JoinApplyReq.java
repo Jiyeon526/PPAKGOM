@@ -8,11 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel("Join Apply Cancel Request")
-public class JoinApplyCancelReq {
+public class JoinApplyReq {
 	
 	@ApiModelProperty(name="study_id", example="3")
 	Long study_id;
 	
-	@ApiModelProperty(name="receiver_id", example="40")
-	Long receiver_id;
+	@ApiModelProperty(name="user_id", example="40")
+	Long user_id;
 }
