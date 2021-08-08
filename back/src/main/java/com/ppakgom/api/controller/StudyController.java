@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.ppakgom.common.auth.SsafyUserDetails;
@@ -30,6 +30,7 @@ import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
@@ -38,6 +39,7 @@ import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserInterestService;
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.request.StudyRatePostReq;
 
 /**
  * 스터디 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -201,6 +203,23 @@ public class StudyController {
 
 
 	/* 평가 점수 입력 */
-	
+	@PostMapping("/rating/{userId}")
+	@ApiOperation(value = "스터디원 평가하기", notes = "스터디원 점수를 5점 만점에 정수로 평가하기")
+	public ResponseEntity<BaseResponseBody> rateStudyMember
+	(@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId,
+	 @ApiParam(value = "평가 내용", required = true) StudyRatePostReq rateInfo) {
+
+//		유저 ID, 스터디 ID, 스터디 멤버 ID
+		try {
+//			유저 ID로 평가자 객체 찾기
+			User user = userService.getUserById(userId);
+			studyService.rateStudy(user,rateInfo);
+			return ResponseEntity.status(200).body(new BaseResponseBody(200, "평가 완료"));
+		}
+//		존재 하지 않는 스터디 || 존재하지 않는 유저 || 존재하지 않는 멤버
+		catch(Exception e) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+		}
+	}
 	
 }

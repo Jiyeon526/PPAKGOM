@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.request.StudyRatePostReq;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 
@@ -25,4 +26,6 @@ public interface StudyService {
 	List<Study> getUserLikeStudy(User user);
 
 	List<Study> getUserJoinStudy(User user);
+
+	void rateStudy(User user, StudyRatePostReq rateInfo);
 }

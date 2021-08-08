@@ -1,10 +1,6 @@
 package com.ppakgom.db.entity;
 
-import java.util.Date;
-
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
@@ -36,4 +32,12 @@ public class StudyRate{
    @JoinColumn(name = "study_member_id")
    User studyMember;
    
+   public StudyRate() {}
+   
+   public StudyRate(Study study, User user, User studyMember) {
+	   this.setChecked(true);
+	   this.setStudy(study);
+	   this.setUser(user);
+	   this.setStudyMember(studyMember);
+   }
 }
