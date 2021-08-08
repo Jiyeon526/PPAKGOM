@@ -39,7 +39,7 @@ public class JoinServiceImpl implements JoinService {
 			if(!s.isPresent()) continue;
 			list.setStudy_id(s.get().getId()); // 스터디 순번 저장
 			list.setStudy_name(s.get().getName()); // 스터디 이름 저장
-			list.setOwner_name(s.get().getUser().getName()); // 스터디 방장 닉네임 저장
+			list.setOwner_user_name(s.get().getUser().getName()); // 스터디 방장 닉네임 저장
 			list.setState(study.getState()); // 상태 저장
 			res.add(list);
 		}
