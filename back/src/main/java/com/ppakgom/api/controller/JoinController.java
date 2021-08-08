@@ -69,4 +69,13 @@ public class JoinController {
 		joinService.deleteJoinApply(studyApply); // 해당 튜플 삭제
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "가입이 거절됐습니다."));
 	}
+	
+	@GetMapping("/request/{userid}")
+	@ApiOperation(value="가입 요청 현황", notes="사용자의 가입 요청 현황")
+	public ResponseEntity<List<JoinApplyListRes>> joinApplyOwnerList(@PathVariable Long userid) {
+		
+		List<JoinApplyListRes> res = joinService.getJoinApplyOwnerList(userid);
+					
+		return ResponseEntity.status(200).body(res);
+	}
 }
