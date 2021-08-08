@@ -11,8 +11,12 @@ import com.ppakgom.api.request.JoinApplyReq;
 import com.ppakgom.api.response.JoinApplyListRes;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
+import com.ppakgom.db.entity.User;
+import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyApplyRepository;
 import com.ppakgom.db.repository.StudyRepository;
+import com.ppakgom.db.repository.UserRepository;
+import com.ppakgom.db.repository.UserStudyRepository;
 
 @Service("JoinService")
 public class JoinServiceImpl implements JoinService {
@@ -22,6 +26,9 @@ public class JoinServiceImpl implements JoinService {
 	
 	@Autowired
 	StudyRepository studyRepository;
+	
+	@Autowired
+	UserStudyRepository userStudyRepository;
 	
 	@Override
 	public List<JoinApplyListRes> getJoinApplyList(Long user_id) { // 가입 요청 현황 가져오기
@@ -91,6 +98,45 @@ public class JoinServiceImpl implements JoinService {
 		}
 		
 		return res;
+	}
+
+	@Override
+	public String studyApplyOk(StudyApply studyApply) {
+		
+		// 현재 스터디 인원
+		int studyPopulation = userStudyRepository.getJoinedUserByStudyId(studyApply.getStudy().getId());
+		// 해당 스터디 정보
+		Optional<Study> study = studyRepository.findById(studyApply.getStudy().getId());
+		// study_apply에서 삭제
+		deleteJoinApply(studyApply);
+		System.out.println(studyPopulation);
+		// 스터디 존재안함
+		if(!study.isPresent()) return "error";
+		
+		// 스터디 인원 초과
+		if(studyPopulation >= study.get().getPopulation())
+			return "population";
+		
+		// 스터디에 유저 추가
+		UserStudy userStudy = new UserStudy(studyApply.getSender(), study.get());
+		userStudyRepository.save(userStudy);
+		return "ok";
+	}
+
+	@Override
+	public StudyApply getStudyApplyReceiver(Long userid, JoinApplyReq joinApplyReq) {
+		// null 값이 들어 올 경우  
+		if(userid == null || joinApplyReq == null || 
+				joinApplyReq.getUser_id() == null || joinApplyReq.getStudy_id() == null)
+			return null;
+		
+		StudyApply studyApply = 
+				studyApplyRepository.findByReceiver_IdAndStudy_IdAndSender_Id(
+						userid, 
+						joinApplyReq.getStudy_id(),
+						joinApplyReq.getUser_id());
+		
+		return studyApply;
 	}
 
 }
