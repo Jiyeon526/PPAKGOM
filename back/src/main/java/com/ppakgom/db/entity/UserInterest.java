@@ -6,11 +6,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 public class UserInterest extends BaseEntity {
 
 	

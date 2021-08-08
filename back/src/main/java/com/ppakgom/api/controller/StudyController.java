@@ -200,6 +200,7 @@ public class StudyController {
 	}
 
 
+	/* 평가 점수 입력 */
 	
 	
 }
