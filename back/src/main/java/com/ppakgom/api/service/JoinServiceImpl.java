@@ -65,7 +65,7 @@ public class JoinServiceImpl implements JoinService {
 	}
 
 	@Override
-	public void deleteJoinApplyCancel(StudyApply studyApply) { // 가입 취소하기
+	public void deleteJoinApply(StudyApply studyApply) { // 가입 취소하기
 		studyApplyRepository.deleteById(studyApply.getId());
 	}
 
