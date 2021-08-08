@@ -35,10 +35,12 @@ import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
+import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserInterestService;
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.request.StudyInvitePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
 
 /**
@@ -57,6 +59,9 @@ public class StudyController {
 	StudyService studyService;
 
 	@Autowired
+	StudyApplyService studyApplyService;
+
+	@Autowired
 	StudyInterestRepository studyInterestRepository;
 
 	@Autowired
@@ -64,7 +69,7 @@ public class StudyController {
 
 	@Autowired
 	UserInterestService userInterestService;
-
+	
 	private final StudyRes STUDY_RES = new StudyRes();
 
 	/* 스터디 생성 */
@@ -224,8 +229,34 @@ public class StudyController {
 	
 	/* 평가 목록 불러오기 */
 	//내가 가입한 스터디 중 내가 평가 한 or 평가 해야 하는 스터디 목록이 쫘르르 나온다.
-//	스터디에 가입하면 스터디 - rate 테이블에 check false로 해서 추가시켜야 함.(나 - 현재 가입 회원들 , 현재 가입회원들 - 나)
-//	@GetMapping("/rating/{userId}")
+//	스터디에 가입승인 or 초대 승인 해서 가입되면 하면 스터디 - rate 테이블에 check false로 해서 추가시켜야 함.(나 - 현재 가입 회원들 , 현재 가입회원들 - 나)
+//그 이후에 user-study 테이블에 삽입해야 함(뉴비와 기존 회원구별 위해 뒤늦게 뉴비 추가.)
+	//	@GetMapping("/rating/{userId}")
 //	@ApiOperation(value = "평가할 스터디원 목록.", notes = "평가 했던 or 평가 해야할 스터디원 목록 불러오기")
 //	public ResponseEntity<>
+	
+	/* 스터디 초대하기 */
+//	스터디에 초대한다(방장만 가능)
+	@PostMapping("/{studyId}/member")
+	@ApiOperation(value = "스터디에 초대하기", notes = "방장이 스터디에 회원을 초대한다.")
+	public ResponseEntity<BaseResponseBody> inviteMember(@PathVariable(value = "studyId") Long studyId, 
+			@ApiParam(value = "스터디 초대 내용",required = true) StudyInvitePostReq req){
+		try {
+		// receiver_id로 회원 찾고
+		User receiver = userService.getUserById(req.getReceiver_id());
+		// study_id로 스터디 찾고
+		Study study = studyService.getStudyById(studyId).get();
+		// owner_id 가 sender_id.
+		User sender = study.getUser();
+		// is_join 가지고
+		// state는 2
+		studyApplyService.inviteStudy(sender, study, receiver, req.is_join());
+		
+		return ResponseEntity.ok(new BaseResponseBody(200,"성공"));
+		}catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.ok(new BaseResponseBody(400,"실패"));
+		}
+	}
+	
 }
