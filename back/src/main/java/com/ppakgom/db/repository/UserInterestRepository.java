@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.UserInterest;
 
 @Repository
@@ -22,5 +23,7 @@ public interface UserInterestRepository extends JpaRepository<UserInterest, Long
 	@Modifying
 	@Query(value = "delete from user_interest where user_id= :user_id and interest_id= :interest_id",nativeQuery = true)
 	void deleteUserInterest(@Param("user_id") Long user_id,@Param("interest_id") Long interest_id);
+
+	List<UserInterest> findInterestByUserId(Long userId);
 
 }

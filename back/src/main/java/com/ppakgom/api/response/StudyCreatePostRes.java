@@ -12,9 +12,9 @@ import lombok.Setter;
 @ApiModel("스터디 생성 값")
 public class StudyCreatePostRes{
 	
-	Long id;
+	Long study_id;
 	
 	public StudyCreatePostRes(Long s) {
-		this.id = s;
+		this.study_id = s;
 	}
 }

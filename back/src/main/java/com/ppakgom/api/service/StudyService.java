@@ -23,5 +23,11 @@ public interface StudyService {
 
 	List<Study> getStudyByInterest(String interest);
 
+
 	List<StudyScheduleMonthRes> getStudyScheduleMonth(Long studyId, int month);
+
+	List<Study> getUserLikeStudy(User user);
+
+	List<Study> getUserJoinStudy(User user);
+
 }

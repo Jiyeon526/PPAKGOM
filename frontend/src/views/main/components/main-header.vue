@@ -5,30 +5,22 @@
         <div class="ic ic-logo" />
       </div>
       <div class="tool-wrapper">
-        <div class="search-field">
-          <el-input
-            placeholder="화상 컨퍼런스 제목 검색"
-            v-model="state.searchValue"
-            @keyup.enter="searchConference"
-          >
-            <template #append>
-              <el-button
-                icon="el-icon-search"
-                @click="searchConference"
-              ></el-button>
-            </template>
-          </el-input>
-        </div>
-
         <div class="button-wrapper">
-          <div v-if="state.isLoggedIn">
+          <div
+            v-if="
+              state.isLoggedIn ||
+                state.googleislogin ||
+                state.kakaoislogin ||
+                state.isNaverLoggedIn
+            "
+          >
             <!-- <el-button @click="clickLogout">로그아웃</el-button> -->
 
             <el-button
               type="primary"
-              icon="el-icon-circle-plus-outline"
-              @click="clickRoomCreation"
-              >생성하기</el-button
+              icon="el-icon-switch-button"
+              @click="clickLogout"
+              >로그아웃</el-button
             >
             <el-button type="primary" @click="clickMypage">프로필</el-button>
           </div>
@@ -48,11 +40,11 @@
       <div class="logo-wrapper" @click="clickLogo">
         <div class="ic ic-logo" />
       </div>
-      <div class="menu-icon-wrapper"><i class="el-icon-search"></i></div>
       <div class="mobile-sidebar-wrapper" v-if="!state.isCollapse">
         <div class="mobile-sidebar">
           <div class="mobile-sidebar-tool-wrapper">
             <div class="logo-wrapper"><div class="ic ic-logo" /></div>
+
             <div v-if="state.isLoggedIn">
               <el-button class="mobile-sidebar-btn" @click="clickLogout"
                 >로그아웃</el-button
@@ -104,7 +96,7 @@
 import { reactive, computed } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-
+import axios from "axios";
 export default {
   name: "main-header",
 
@@ -118,11 +110,15 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     const router = useRouter();
+
     const state = reactive({
-      searchValue: "",
       isCollapse: true,
       isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
+      isNaverLoggedIn: computed(() => store.getters["root/isNaverLoggedIn"]),
       userId: computed(() => store.getters["root/userId"]),
+      naverToken: computed(() => store.getters["root/getNaverAccessToken"]),
+      kakaoislogin: computed(() => store.getters["root/getKakaoIsLoggedIn"]),
+      googleislogin: computed(() => store.getters["root/getGoogleIsLoggedIn"]),
       menuItems: computed(() => {
         const MenuItems = store.getters["root/getMenus"];
         let keys = Object.keys(MenuItems);
@@ -176,27 +172,46 @@ export default {
     const clicktestanswer = () => {
       emit("OpenAnswerworkbookDialog");
     };
-    const click1 = () => {
-      emit("openInviteDialog");
-    };
-    const click2 = () => {
-      emit("openMakeworkbookDialog");
-    };
-    const click3 = () => {
-      emit("openOtherpeopleDialog");
-    };
-    const click4 = () => {
-      emit("openStudydetailDialog");
-    };
-    const click5 = () => {
-      emit("openStduyscheduleDialog");
-    };
 
     const clickLogout = () => {
       store.dispatch("root/requestLogout");
       store.commit("root/deleteToken");
+
+      if (state.isNaverLoggedIn) {
+        const accessToken = state.naverToken;
+        console.log("logout accessToken", accessToken);
+        const url = `https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=2skX9k2csf4rw6XBSD_S&client_secret=MFJnBhWD3K&access_token=${accessToken}&service_provider=NAVER`;
+        axios.get(url).then(res => {
+          console.log("결과", res.data);
+          store.dispatch("root/requestNaverLogout");
+          store.commit("root/deleteNaverToken");
+          console.log(state.isNaverLoggedIn);
+        });
+      }
+
+      if (state.kakaoislogin) {
+        if (!window.Kakao.Auth.getAccessToken()) {
+          console.log("Not logged in.");
+          return;
+        }
+        window.Kakao.Auth.logout(response => {
+          //로그아웃
+          console.log("access token:", window.Kakao.Auth.getAccessToken());
+          console.log("log out:", response);
+        });
+        store.commit("root/setkakaologin", {
+          login: false
+        });
+      }
+
+      if (state.googleislogin) {
+        window.gapi.auth2.getAuthInstance().disconnect();
+        store.commit("root/setGoogleLogin", {
+          login: false
+        });
+      }
       router.push({
-        name: "home"
+        name: "main"
       });
     };
 
@@ -222,19 +237,6 @@ export default {
       state.isCollapse = !state.isCollapse;
     };
 
-    // 검색한 문자열 home에 보내기
-    const searchConference = function() {
-      var cleanValue = state.searchValue.trim();
-      console.log(cleanValue);
-      if (cleanValue !== "") {
-        store.commit("root/titleSearch", {
-          titleData: cleanValue
-        });
-      } else {
-        state.searchValue = "";
-      }
-    };
-
     return {
       state,
       menuSelect,
@@ -244,14 +246,8 @@ export default {
       clickMypage,
       clickRegister,
       changeCollapse,
-      searchConference,
       clickRoomCreation,
-      clicktestanswer,
-      click1,
-      click2,
-      click3,
-      click4,
-      click5
+      clicktestanswer
     };
   }
 };
@@ -364,22 +360,10 @@ export default {
   cursor: pointer;
   margin-right: 1%;
 }
-.main-header .hide-on-small .tool-wrapper .search-field {
-  width: 50%;
-  height: 50px;
-  max-width: 400px;
-  margin-right: 2%;
-  display: inline-block;
-  background-color: white;
-}
-.main-header .hide-on-small .tool-wrapper .search-field .el-input {
-  width: 100%;
-  height: 100%;
-}
+
 .main-header
   .hide-on-small
   .tool-wrapper
-  .search-field
   .el-input
   .el-input__inner {
   /* width: 88%; */
@@ -389,7 +373,6 @@ export default {
 .main-header
   .hide-on-small
   .tool-wrapper
-  .search-field
   .el-input
   .el-input__prefix {
   top: 5px;

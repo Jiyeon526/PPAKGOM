@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@ApiModel("Login Request")
+@ApiModel("Email Request")
 public class EmailReq {
 	@ApiModelProperty(name="email", example="ssafy@naver.com")
 	String email;

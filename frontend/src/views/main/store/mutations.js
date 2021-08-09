@@ -31,6 +31,23 @@ export function deleteToken(state) {
 
 // 검색한 문자열 업데이트
 export function titleSearch(state, payload) {
-  state.searchData = payload.titleData
+  state.searchData = payload.searchValue
   console.log("mutate!!!", state.searchData)
+}
+
+export function setNaverAccessToken(state) {
+  state.naveraccessToken = localStorage.getItem('naveraccessToken')
+  console.log(state.naveraccessToken)
+}
+
+export function deleteNaverToken(state) {
+  state.naveraccessToken = ''
+}
+
+export function setGoogleLogin(state, payload) {
+  state.googlelogin = payload.login
+}
+
+export function setkakaologin(state, payload) {
+  state.kakaologin = payload.login
 }

@@ -26,5 +26,14 @@ public class User extends BaseEntity{
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
 
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", email=" + email + ", name=" + name + ", platform_type=" + platform_type
+				+ ", access_token=" + access_token + ", profile_thumbnail=" + profile_thumbnail + ", temperature="
+				+ temperature + ", position=" + position + ", password=" + password + "]";
+	}
+
+    
+    
 }
 

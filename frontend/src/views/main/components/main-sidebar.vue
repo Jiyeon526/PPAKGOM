@@ -80,10 +80,13 @@ export default {
         let menuArray = [];
         if (!isLoggedIn) {
           let menuObject = {};
+          menuObject.icon = MenuItems["main"].icon;
+          menuObject.title = MenuItems["main"].name;
+          menuArray.push(menuObject);
+          menuObject = {};
           menuObject.icon = MenuItems["home"].icon;
           menuObject.title = MenuItems["home"].name;
           menuArray.push(menuObject);
-
           return menuArray;
         }
         for (let i = 0; i < keys.length - 3; ++i) {
@@ -107,6 +110,7 @@ export default {
       store.commit("root/setMenuActive", param);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
+      console.log(keys[param])
       router.push({
         name: keys[param]
       });
