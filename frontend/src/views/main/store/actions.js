@@ -57,7 +57,7 @@ export function requestEmail({ state }, payload) {
   return $axios.post(url, body)
 }
 
-// 이메일 인증
+// 이메일 코드 인증
 export function requestEmailCode({ state }, payload) {
   console.log('requestEmailCode', state, payload)
   const url = '/users/verifyCode'
@@ -141,8 +141,8 @@ export function requestRoomInfoDetail({ state }, payload) {
 export function requestNaverLogout({ state }) {
   console.log('requestLogout', state)
   localStorage.removeItem('naveraccessToken')
-  localStorage.removeItem('com.naver.nid.access_token')
-  localStorage.removeItem('com.naver.nid.oauth.state_token')
+ // localStorage.removeItem('com.naver.nid.access_token')
+ // localStorage.removeItem('com.naver.nid.oauth.state_token')
   return
 }
 

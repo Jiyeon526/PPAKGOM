@@ -51,3 +51,7 @@ export function setGoogleLogin(state, payload) {
 export function setkakaologin(state, payload) {
   state.kakaologin = payload.login
 }
+
+export function setUserpk(state, payload) {
+  state.userpk = payload
+}
