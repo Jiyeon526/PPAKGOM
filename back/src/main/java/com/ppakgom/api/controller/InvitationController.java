@@ -61,7 +61,7 @@ public class InvitationController {
 	/* 스터디원 초대 현황 */
 	@GetMapping("/response/{userId}")
 	@ApiOperation(value = "스터디 초대 현황", notes = "로그인한 유저가 초대한 리스트를 보여줍니다.")
-	public ResponseEntity<?> inviteList(
+	public ResponseEntity<?> getInviteListOfUser(
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
 
 		try {

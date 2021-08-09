@@ -27,11 +27,14 @@ import springfox.documentation.annotations.ApiIgnore;
 import com.ppakgom.common.auth.SsafyUserDetails;
 import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.Study;
+import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
+import com.ppakgom.api.response.InviteGetResByStudy;
+import com.ppakgom.api.response.InviteResByStudy;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
@@ -255,8 +258,25 @@ public class StudyController {
 		return ResponseEntity.ok(new BaseResponseBody(200,"성공"));
 		}catch(Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.ok(new BaseResponseBody(400,"실패"));
+			return ResponseEntity.status(400).body(new BaseResponseBody(400,"실패"));
 		}
+	}
+	
+	/* 초대한 회원 리스트 */
+	@GetMapping("/{studyId}/invitelist")
+	@ApiOperation(value = "스터디에 초대한 회원 리스트 ", notes = "방장이 스터디에 초대한 회원 리스트")
+	public ResponseEntity<?> getInviteListOfStudy(@PathVariable(value = "studyId")Long studyId){
+		
+//		study로 질의
+		List<StudyApply> temp = studyApplyService.getInviteListByStudy(studyId);
+		
+		InviteGetResByStudy res = new InviteGetResByStudy();
+		for(StudyApply sa : temp) {
+			InviteResByStudy resByStudy = new InviteResByStudy();
+			res.getInviteResult().add(resByStudy.of(sa));
+		}
+		
+		return ResponseEntity.ok(res);
 	}
 	
 }

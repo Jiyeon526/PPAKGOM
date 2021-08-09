@@ -18,5 +18,7 @@ public interface StudyApplyService {
 	void inviteStudy(User sender, Study study, User receiver, boolean is_join);
 
 	List<StudyApply> getInviteList(Long userId);
+
+	List<StudyApply> getInviteListByStudy(Long studyId);
 	
 }
