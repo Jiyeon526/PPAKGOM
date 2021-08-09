@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ppakgom.api.request.CancelInviteReq;
+import com.ppakgom.api.request.RejectInviteReq;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
@@ -54,5 +55,14 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 		
 		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverId(userId, req.getStudyId(), req.getReceiverId());
 	}
+
+	@Override
+	public void rejectInvitation(RejectInviteReq req, Long userId) {
+		StudyApply studyApply = studyApplyRepository.findByReceiverIdAndStudyIdAndSenderId(userId,req.getStudyId(),req.getSenderId());
+//		상태를 거절(1)로 변경
+		studyApply.setState((short) 1);
+		studyApplyRepository.save(studyApply);
+	}
+
 
 }

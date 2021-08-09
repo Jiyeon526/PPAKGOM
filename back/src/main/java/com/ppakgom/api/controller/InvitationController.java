@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -44,6 +45,7 @@ import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserInterestService;
 import com.ppakgom.api.request.CancelInviteReq;
+import com.ppakgom.api.request.RejectInviteReq;
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyInvitePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
@@ -112,13 +114,29 @@ public class InvitationController {
 	/* 초대 취소하기 */
 	@DeleteMapping("/response/calcel/{userId}")
 	@ApiOperation(value = "초대 취소하기", notes = "로그인한 유저가 보낸 초대를 취소합니다.")
-	public ResponseEntity<BaseResponseBody> canceInvitation(CancelInviteReq req,
+	public ResponseEntity<BaseResponseBody> cancelInvitation(CancelInviteReq req,
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
 		try {
 			studyApplyService.cancelInvitation(req, userId);
 			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
 		}catch(Exception e) {
-			return ResponseEntity.status(400).body(new BaseResponseBody(400, "초대 취소 완료"));
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "잘못된 요청"));
+		}
+		
+	}
+	
+	/* 초대 거절하기 */
+//	state를 1로 변경
+	@PutMapping("/request/reject/{userId}")
+	@ApiOperation(value = "초대 거절하기", notes = "자신에게 온 초대를 거절합니다.")
+	public ResponseEntity<BaseResponseBody> rejectInvitation(RejectInviteReq req,
+			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
+			
+		try {
+			studyApplyService.rejectInvitation(req, userId);
+			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
+		}catch(Exception e) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "잘못된 요청"));
 		}
 		
 	}
