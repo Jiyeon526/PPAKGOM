@@ -24,7 +24,6 @@
   <login-dialog
     :open="loginDialogOpen"
     @closeLoginDialog="onCloseLoginDialog"
-    @openRegisterDialog="onOpenRegisterDialog"
   />
   <register-dialog
     :open="registerDialogOpen"
@@ -120,8 +119,6 @@ export default {
     },
 
     onOpenStudydetailDialog(selectStudy) {
-      console.log("여기 실행됨?")
-      console.log(selectStudy)
       this.studydetailDialogOpen = true;
       this.selectStudyDetail = selectStudy
     },
