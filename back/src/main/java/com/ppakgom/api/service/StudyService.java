@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 
@@ -21,4 +22,6 @@ public interface StudyService {
 	List<Study> getStudyByName(String name);
 
 	List<Study> getStudyByInterest(String interest);
+
+	List<StudyScheduleMonthRes> getStudyScheduleMonth(Long studyId, int month);
 }
