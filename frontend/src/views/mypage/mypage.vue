@@ -27,7 +27,7 @@
         <el-input
           v-model="state.form.email"
           autocomplete="off"
-          clearable
+          disabled="true"
         ></el-input>
       </el-form-item>
 
@@ -56,19 +56,10 @@
         label="프로필 사진"
         :label-width="state.formLabelWidth"
       >
-        <el-upload
-          class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          accept=".png, .jpg, .jpeg, .gif"
-          list-type="picture"
-          limit="1"
-          :before-upload="prevUpload"
-          :auto-upload="false"
-          thumbnail-mode="true"
-          ref="toUpload"
-        >
-          <i class="el-icon-plus"></i>
-        </el-upload>
+        <el-image
+          style="width: 100px; height: 100px"
+          :src="'https://localhost:8443/' + state.form.thumbnail"
+          :fit="fit"></el-image>
       </el-form-item>
     </el-form>
   </el-container>
@@ -111,7 +102,7 @@ export default {
         email: "",
         name: "",
         interest: "",
-        thumbnail: [],
+        thumbnail: "",
         align: "left"
       },
       rules: {
@@ -154,22 +145,26 @@ export default {
         .dispatch("root/requestReadMyInfo")
         .then(function(result) {
           console.log(result);
-          state.form.id = result.data.userId;
+          state.form.id = result.data.user_id;
           state.form.email = result.data.email;
           state.form.name = result.data.name;
           state.form.interest = result.data.interest;
-          state.form.thumbnail = result.data.thumbnail;
+          const origin_url = result.data.profile_thumbnail
+          const need_from = origin_url.indexOf('image')
+          const url_length = origin_url.length
+          state.form.thumbnail = origin_url.substring(need_from,url_length)
         })
         .catch(function(err) {
-          ElMessage.error(err);
-        });
-    };
+          ElMessage.error(err)
+        })
+    }
 
     const clickUpdate = function() {
+      console.log(state.form.thumbnail)
       console.log(editForm);
       editForm.value.validate(valid => {
         if (valid) {
-          console.log("submit");
+          console.log("submit")
           store
             .dispatch("root/requestUpdateMyInfo", {
               name: state.form.name,
@@ -231,7 +226,7 @@ export default {
       getUserInfo();
     });
 
-    return { editForm, state, clickUpdate, clickDelete, prevUpload };
+    return { editForm, state, clickUpdate, clickDelete, prevUpload }
   }
 };
 </script>

@@ -87,12 +87,6 @@ export default {
           menuObject.icon = MenuItems["home"].icon;
           menuObject.title = MenuItems["home"].name;
           menuArray.push(menuObject);
-          // 스터디 생성 테스트용
-          menuObject = {};
-          menuObject.icon = MenuItems["create"].icon;
-          menuObject.title = MenuItems["create"].name;
-          menuArray.push(menuObject);
-          //
           return menuArray;
         }
         for (let i = 0; i < keys.length - 3; ++i) {

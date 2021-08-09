@@ -59,9 +59,12 @@
             :label-width="state.formLabelWidth"
           >
               <el-slider
+                class="slider-reverse"
                 v-model="state.form.passion"
                 max=70
-                :marks="state.marks">
+                step=0.5
+                :marks="state.marks"
+              >
               </el-slider>
           </el-form-item>
 
@@ -80,9 +83,10 @@
           >
             <el-date-picker
               v-model="state.form.deadline"
-              type="daterange"
-              start-placeholder="Start Date"
-              end-placeholder="End Date">
+              type="date"
+              placeholder="Pick a Date"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD">
           </el-date-picker>
           </el-form-item>
 
@@ -99,11 +103,11 @@
               list-type="picture"
               :on-change="prevUpload"
               :auto-upload="false"
-              :limit="1"
               thumbnail-mode=true
               ref="toUpload"
+              :on-remove="handleRemove"
             >
-              <i class="el-icon-plus"></i>
+            <el-button type="primary">Upload</el-button>
             </el-upload>
           </el-form-item>
         </el-form>
@@ -120,12 +124,15 @@
 import { computed, reactive, ref, onMounted, nextTick } from "vue"
 import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
+import { useRouter } from 'vue-router';
+import ex4 from '@/assets/images/ex4.jpg'
 
 export default {
   name: 'Createpage',
 
   setup(props, { emit }) {
     const store = useStore()
+    const router = useRouter()
     const roomForm = ref(null)
     const toUpload = ref(null)
     const saveTagInput = ref(null)
@@ -182,11 +189,17 @@ export default {
       },
       uploading: [],
       marks: {
-          36.5: '36.5°C',
+        36.5: '36.5°C',
       },
       inputVisible: false,
       inputValue: '',
       formLabelWidth: "100px",
+      fileList: [
+        {
+          name:'default.jpg',
+          url: ex4,
+        }
+      ],
     })
 
     onMounted(() => {
@@ -199,7 +212,7 @@ export default {
       necessary.push(file['name'])
       necessary.push(file['size'])
       state.form.thumbnail = necessary
-
+      console.log(state.form.passion)
       state.uploading = file.raw
       console.log('111', file, state.form.thumbnail, typeof state.form.thumbnail)
     }
@@ -207,40 +220,49 @@ export default {
     const clickCreateRoom = function() {
 
       console.log("check",state.uploading)
-      // roomForm.value.validate(valid => {
-      //   console.log("!!!",valid)
-      //   if (valid) {
-      //     console.log("submit");
-      //     let body = new FormData();
-      //     body.append("title", state.form.title);
-      //     body.append("description", state.form.description);
-      //     body.append("thumbnail", state.uploading);
-      //     console.log("여기까지 확인!")
-      //     store
-      //       .dispatch("root/requestCreateRoom", body)
-      //       .then(function(result) {
-      //         console.log(result)
-      //         toUpload.value.submit()
-      //         ElMessage({
-      //           message: "새 방이 생성되었습니다.",
-      //           type: "success"
-      //         });
-      //         handleClose();
-      //       })
-      //       .catch(function(err) {
-      //         alert(err.message);
-      //       });
-      //   } else {
-      //     alert("Validate error!");
-      //   }
-      // })
+      console.log("check2",state.form.deadline)
+      roomForm.value.validate(valid => {
+        console.log("!!!",valid)
+        if (valid) {
+          console.log("submit");
+          let body = new FormData();
+          body.append("name", state.form.title);
+          body.append("content", state.form.description);
+          body.append("temperature", state.form.passion);
+          body.append("interest", state.form.dynamicTags);
+          body.append("deadline", state.form.deadline);
+          body.append("population", state.form.num);
+          body.append("study_thumbnail", state.uploading);
+          console.log("여기까지 확인!")
+          store
+            .dispatch("root/requestCreateRoom", body)
+            .then(function(result) {
+              console.log(result)
+              toUpload.value.submit()
+              ElMessage({
+                message: "새 방이 생성되었습니다.",
+                type: "success"
+              });
+              handleClose();
+            })
+            .catch(function(err) {
+              alert(err.message);
+            });
+        } else {
+          alert("Validate error!");
+        }
+      })
     }
 
     const handleClose = function() {
       state.form.title = "";
       state.form.description = "";
       state.form.thumbnail = [],
-      emit("closeRoomDialog")
+      state.form.dynamicTags = [],
+      state.form.passion = 36.5,
+      state.form.num = 1,
+      state.form.deadline = '',
+      router.push({name: "home" })
     }
 
     const handleTagClose = function(tag) {
@@ -263,7 +285,11 @@ export default {
       state.inputValue = ''
     }
 
-    return { roomForm, toUpload, saveTagInput, state, handleClose, clickCreateRoom, prevUpload, handleTagClose, showInput, handleInputConfirm }
+    const handleRemove = function(file, fileList) {
+        console.log(file, fileList)
+    }
+
+    return { roomForm, toUpload, saveTagInput, state, handleClose, clickCreateRoom, prevUpload, handleTagClose, showInput, handleInputConfirm, handleRemove }
   }
 }
 </script>
@@ -284,4 +310,22 @@ export default {
   margin-left: 10px;
   vertical-align: bottom;
 }
+.slider-reverse .el-slider__runway {
+    width: 100%;
+    height: var(--el-slider-height);
+    margin: var(--el-slider-margin);
+    background-color: var(--el-slider-main-background-color);
+    border-radius: var(--el-slider-border-radius);
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+}
+.slider-reverse .el-slider__bar {
+    height: var(--el-slider-height);
+    background-color: var(--el-slider-runway-background-color);
+    border-top-left-radius: var(--el-slider-border-radius);
+    border-bottom-left-radius: var(--el-slider-border-radius);
+    position: absolute;
+}
+
 </style>
