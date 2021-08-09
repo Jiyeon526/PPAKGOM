@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ppakgom.api.request.CancelInviteReq;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
@@ -41,10 +42,17 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 		return studyApplyRepository.findByStudyId(studyId);
 	}
 
-	@Override
 //	내가 '받은' 초대를 보여줄 때 -> 상태가 '대기'일 때만 보여줌.
+	@Override
 	public List<StudyApply> getInvitedList(Long userId) {
 		return studyApplyRepository.findByReceiverId(userId, 2L);
+	}
+
+//	userId가 보낸 요청을 취소한다.
+	@Override
+	public void cancelInvitation(CancelInviteReq req, Long userId) {
+		
+		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverId(userId, req.getStudyId(), req.getReceiverId());
 	}
 
 }

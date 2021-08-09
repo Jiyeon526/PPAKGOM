@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,7 @@ import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserInterestService;
+import com.ppakgom.api.request.CancelInviteReq;
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyInvitePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
@@ -58,6 +60,12 @@ public class InvitationController {
 	@Autowired
 	StudyApplyService studyApplyService;
 
+	@Autowired
+	StudyService studyService;
+	
+	@Autowired
+	UserService userService;
+	
 	/* 스터디원 초대 현황 */
 	@GetMapping("/response/{userId}")
 	@ApiOperation(value = "스터디 초대 현황", notes = "로그인한 유저가 초대한 리스트를 보여줍니다.")
@@ -80,9 +88,6 @@ public class InvitationController {
 		}
 	}
 
-	
-	
-	
 	/* 받은 초대 목록 */
 	@GetMapping("/request/{userId}")
 	@ApiOperation(value = "받은 초대 현황", notes = "로그인한 유저가 받은 초대 목록을 보여줍니다.")
@@ -92,7 +97,7 @@ public class InvitationController {
 		try {
 			InviteGetRes res = new InviteGetRes();
 			List<StudyApply> inviteList = studyApplyService.getInvitedList(userId);
-			for(StudyApply sa : inviteList) {
+			for (StudyApply sa : inviteList) {
 				InviteRes ir = new InviteRes();
 				res.getInviteResult().add(ir.of(sa));
 			}
@@ -101,9 +106,21 @@ public class InvitationController {
 		} catch (Exception e) {
 			BaseResponseBody res = new BaseResponseBody(400, "잘못된 요청");
 			return ResponseEntity.status(400).body(res);
-
 		}
+	}
 
+	/* 초대 취소하기 */
+	@DeleteMapping("/response/calcel/{userId}")
+	@ApiOperation(value = "초대 취소하기", notes = "로그인한 유저가 보낸 초대를 취소합니다.")
+	public ResponseEntity<BaseResponseBody> canceInvitation(CancelInviteReq req,
+			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
+		try {
+			studyApplyService.cancelInvitation(req, userId);
+			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
+		}catch(Exception e) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "초대 취소 완료"));
+		}
+		
 	}
 
 }
