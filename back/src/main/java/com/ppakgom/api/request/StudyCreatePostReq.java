@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 로그인 요청 몸체
+ * 스터디 생성 몸체
  */
 @Getter
 @Setter

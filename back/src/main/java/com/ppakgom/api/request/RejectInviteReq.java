@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 초대 취소 몸체
+ * 초대 거절 몸체
  */
 @Getter
 @Setter
 @ApiModel("Cancel Invitation")
-public class CancelInviteReq {
+public class RejectInviteReq {
 
 	@ApiModelProperty(name="studyId", example="50")
 	Long studyId;
