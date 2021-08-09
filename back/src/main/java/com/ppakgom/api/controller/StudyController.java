@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -56,6 +57,7 @@ import com.ppakgom.api.service.UserInterestService;
 /* request */
 import com.ppakgom.api.request.LoginReq;
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.request.StudyScheduleReq;
 
 /**
  * 스터디 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -238,6 +240,20 @@ public class StudyController {
 		}
 		return ResponseEntity.ok(res);
 		
+	}
+	
+	@PostMapping("/{studyId}/schedule")
+	@ApiOperation(value = "스터디 방 스케줄 입력", notes = "스터디 방 스케줄 입력")
+	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId, 
+			@RequestBody StudyScheduleReq req) {
+		// 값이 다 들어왔는지 확인
+		if(req.getTitle().length() == 0 || req.getDetail().length() == 0 || req.getDate().length() == 0)
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		// 저장하기
+		if(!studyService.postStudySchedule(studyId, req))
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		
+		return ResponseEntity.status(201).body(BaseResponseBody.of(201, "일정 등록 완료"));
 	}
 
 }
