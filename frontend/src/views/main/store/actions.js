@@ -96,7 +96,7 @@ export function requestUpdateMyInfo({ state }, payload) {
 export function requestCreateRoom({ state }, payload) {
   console.log('requestCreateRoom', state, payload)
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '', 'Content-Type': 'multipart/form-data' } // 토큰
-  const url = '/conferences/conferences'
+  const url = '/study/'
   let body = payload
   return $axios.post(url, body, { headers: headers })
 }

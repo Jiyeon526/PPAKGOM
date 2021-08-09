@@ -25,6 +25,8 @@
             <el-button type="primary" @click="clickMypage">프로필</el-button>
           </div>
           <div v-else>
+            <!-- <el-button type="primary" @click="clickOtherpeoplepage">타프로필</el-button>
+            <el-button type="primary" @click="clickMypage">프로필</el-button> -->
             <el-button type="primary" @click="clickRegister"
               >회원가입</el-button
             >
@@ -233,6 +235,10 @@ export default {
       });
     };
 
+    const clickOtherpeoplepage = () => {
+      emit("openOtherpeopleDialog");
+    };
+
     const changeCollapse = () => {
       state.isCollapse = !state.isCollapse;
     };
@@ -247,7 +253,8 @@ export default {
       clickRegister,
       changeCollapse,
       clickRoomCreation,
-      clicktestanswer
+      clicktestanswer,
+      clickOtherpeoplepage
     };
   }
 };
