@@ -28,9 +28,8 @@
   </h4>
   <el-carousel v-else :interval="4000" type="card" height="200px">
     <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i">
-      <!-- <h3>{{ state.recommendStudyList[i-1].study_thumbnail }}</h3> -->
       <el-image style="width: 100%; height: 190px"
-        :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
+        :src="state.recommendStudyList[i-1].study_thumbnail"
         :fit="fit"
         alt="PPAKGOM"
       >
@@ -120,7 +119,7 @@ export default {
         name: "관심분야를 더 등록해주세요",
         content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
         population: 5,
-        study_thumbnail: require('@/assets/images/kakao.jpg'),
+        study_thumbnail: require('@/assets/images/ppakgom.png'),
         joined_population: 3,
         deadline: "2021-08-23"
       },
@@ -170,6 +169,14 @@ export default {
         .then(function(res) {
           console.log('추천 리스트 응답 결과', res)
           state.recommendStudyList = res.data.studyResult
+          // 받아온 study_thumbnail에 'https://localhost:8443/'를 붙여서 주소로 만들고 src로 넣어준다.
+          // 1개나 2개의 데이터를 받아오는 경우 기본 이미지를 출력하기 위해
+          const recommendStudIndex = state.recommendStudyList.length
+          let cnt = 0
+          while (cnt < recommendStudIndex) {
+            state.recommendStudyList[cnt].study_thumbnail = 'https://localhost:8443/' + state.recommendStudyList[cnt].study_thumbnail
+            cnt += 1
+          }
           if (0 < state.recommendStudyList.length < 3) {
             state.recommendStudyList.push(state.addRecommendStudy)
             if (0 < state.recommendStudyList.length < 3) {
