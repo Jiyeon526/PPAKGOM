@@ -67,17 +67,43 @@ public class InvitationController {
 		try {
 			InviteGetRes res = new InviteGetRes();
 			List<StudyApply> inviteList = studyApplyService.getInviteList(userId);
+			for (StudyApply sa : inviteList) {
+				InviteRes ir = new InviteRes();
+				res.getInviteResult().add(ir.of(sa));
+			}
+
+			return ResponseEntity.ok(res);
+
+		} catch (Exception e) {
+			BaseResponseBody res = new BaseResponseBody(400, "잘못된 요청");
+			return ResponseEntity.status(400).body(res);
+		}
+	}
+
+	
+	
+	
+	/* 받은 초대 목록 */
+	@GetMapping("/request/{userId}")
+	@ApiOperation(value = "받은 초대 현황", notes = "로그인한 유저가 받은 초대 목록을 보여줍니다.")
+	public ResponseEntity<?> getInvitedListOfUser(
+			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
+
+		try {
+			InviteGetRes res = new InviteGetRes();
+			List<StudyApply> inviteList = studyApplyService.getInvitedList(userId);
 			for(StudyApply sa : inviteList) {
 				InviteRes ir = new InviteRes();
 				res.getInviteResult().add(ir.of(sa));
 			}
-			
 			return ResponseEntity.ok(res);
 
 		} catch (Exception e) {
-			BaseResponseBody res = new BaseResponseBody(400,"잘못된 요청");
+			BaseResponseBody res = new BaseResponseBody(400, "잘못된 요청");
 			return ResponseEntity.status(400).body(res);
+
 		}
+
 	}
 
 }

@@ -20,5 +20,7 @@ public interface StudyApplyService {
 	List<StudyApply> getInviteList(Long userId);
 
 	List<StudyApply> getInviteListByStudy(Long studyId);
+
+	List<StudyApply> getInvitedList(Long userId);
 	
 }
