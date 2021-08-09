@@ -16,8 +16,8 @@ public class JoinApplyListRes {
 	@ApiModelProperty(name="study_name", example="마이크 들리시조")
 	String study_name;
 	
-	@ApiModelProperty(name="owner_name", example="마이크")
-	String owner_name;
+	@ApiModelProperty(name="owner_user_name", example="마이크")
+	String owner_user_name;
 	
 	@ApiModelProperty(name="state", example="2")
 	Short state;
