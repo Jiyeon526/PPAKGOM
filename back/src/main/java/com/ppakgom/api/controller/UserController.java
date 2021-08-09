@@ -213,7 +213,6 @@ public class UserController {
 	}
 
 	
-	//////////////////가입됐느지만 확인
 	/* 가입한 스터디 가져오기 */
 	@GetMapping("/join/{userId}")
 	@ApiOperation(value = "가입한 스터디", notes = "사용자가 가입한 스터디를 가져온다")

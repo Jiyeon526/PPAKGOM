@@ -45,5 +45,10 @@ public class UserStudyServiceImpl implements UserStudyService {
 		userStudyRepository.save(new UserStudy(newUser, study));
 	}
 
+	@Override
+	public List<UserStudy> findUserStudyByUserId(Long userId) {
+		return userStudyRepository.findByUserId(userId);
+	}
+
 
 }

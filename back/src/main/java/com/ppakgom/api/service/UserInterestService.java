@@ -9,5 +9,8 @@ import com.ppakgom.db.entity.UserInterest;
 public interface UserInterestService {
 
 	List<UserInterest> getInterestByUser(User user);
+
+	List<UserInterest> findByInterestId(Long id);
+
 	
 }

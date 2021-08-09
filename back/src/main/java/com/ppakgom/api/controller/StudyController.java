@@ -26,20 +26,25 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import com.ppakgom.common.auth.SsafyUserDetails;
 import com.ppakgom.common.model.response.BaseResponseBody;
+import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
+import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.InviteGetResByStudy;
 import com.ppakgom.api.response.InviteResByStudy;
+import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
+import com.ppakgom.api.service.InterestService;
 import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
+import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.api.service.UserInterestService;
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyInvitePostReq;
@@ -71,6 +76,12 @@ public class StudyController {
 
 	@Autowired
 	UserInterestService userInterestService;
+	
+	@Autowired
+	InterestService interestService;
+	
+	@Autowired
+	UserStudyService userStudyService;
 	
 	private final StudyRes STUDY_RES = new StudyRes();
 
@@ -281,6 +292,35 @@ public class StudyController {
 		return ResponseEntity.ok(res);
 	}
 	
-	
+	/* 검색한 해시태그로 회원 리스트 불러오기 */
+	@GetMapping("/{studyId}/member/{interest}")
+	@ApiOperation(value = "관심사를 가진 회원 리스트", notes = "해당 관심사를 가진 회원 리스트")
+	public ResponseEntity<?> getMemberByInterest(@PathVariable(value = "studyId")Long studyId,@PathVariable (value = "interest")String interest){
+		
+		List<SearchMember> res = new ArrayList<>();
+		
+		
+//		1. 해당 단어가 포함된 관심사를 불러온다.
+		List<Interest> interestThings = interestService.getInterestByName(interest);
+		
+		HashSet<User> interestedUsers = new HashSet<>();
+		
+//		2. 회원 - 관심사 테이블에서 그에 맞는 회원을 리스트로 가져온다.
+		for(Interest i : interestThings ) {
+			List<UserInterest> userInterest = userInterestService.findByInterestId(i.getId());
+			for(UserInterest ui : userInterest) {
+				interestedUsers.add(ui.getUser());
+			}
+		}
+		
+//		3. 회원이 가입한 스터디를 회원 - 스터디 테이블에서 가져오고, 그에 맞게 응답 객체를 생성하고 삽입한다.
+		for(User u : interestedUsers) {
+			List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
+			res.add(new SearchMember(u, studyList));
+		}
+		
+		return ResponseEntity.ok(res);
+		
+	}
 	
 }
