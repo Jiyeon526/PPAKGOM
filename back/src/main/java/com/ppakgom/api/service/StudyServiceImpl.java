@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.request.StudyScheduleReq;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
@@ -222,6 +224,36 @@ public class StudyServiceImpl implements StudyService {
 		}
 		
 		return res;
+	}
+
+	@Override
+	public boolean postStudySchedule(Long studyId, StudyScheduleReq req) {
+		
+		try {
+			// 해당 스터디 가져오기
+			Optional<Study> study = studyRepository.findById(studyId);
+			// 없다면 false 리턴
+			if(!study.isPresent()) return false;
+			
+			// 날짜 변환
+			Date date;
+			date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
+			
+			// 스터디 일정 객체 생성
+			StudyPlan studyPlan = new StudyPlan(req.getTitle(), 
+					req.getDetail(), date,study.get());
+			// 객체 생성 안되면 false
+			if(studyPlan == null) return false;
+			
+			// DB에 저장
+			studyPlanRepository.save(studyPlan);
+			
+		} catch (ParseException e) {
+			System.out.println("날짜 변환 에러");
+			e.printStackTrace();
+		}
+		
+		return true;
 	}
 
 }
