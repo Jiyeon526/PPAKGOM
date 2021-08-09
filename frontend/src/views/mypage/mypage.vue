@@ -149,6 +149,7 @@ export default {
           state.form.email = result.data.email;
           state.form.name = result.data.name;
           state.form.interest = result.data.interest;
+          // 필요한 url부분만 잘라내기
           const origin_url = result.data.profile_thumbnail
           const need_from = origin_url.indexOf('image')
           const url_length = origin_url.length
