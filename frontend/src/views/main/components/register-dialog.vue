@@ -108,16 +108,38 @@
       </el-row>
 
       <el-form-item
-        prop="name"
+        prop="interet"
         label="관심사항"
         :label-width="state.formLabelWidth"
       >
-        <el-input
+        <!-- <el-input
           placeholder="Ex) #관심사항1 #관심사항2"
           v-model="state.form.interest"
           autocomplete="off"
           clearable
-        ></el-input>
+        ></el-input> -->
+        <el-tag
+          :key="tag"
+          v-for="tag in state.dynamicTags"
+          closable
+          :disable-transitions="false"
+          @close="taghandleClose(tag)"
+        >
+          {{ tag }}
+        </el-tag>
+        <el-input
+          class="input-new-tag"
+          v-if="state.inputVisible"
+          v-model="state.inputValue"
+          ref="saveTagInput"
+          size="mini"
+          @keyup.enter="handleInputConfirm"
+          @blur="handleInputConfirm"
+        >
+        </el-input>
+        <el-button v-else class="button-new-tag" size="small" @click="showInput"
+          >+ New Tag</el-button
+        >
       </el-form-item>
 
       <el-form-item
@@ -150,7 +172,7 @@
 <style>
 .register-dialog {
   width: 600px !important;
-  height: 700px;
+  height: 750px;
 }
 .register-dialog .el-dialog__headerbtn {
   float: right;
@@ -179,6 +201,21 @@
 .register-dialog .dialog-footer .el-button {
   width: 500px;
 }
+.register-dialog .el-tag + .el-tag {
+  margin-left: 10px;
+}
+.register-dialog .button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.register-dialog .input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
 </style>
 <script>
 import { reactive, computed, ref, onMounted } from "vue";
@@ -200,7 +237,7 @@ export default {
     // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
     const registerForm = ref(null);
     const toUpload = ref(null);
-
+    const reader = new FileReader();
     /*
       // Element UI Validator
       // rules의 객체 키 값과 form의 객체 키 값이 같아야 매칭되어 적용됨
@@ -307,7 +344,17 @@ export default {
       },
       dialogVisible: computed(() => props.open),
       formLabelWidth: "130px",
-      uploading: []
+      dynamicTags: [],
+      inputVisible: false,
+      inputValue: "",
+      uploading: [],
+      fileList: [
+        {
+          name: "food.jpeg",
+          url:
+            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
+        }
+      ]
     });
 
     onMounted(() => {
@@ -343,24 +390,26 @@ export default {
       registerForm.value.validate(valid => {
         if (valid) {
           console.log("submit");
-          var split = state.form.interest.split("#");
-          var interesting = [];
-          split.forEach(e => {
-            var temp = e.trim();
-            if (temp != "") {
-              interesting.push(temp);
-            }
-          });
-          console.log(interesting);
+          // var split = state.form.interest.split("#");
+          // var interesting = [];
+          // split.forEach(e => {
+          //   var temp = e.trim();
+          //   if (temp != "") {
+          //     interesting.push(temp);
+          //   }
+          // });
+          // console.log(interesting);
 
           let body = new FormData();
           body.append("file", state.uploading);
           body.append("email", state.form.enail);
-          body.append("interest", interesting);
+          body.append("interest", state.dynamicTags);
           body.append("name", state.form.name);
           body.append("password", state.form.password);
           body.append("userId", state.form.id);
           console.log(body);
+          console.log(state.uploading);
+          console.log(state.dynamicTags);
 
           store
             .dispatch("root/requestRegister", body)
@@ -393,7 +442,7 @@ export default {
     const checkEmail = function() {
       // axios 보냄
       store
-        .dispatch("root/requestEmail", { email: state.form.email })
+        .dispatch("root/requestEmail", state.form.email)
         .then(function(result) {
           console.log(result);
           state.duplicationCheck = 1; // 성공하면 초록색
@@ -464,19 +513,29 @@ export default {
 
     // 썸네일 데이터 가져오기
     const prevUpload = function(file) {
-      const necessary = [];
-      necessary.push(file["name"]);
-      necessary.push(file["size"]);
-      state.form.thumbnail = necessary;
-
       state.uploading = file;
-      console.log(
-        "111",
-        file,
-        state.form.thumbnail,
-        typeof state.form.thumbnail
-      );
     };
+
+    const taghandleClose = function(tag) {
+      state.dynamicTags.splice(state.dynamicTags.indexOf(tag), 1);
+    };
+
+    const showInput = function() {
+      state.inputVisible = true;
+      // $nextTick(_ => {
+      //   $refs.saveTagInput.$refs.input.focus();
+      // });
+    };
+
+    const handleInputConfirm = function() {
+      let inputValue = state.inputValue;
+      if (inputValue) {
+        state.dynamicTags.push(inputValue);
+      }
+      state.inputVisible = false;
+      state.inputValue = "";
+    };
+
     return {
       registerForm,
       state,
@@ -487,7 +546,10 @@ export default {
       checkName,
       prevUpload,
       toUpload,
-      checkCode
+      checkCode,
+      taghandleClose,
+      showInput,
+      handleInputConfirm
     };
   }
 };
