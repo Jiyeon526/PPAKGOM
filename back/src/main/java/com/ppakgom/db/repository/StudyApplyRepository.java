@@ -31,5 +31,7 @@ public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 
 	StudyApply findByReceiverIdAndStudyIdAndSenderId(Long receiverId, Long studyId, Long senderId);
 
+	void deleteBySenderIdAndStudyIdAndReceiverIdAndState(Long senderId, Long studyId, Long receiverId, short state);
+
 
 }

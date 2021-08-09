@@ -64,5 +64,10 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 		studyApplyRepository.save(studyApply);
 	}
 
+	@Override
+	public void confirmRejectedInvitation(CancelInviteReq req, Long userId) {
+		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverIdAndState(userId, req.getStudyId(), req.getReceiverId(), (short) 1);
+	}
+
 
 }

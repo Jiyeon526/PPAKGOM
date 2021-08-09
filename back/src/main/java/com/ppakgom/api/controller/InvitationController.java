@@ -64,10 +64,10 @@ public class InvitationController {
 
 	@Autowired
 	StudyService studyService;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	/* 스터디원 초대 현황 */
 	@GetMapping("/response/{userId}")
 	@ApiOperation(value = "스터디 초대 현황", notes = "로그인한 유저가 초대한 리스트를 보여줍니다.")
@@ -119,23 +119,39 @@ public class InvitationController {
 		try {
 			studyApplyService.cancelInvitation(req, userId);
 			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "잘못된 요청"));
 		}
-		
+
 	}
-	
-	/* 초대 거절하기 */
-//	state를 1로 변경
+
+	/* 초대 거절하기 -> state를 1로 변경 */
 	@PutMapping("/request/reject/{userId}")
 	@ApiOperation(value = "초대 거절하기", notes = "자신에게 온 초대를 거절합니다.")
 	public ResponseEntity<BaseResponseBody> rejectInvitation(RejectInviteReq req,
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
-			
+
 		try {
 			studyApplyService.rejectInvitation(req, userId);
 			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
-		}catch(Exception e) {
+		} catch (Exception e) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "잘못된 요청"));
+		}
+
+	}
+
+	/* 초대 거절 확인 -> DB에서 지우기 */
+	@DeleteMapping("/response/reject/{userId}")
+	@ApiOperation(value = "초대 거절 확인", notes = "자신이 거절받은 초대를 확인하고, 목록에서 지웁니다.")
+	public ResponseEntity<BaseResponseBody> confirmRejected(CancelInviteReq req,
+			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
+		System.out.println(userId);
+		System.out.println(req.getReceiverId());
+		System.out.println(req.getStudyId());
+		try {
+			studyApplyService.confirmRejectedInvitation(req, userId);
+			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
+		} catch (Exception e) {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "잘못된 요청"));
 		}
 		

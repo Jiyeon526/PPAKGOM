@@ -29,5 +29,7 @@ public interface StudyApplyService {
 	void cancelInvitation(CancelInviteReq req, Long userId);
 
 	void rejectInvitation(RejectInviteReq req, Long userId);
+
+	void confirmRejectedInvitation(CancelInviteReq req, Long userId);
 	
 }
