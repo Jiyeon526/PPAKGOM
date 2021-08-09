@@ -99,9 +99,9 @@ export default {
     Study
   },
 
-  setup() {
-    const store = useStore();
-    const router = useRouter();
+  setup (props, { emit }) {
+    const store = useStore()
+    const router = useRouter()
     const state = reactive({
       isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
       studyList: [],
@@ -200,14 +200,13 @@ export default {
       ]
     });
 
-    const onClickStudyList = function(id) {
-      router.push({
-        name: "studydetail-dialog",
-        params: {
-          studyId: state.studyListTest[id - 1].study_id
-        }
-      });
-    };
+    const onClickStudyList = (id) => {
+      const selectStudy = state.studyListTest[id-1]
+      console.log(selectStudy)
+      console.log("첫번째 실행")
+      emit("openStudydetailDialog", selectStudy);
+      console.log("두번째 실행")
+    }
 
     // 방 목록 리스트 가져오기
     const getStudyList = function() {
