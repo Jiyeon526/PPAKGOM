@@ -23,7 +23,7 @@ public interface StudyApplyService {
 
 	List<StudyApply> getInviteListByStudy(Long studyId);
 
-	List<StudyApply> getInvitedList(Long userId);
+	List<StudyApply> getInvitedList(Long userId, boolean isJoin);
 
 
 	void cancelInvitation(InviteReq_receiver req, Long userId);

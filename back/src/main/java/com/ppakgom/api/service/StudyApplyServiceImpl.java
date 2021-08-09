@@ -33,7 +33,7 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 
 	@Override
 	public List<StudyApply> getInviteList(Long userId) {
-		return studyApplyRepository.findBySenderId(userId);
+		return studyApplyRepository.findBySenderIdAndIsJoin(userId, false);
 	}
 
 	@Override
@@ -45,8 +45,8 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 
 //	내가 '받은' 초대를 보여줄 때 -> 상태가 '대기'일 때만 보여줌.
 	@Override
-	public List<StudyApply> getInvitedList(Long userId) {
-		return studyApplyRepository.findByReceiverId(userId);
+	public List<StudyApply> getInvitedList(Long userId, boolean isJoin) {
+		return studyApplyRepository.findByReceiverIdAndIsJoin(userId, isJoin);
 	}
 
 //	userId가 보낸 요청을 취소한다.

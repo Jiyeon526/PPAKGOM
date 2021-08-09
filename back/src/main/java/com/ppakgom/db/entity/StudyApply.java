@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 public class StudyApply extends BaseEntity {
 
-	boolean is_join;
+	boolean isJoin;
 	Short state;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -36,12 +36,12 @@ public class StudyApply extends BaseEntity {
 		this.state = state;
 		this.study = study;
 		this.receiver = receiver;
-		this.is_join = is_join;
+		this.isJoin = is_join;
 	}
 
 	@Override
 	public String toString() {
-		return "StudyApply [is_join=" + is_join + ", state=" + state + ", receiver=" + receiver + ", sender=" + sender
+		return "StudyApply [is_join=" + isJoin + ", state=" + state + ", receiver=" + receiver + ", sender=" + sender
 				+ ", study=" + study + "]";
 	}
 

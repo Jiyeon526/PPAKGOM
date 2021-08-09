@@ -107,7 +107,7 @@ public class InvitationController {
 
 		try {
 			InviteGetRes res = new InviteGetRes();
-			List<StudyApply> inviteList = studyApplyService.getInvitedList(userId);
+			List<StudyApply> inviteList = studyApplyService.getInvitedList(userId, false);
 			for (StudyApply sa : inviteList) {
 				InviteRes ir = new InviteRes();
 				res.getInviteResult().add(ir.of(sa));
