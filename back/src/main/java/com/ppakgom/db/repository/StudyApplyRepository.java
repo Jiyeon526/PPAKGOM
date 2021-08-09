@@ -15,4 +15,6 @@ import com.ppakgom.db.entity.User;
 @Repository
 public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 
+	List<StudyApply> findBySenderId(Long senderId);
+
 }

@@ -1,6 +1,8 @@
 package com.ppakgom.api.service;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,11 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 	public void inviteStudy(User sender, Study study, User receiver, boolean is_join) {
 
 		studyApplyRepository.save(new StudyApply(sender, study, receiver, is_join, (short) 2));
+	}
+
+	@Override
+	public List<StudyApply> getInviteList(Long userId) {
+		return studyApplyRepository.findBySenderId(userId);
 	}
 
 }
