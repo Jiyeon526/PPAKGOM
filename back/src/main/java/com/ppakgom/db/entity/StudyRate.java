@@ -12,24 +12,20 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@IdClass(StudyRateId.class)
-public class StudyRate{
+public class StudyRate extends BaseEntity{
    
    boolean checked;
    
-   @Id
    @ManyToOne
-   @JoinColumn(name = "user_id")
+   @JoinColumn(name = "userId")
    User user;
    
-   @Id
    @ManyToOne
-   @JoinColumn(name = "study_id")
+   @JoinColumn(name = "studyId")
    Study study;
    
-   @Id
    @ManyToOne
-   @JoinColumn(name = "study_member_id")
+   @JoinColumn(name = "studyMemberId")
    User studyMember;
    
    

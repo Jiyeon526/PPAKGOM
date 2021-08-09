@@ -212,6 +212,7 @@ public class UserController {
 		return ResponseEntity.status(200).body(userInfoRes);
 	}
 
+	
 	/* 가입한 스터디 가져오기 */
 	@GetMapping("/join/{userId}")
 	@ApiOperation(value = "가입한 스터디", notes = "사용자가 가입한 스터디를 가져온다")

@@ -7,11 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 로그인 요청 몸체
+ * 스터디 초대 몸체
  */
 @Getter
 @Setter
-@ApiModel("Login Request")
+@ApiModel("Study Invite Request")
 public class StudyInvitePostReq {
 	
 	@ApiModelProperty(name="receiver_id", example="3")
