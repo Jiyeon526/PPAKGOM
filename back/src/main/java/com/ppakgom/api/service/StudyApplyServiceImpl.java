@@ -45,7 +45,7 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 //	내가 '받은' 초대를 보여줄 때 -> 상태가 '대기'일 때만 보여줌.
 	@Override
 	public List<StudyApply> getInvitedList(Long userId) {
-		return studyApplyRepository.findByReceiverId(userId, 2L);
+		return studyApplyRepository.findByReceiverId(userId);
 	}
 
 //	userId가 보낸 요청을 취소한다.

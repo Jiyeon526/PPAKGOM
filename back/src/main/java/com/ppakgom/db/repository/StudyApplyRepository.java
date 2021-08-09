@@ -23,8 +23,8 @@ public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 	List<StudyApply> findByStudyId(Long studyId);
 
 //	상태가 '대기'일 때만 보여줌.
-	@Query(value = "SELECT * FROM STUDY_APPLY WHERE RECEIVER_ID = ?1 AND STATE = ?2",nativeQuery = true )
-	List<StudyApply> findByReceiverId(Long receiverId, Long state);
+	@Query(value = "SELECT * FROM STUDY_APPLY WHERE RECEIVER_ID = ?1 AND STATE = 2",nativeQuery = true )
+	List<StudyApply> findByReceiverId(Long receiverId);
 
 
 	void deleteBySenderIdAndStudyIdAndReceiverId(Long senderId, Long studyId, Long receiverId);
