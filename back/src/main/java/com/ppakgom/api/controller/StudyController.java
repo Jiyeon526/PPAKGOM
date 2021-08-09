@@ -38,11 +38,13 @@ import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.api.response.StudyRes;
+import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.service.JoinService;
 import com.ppakgom.api.service.StudyService;
@@ -155,4 +157,15 @@ public class StudyController {
 		List<StudyJoinApplyListRes> res = joinService.getStudyJoinApplyList(studyId);
 		return ResponseEntity.status(200).body(res);
 	}
+	
+	@GetMapping("/{studyId}/schedule")
+	@ApiOperation(value = "스터디 방 스케줄 정보 가져오기", notes = "스터디 방 스케줄 정보 가져오기")
+	public ResponseEntity<List<StudyScheduleMonthRes>> studyScheduleMonth(@PathVariable Long studyId,
+			@RequestParam(required = true) int month) {
+		
+		// 스터디 방 스케쥴 정보 가져오기
+		List<StudyScheduleMonthRes> res = studyService.getStudyScheduleMonth(studyId, month);
+		return ResponseEntity.status(200).body(res);
+	}
 }
+
