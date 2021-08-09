@@ -1,12 +1,19 @@
 <template>
-  <el-row class="main-sidebar" :gutter="10" :style="{ width: width }">
+  <el-row class="main-sidebar" :gutter="10" :style="{ width: state.width }">
     <div class="hide-on-small">
       <el-menu
+        :collapse="state.isCollapse"
         :default-active="String(state.activeIndex)"
         active-text-color="#ffd04b"
         class="el-menu-vertical-demo"
         @select="menuSelect"
       >
+        <div v-if="!state.isCollapse">
+          <el-menu-item style="display: flex; justify-content:flex-end; align-items:center" @click="onCollapse"><i class="el-icon-d-arrow-left"></i></el-menu-item>
+        </div>
+        <div v-else>
+          <el-menu-item style="display: flex; justify-content:flex-end; align-items:center" @click="onCollapse"><i class="el-icon-d-arrow-right"></i></el-menu-item>
+        </div>
         <el-menu-item
           v-for="(item, index) in state.menuItems"
           :key="index"
@@ -21,14 +28,11 @@
             <span>Mypage</span>
           </template>
           <el-menu-item-group title="">
-            <el-menu-item index="3">가입한 스터디</el-menu-item>
-            <el-menu-item index="4">찜한 스터디</el-menu-item>
-            <el-menu-item index="5">방관리</el-menu-item>
+            <el-menu-item index="3"><i class="el-icon-reading"></i>가입한 스터디</el-menu-item>
+            <el-menu-item index="4"><i class="el-icon-star-on"></i>찜한 스터디</el-menu-item>
+            <el-menu-item index="5"><i class="el-icon-s-management"></i>방관리</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
-        <el-menu-item v-if="state.isLoggedIn">
-          <span @click="clickLogout">로그아웃</span>
-        </el-menu-item>
       </el-menu>
     </div>
   </el-row>
@@ -60,12 +64,12 @@ import { useRouter } from "vue-router";
 export default {
   name: "main-header",
 
-  props: {
-    width: {
-      type: String,
-      default: "240px"
-    }
-  },
+  // props: {
+  //   width: {
+  //     type: String,
+  //     default: "180px"
+  //   }
+  // },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -97,7 +101,9 @@ export default {
         }
         return menuArray;
       }),
-      activeIndex: computed(() => store.getters["root/getActiveMenuIndex"])
+      activeIndex: computed(() => store.getters["root/getActiveMenuIndex"]),
+      isCollapse: false,
+      width: "200px"
     });
 
     if (state.activeIndex === -1) {
@@ -123,7 +129,18 @@ export default {
         name: "home"
       });
     };
-    return { state, menuSelect, clickLogout };
+
+    const onCollapse = function() {
+      state.isCollapse = !state.isCollapse
+      if (state.isCollapse) {
+        state.width = "70px"
+      }
+      else {
+        state.width = "200px"
+      }
+    }
+
+    return { state, menuSelect, clickLogout, onCollapse };
   }
 };
 </script>

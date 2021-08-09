@@ -1,7 +1,7 @@
 <template>
   <el-row :gutter="20" justify="center" align="middle">
-    <el-col :span="10">
-      <el-carousel :interval="5000" arrow="always" @change="changePage">
+    <el-col>
+      <el-carousel class="carousel-margin" :interval="5000" arrow="always" @change="changePage" height="600px">
         <el-carousel-item v-for="(item,idx) in state.items" :key="idx">
           <el-image
           :src="item.src"
@@ -9,7 +9,7 @@
         </el-carousel-item>
       </el-carousel>
     </el-col>
-    <el-col :span="10">
+    <el-col>
     <h2>{{state.explain}}</h2>
     </el-col>
   </el-row>
@@ -59,5 +59,7 @@ export default {
 </script>
 
 <style>
-
+.carousel-margin {
+    padding: 0px
+}
 </style>

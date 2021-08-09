@@ -55,3 +55,7 @@ export function setkakaologin(state, payload) {
 export function setUserpk(state, payload) {
   state.userpk = payload
 }
+
+export function setStudypk(state, payload) {
+  state.studypk = payload
+}

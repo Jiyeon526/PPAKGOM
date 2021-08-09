@@ -1,17 +1,20 @@
 <template>
-  <el-row class="main-footer" :gutter="10">
+  <el-row class="main-footer" :gutter="5">
     <div class="contents">
-      Copyright © SAMSUNG All Rights Reserved.
+      PPAKGOM
     </div>
+    <el-badge class="item">
+      <el-button icon="el-icon-chat-round" circle type="success" plain></el-button>
+    </el-badge>
   </el-row>
 </template>
 <style>
 @media (max-width: 700px) {
   .main-footer {
-    height: 190px;
+    height: 50px;
   }
   .main-footer .contents {
-    line-height: 190px;
+    line-height: 50px;
     text-align: center;
     margin: 0 auto;
   }
@@ -19,10 +22,10 @@
 
 @media (min-width: 701px) {
   .main-footer {
-    height: 110px;
+    height: 50px;
   }
   .main-footer .contents {
-    line-height: 110px;
+    line-height: 50px;
     text-align: center;
     margin: 0 auto;
   }

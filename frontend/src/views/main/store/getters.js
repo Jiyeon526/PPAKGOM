@@ -47,3 +47,7 @@ export function getGoogleIsLoggedIn(state) {
 export function getUserpk(state) {
   return state.userpk;
 }
+
+export function getStudypk(state) {
+  return state.studypk;
+}

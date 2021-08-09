@@ -12,14 +12,14 @@
       @openStudyscheduleDialog="onOpenStudyscheduleDialog"
     />
     <el-container class="main-container">
-      <el-aside class="hide-on-small" width="240px">
-        <main-sidebar :width="`240px`" />
-      </el-aside>
+      <!-- <el-aside class="hide-on-small" > -->
+        <main-sidebar />
+      <!-- </el-aside> -->
       <el-main>
         <router-view @openStudydetailDialog="onOpenStudydetailDialog"></router-view>
       </el-main>
     </el-container>
-    <main-footer :height="`80px`" />
+    <main-footer :height="`50px`" />
   </el-container>
   <login-dialog
     :open="loginDialogOpen"

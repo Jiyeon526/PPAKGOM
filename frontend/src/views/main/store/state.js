@@ -41,5 +41,6 @@ export default {
   naveraccessToken: naveraccessToken,
   googlelogin: false,
   kakaologin: false,
-  userpk: 0
+  userpk: 0,
+  studypk: 0
 }

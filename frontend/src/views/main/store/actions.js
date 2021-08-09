@@ -110,7 +110,7 @@ export function requestStudyList({state}) {
 // 추천 스터디 목록 가져오기
 export function requestRecommendStudyList({state}) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/study/interest/4`
+  const url = `/study/interest/${state.userpk}`
   return $axios.get(url, { headers: headers })
 }
 
