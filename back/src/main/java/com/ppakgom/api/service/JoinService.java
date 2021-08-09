@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ppakgom.api.request.JoinApplyReq;
 import com.ppakgom.api.response.JoinApplyListRes;
+import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.db.entity.StudyApply;
 
 public interface JoinService {
@@ -15,5 +16,6 @@ public interface JoinService {
 	String studyApplyOk(StudyApply studyApply);
 	StudyApply getStudyApplyReceiver(Long userid, JoinApplyReq joinApplyReq);
 	void modifyJoinApply(StudyApply studyApply);
+	List<StudyJoinApplyListRes> getStudyJoinApplyList(Long studyId);
 
 }
