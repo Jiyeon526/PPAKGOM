@@ -2,9 +2,11 @@ package com.ppakgom.api.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,13 +17,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyInterest;
+import com.ppakgom.db.entity.StudyPlan;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.StudyPlanRepository;
 import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 
@@ -39,6 +44,9 @@ public class StudyServiceImpl implements StudyService {
 
 	@Autowired
 	UserStudyRepository userStudyRepository;
+	
+	@Autowired
+	StudyPlanRepository studyPlanRepository;
 	
 	String BASE_PATH = System.getProperty("user.dir");
 	
@@ -148,6 +156,35 @@ public class StudyServiceImpl implements StudyService {
 		}
 		
 		return resultSet;
+	}
+
+	@Override
+	public List<StudyScheduleMonthRes> getStudyScheduleMonth(Long studyId, int month) {
+		
+		// 해당 스터디 일정 전부 가져오기
+		List<StudyPlan> list = studyPlanRepository.findByStudy_Id(studyId);
+		List<StudyScheduleMonthRes> res = new ArrayList<>();
+		
+		for(StudyPlan studyPlan : list) {
+			DateFormat sdFormat = new SimpleDateFormat("yyyy-MM");
+			Date nowDate = new Date();
+			String today = sdFormat.format(nowDate); // 오늘 날짜(연, 월)
+			
+			String studyMonth = Integer.toString(month); // 검색할 월
+			if(studyMonth.length() != 2) studyMonth = "0" + studyMonth;
+			today = today.substring(0, 5) + studyMonth; 
+			
+			String studySchedule = sdFormat.format(studyPlan.getDate()); // 스터디 날짜
+			
+			if(!today.equals(studySchedule)) continue; // 날짜 다르면 넘김
+			
+			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
+					studyPlan.getTitle(), studyPlan.getDetail(), studyPlan.getDate());
+			// 저장
+			res.add(s);
+		}
+		
+		return res;
 	}
 
 }
