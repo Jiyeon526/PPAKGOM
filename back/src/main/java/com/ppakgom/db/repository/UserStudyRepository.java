@@ -16,4 +16,6 @@ public interface UserStudyRepository extends JpaRepository<UserStudy, Long> {
 
 	List<UserStudy> findByUserId(Long userId);
 
+	List<UserStudy> findByStudyId(Long studyId);
+
 }

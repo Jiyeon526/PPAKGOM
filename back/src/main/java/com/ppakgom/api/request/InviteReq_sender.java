@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel("Reject Invitation")
-public class RejectInviteReq {
+public class InviteReq_sender {
 
 	@ApiModelProperty(name="studyId", example="50")
 	Long studyId;

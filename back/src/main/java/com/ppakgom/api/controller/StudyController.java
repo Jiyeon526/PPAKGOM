@@ -1,6 +1,7 @@
 package com.ppakgom.api.controller;
 
 import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.ppakgom.common.auth.SsafyUserDetails;
@@ -31,7 +31,6 @@ import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.repository.StudyInterestRepository;
-import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.InviteGetResByStudy;
 import com.ppakgom.api.response.InviteResByStudy;

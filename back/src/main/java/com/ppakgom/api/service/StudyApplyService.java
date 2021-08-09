@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ppakgom.api.request.CancelInviteReq;
-import com.ppakgom.api.request.RejectInviteReq;
+import com.ppakgom.api.request.InviteReq_receiver;
+import com.ppakgom.api.request.InviteReq_sender;
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
 import com.ppakgom.db.entity.Study;
@@ -26,10 +26,12 @@ public interface StudyApplyService {
 	List<StudyApply> getInvitedList(Long userId);
 
 
-	void cancelInvitation(CancelInviteReq req, Long userId);
+	void cancelInvitation(InviteReq_receiver req, Long userId);
 
-	void rejectInvitation(RejectInviteReq req, Long userId);
+	void rejectInvitation(InviteReq_sender req, Long userId);
 
-	void confirmRejectedInvitation(CancelInviteReq req, Long userId);
+	void confirmRejectedInvitation(InviteReq_receiver req, Long userId);
+
+	void agreeInvitation(InviteReq_sender req, Long userId);
 	
 }

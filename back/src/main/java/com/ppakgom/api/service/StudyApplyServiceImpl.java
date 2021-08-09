@@ -7,8 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ppakgom.api.request.CancelInviteReq;
-import com.ppakgom.api.request.RejectInviteReq;
+import com.ppakgom.api.request.InviteReq_receiver;
+import com.ppakgom.api.request.InviteReq_sender;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
@@ -51,13 +51,13 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 
 //	userId가 보낸 요청을 취소한다.
 	@Override
-	public void cancelInvitation(CancelInviteReq req, Long userId) {
+	public void cancelInvitation(InviteReq_receiver req, Long userId) {
 		
 		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverId(userId, req.getStudyId(), req.getReceiverId());
 	}
 
 	@Override
-	public void rejectInvitation(RejectInviteReq req, Long userId) {
+	public void rejectInvitation(InviteReq_sender req, Long userId) {
 		StudyApply studyApply = studyApplyRepository.findByReceiverIdAndStudyIdAndSenderId(userId,req.getStudyId(),req.getSenderId());
 //		상태를 거절(1)로 변경
 		studyApply.setState((short) 1);
@@ -65,9 +65,14 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 	}
 
 	@Override
-	public void confirmRejectedInvitation(CancelInviteReq req, Long userId) {
+	public void confirmRejectedInvitation(InviteReq_receiver req, Long userId) {
 		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverIdAndState(userId, req.getStudyId(), req.getReceiverId(), (short) 1);
 	}
 
+//	스터디 초대승낙 -> study_apply 테이블에서 삭제.
+	@Override
+	public void agreeInvitation(InviteReq_sender req, Long userId) {
+		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverId(req.getSenderId(), req.getStudyId(), userId);
+	}
 
 }

@@ -32,6 +32,7 @@ import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
+import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
@@ -41,11 +42,13 @@ import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.service.StudyApplyService;
+import com.ppakgom.api.service.StudyRateService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
+import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.api.service.UserInterestService;
-import com.ppakgom.api.request.CancelInviteReq;
-import com.ppakgom.api.request.RejectInviteReq;
+import com.ppakgom.api.request.InviteReq_receiver;
+import com.ppakgom.api.request.InviteReq_sender;
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyInvitePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
@@ -67,6 +70,12 @@ public class InvitationController {
 
 	@Autowired
 	UserService userService;
+
+	@Autowired
+	UserStudyService userStudyService;
+
+	@Autowired
+	StudyRateService studyRateService;
 
 	/* 스터디원 초대 현황 */
 	@GetMapping("/response/{userId}")
@@ -114,7 +123,7 @@ public class InvitationController {
 	/* 초대 취소하기 */
 	@DeleteMapping("/response/calcel/{userId}")
 	@ApiOperation(value = "초대 취소하기", notes = "로그인한 유저가 보낸 초대를 취소합니다.")
-	public ResponseEntity<BaseResponseBody> cancelInvitation(CancelInviteReq req,
+	public ResponseEntity<BaseResponseBody> cancelInvitation(InviteReq_receiver req,
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
 		try {
 			studyApplyService.cancelInvitation(req, userId);
@@ -128,7 +137,7 @@ public class InvitationController {
 	/* 초대 거절하기 -> state를 1로 변경 */
 	@PutMapping("/request/reject/{userId}")
 	@ApiOperation(value = "초대 거절하기", notes = "자신에게 온 초대를 거절합니다.")
-	public ResponseEntity<BaseResponseBody> rejectInvitation(RejectInviteReq req,
+	public ResponseEntity<BaseResponseBody> rejectInvitation(InviteReq_sender req,
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
 
 		try {
@@ -143,18 +152,45 @@ public class InvitationController {
 	/* 초대 거절 확인 -> DB에서 지우기 */
 	@DeleteMapping("/response/reject/{userId}")
 	@ApiOperation(value = "초대 거절 확인", notes = "자신이 거절받은 초대를 확인하고, 목록에서 지웁니다.")
-	public ResponseEntity<BaseResponseBody> confirmRejected(CancelInviteReq req,
+	public ResponseEntity<BaseResponseBody> confirmRejected(InviteReq_receiver req,
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
-		System.out.println(userId);
-		System.out.println(req.getReceiverId());
-		System.out.println(req.getStudyId());
 		try {
 			studyApplyService.confirmRejectedInvitation(req, userId);
 			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
 		} catch (Exception e) {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "잘못된 요청"));
 		}
-		
+	}
+
+	/* 초대를 승인한다 -> 스터디에 새로운 멤버 가입하기. */
+	@PostMapping("/request/ok/{userId}")
+	@ApiOperation(value = "초대 승인", notes = "자신에게 온 초대를 승낙하고, 새로운 스터디에 가입합니다.")
+	public ResponseEntity<BaseResponseBody> agreeInvitation(InviteReq_sender req,
+			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
+//		DB에서 삭제
+		try {
+			studyApplyService.agreeInvitation(req, userId);
+			Study study = studyService.getStudyById(req.getStudyId()).get();
+			
+//		population vs 현재 인원 확인 -> 마감시 알려주기.
+			List<UserStudy> userStudy = userStudyService.getCurrentMember(study.getId());
+			if (study.getPopulation() <= userStudy.size()) {
+				return ResponseEntity.status(400).body(new BaseResponseBody(400, "이미 마감된 스터디입니다."));
+			}
+
+//		평가 목록에 추가
+//		내가 다른 스터디원을 평가해야 하고, 다른스터디원들이 나를 평가해야 함
+			User newUser = userService.getUserById(userId);
+			System.out.println("뉴비 정보 "+newUser);
+			studyRateService.addRating(study, userStudy, newUser);
+			
+//		스터디-회원 테이블에 추가
+			userStudyService.addMember(study, newUser);
+			return ResponseEntity.ok(new BaseResponseBody(200,"초대 승인 완료"));
+
+		} catch (Exception e) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(404, "다시 시도해 주세요."));
+		}
 	}
 
 }
