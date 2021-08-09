@@ -126,7 +126,7 @@ public class InvitationController {
 	public ResponseEntity<BaseResponseBody> cancelInvitation(InviteReq_receiver req,
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
 		try {
-			studyApplyService.cancelInvitation(req, userId);
+			studyApplyService.cancelInvitation(req, userId, false);
 			return ResponseEntity.ok().body(new BaseResponseBody(200, "초대 취소 완료"));
 		} catch (Exception e) {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "잘못된 요청"));

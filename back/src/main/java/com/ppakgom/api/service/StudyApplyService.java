@@ -21,17 +21,19 @@ public interface StudyApplyService {
 
 	List<StudyApply> getInviteList(Long userId);
 
-	List<StudyApply> getInviteListByStudy(Long studyId);
+//	List<StudyApply> getInviteListByStudy(Long studyId);
 
 	List<StudyApply> getInvitedList(Long userId, boolean isJoin);
 
 
-	void cancelInvitation(InviteReq_receiver req, Long userId);
+	void cancelInvitation(InviteReq_receiver req, Long userId, boolean isJoin);
 
 	void rejectInvitation(InviteReq_sender req, Long userId);
 
 	void confirmRejectedInvitation(InviteReq_receiver req, Long userId);
 
 	void agreeInvitation(InviteReq_sender req, Long userId);
+
+	List<StudyApply> getInviteListByStudyAndIsJoin(Long studyId, boolean isJoin);
 	
 }

@@ -38,9 +38,9 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 
 	@Override
 //	studyId로 해당 스터디 방장이 초대한 목록을 가져온다.
-	public List<StudyApply> getInviteListByStudy(Long studyId) {
+	public List<StudyApply> getInviteListByStudyAndIsJoin(Long studyId ,boolean isJoin) {
 		
-		return studyApplyRepository.findByStudyId(studyId);
+		return studyApplyRepository.findByStudyIdAndIsJoin(studyId, isJoin);
 	}
 
 //	내가 '받은' 초대를 보여줄 때 -> 상태가 '대기'일 때만 보여줌.
@@ -51,14 +51,13 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 
 //	userId가 보낸 요청을 취소한다.
 	@Override
-	public void cancelInvitation(InviteReq_receiver req, Long userId) {
-		
-		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverId(userId, req.getStudyId(), req.getReceiverId());
+	public void cancelInvitation(InviteReq_receiver req, Long userId, boolean isJoin) {
+		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverIdAndIsJoin(userId, req.getStudyId(), req.getReceiverId(), isJoin);
 	}
 
 	@Override
 	public void rejectInvitation(InviteReq_sender req, Long userId) {
-		StudyApply studyApply = studyApplyRepository.findByReceiverIdAndStudyIdAndSenderId(userId,req.getStudyId(),req.getSenderId());
+		StudyApply studyApply = studyApplyRepository.findByReceiverIdAndStudyIdAndSenderIdAndIsJoin(userId,req.getStudyId(),req.getSenderId(), false);
 //		상태를 거절(1)로 변경
 		studyApply.setState((short) 1);
 		studyApplyRepository.save(studyApply);
@@ -66,13 +65,15 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 
 	@Override
 	public void confirmRejectedInvitation(InviteReq_receiver req, Long userId) {
-		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverIdAndState(userId, req.getStudyId(), req.getReceiverId(), (short) 1);
+		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverIdAndStateAndIsJoin(userId, req.getStudyId(), req.getReceiverId(), (short) 1, false);
 	}
 
 //	스터디 초대승낙 -> study_apply 테이블에서 삭제.
 	@Override
 	public void agreeInvitation(InviteReq_sender req, Long userId) {
-		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverId(req.getSenderId(), req.getStudyId(), userId);
+		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverIdAndIsJoin(req.getSenderId(), req.getStudyId(), userId, false);
 	}
+
+
 
 }

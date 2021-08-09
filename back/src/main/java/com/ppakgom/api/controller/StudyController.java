@@ -237,6 +237,8 @@ public class StudyController {
 //	@ApiOperation(value = "평가할 스터디원 목록.", notes = "평가 했던 or 평가 해야할 스터디원 목록 불러오기")
 //	public ResponseEntity<>
 	
+	
+	
 	/* 스터디 초대하기 */
 //	스터디에 초대한다(방장만 가능)
 	@PostMapping("/{studyId}/member")
@@ -261,13 +263,14 @@ public class StudyController {
 		}
 	}
 	
+	
 	/* 초대한 회원 리스트 */
 	@GetMapping("/{studyId}/invitelist")
 	@ApiOperation(value = "스터디에 초대한 회원 리스트 ", notes = "방장이 스터디에 초대한 회원 리스트")
 	public ResponseEntity<?> getInviteListOfStudy(@PathVariable(value = "studyId")Long studyId){
 		
 //		study로 질의
-		List<StudyApply> temp = studyApplyService.getInviteListByStudy(studyId);
+		List<StudyApply> temp = studyApplyService.getInviteListByStudyAndIsJoin(studyId, false);
 		
 		InviteGetResByStudy res = new InviteGetResByStudy();
 		for(StudyApply sa : temp) {
