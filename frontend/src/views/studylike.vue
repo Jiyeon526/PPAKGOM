@@ -1,9 +1,9 @@
 <template>
   <h2>찜한 스터디</h2>
   <br>
-  <div v-if="state.likeStudyListTest">
-    <div v-for="i in state.likeStudyListTest.length" :key="i" @click="onClickStudyList(i)" class="study" >
-      <study :studyData="state.likeStudyListTest[i-1]"/>
+  <div v-if="state.likeStudyList.length !== 0">
+    <div v-for="i in state.likeStudyList.length" :key="i" @click="onClickStudyList(i)" class="study" >
+      <study :studyData="state.likeStudyList[i-1]"/>
     </div>
   </div>
   <el-alert v-else
@@ -35,59 +35,6 @@ export default {
     const store = useStore();
     const state = reactive({
       likeStudyList : [],
-      likeStudyListTest : [{
-        study_id : 10,
-        name : "찜한빡곰",
-        content : "찜한빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population : 6,
-        study_thumbnail : "thumbnail.jpg",
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 20,
-        name : "찜한빡곰2 빡곰2 빡곰2 빡곰2 빡곰2 빡곰2 빡곰2",
-        content : "찜한빡곰2 스터디는 원할한 스터디를 지원합니다.",
-        population : 7,
-        study_thumbnail : "thumbnail.jpg",
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 30,
-        name : "찜한빡곰3",
-        content : "찜한빡곰3 스터디는 원할한 스터디를 지원합니다. 빡곰3 스터디는 원할한 스터디를 지원합니다. 빡곰3 스터디는 원할한 스터디를 지원합니다. 빡곰3 스터디는 원할한 스터디를 지원합니다.",
-        population : 8,
-        study_thumbnail : "thumbnail.jpg",
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 40,
-        name : "찜한빡곰4 빡곰4 빡곰4 빡곰4 빡곰4 빡곰4 빡곰4 빡곰4",
-        content : "찜한빡곰4 스터디는 원할한 스터디를 지원합니다. 빡곰4 스터디는 원할한 스터디를 지원합니다. 빡곰4 스터디는 원할한 스터디를 지원합니다. 빡곰4 스터디는 원할한 스터디를 지원합니다.",
-        population : 9,
-        study_thumbnail : "thumbnail.jpg",
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 50,
-        name : "찜한빡곰5 빡곰5 빡곰5 빡곰5 빡곰5 빡곰5 빡곰5 빡곰5",
-        content : "찜한빡곰5 스터디는 원할한 스터디를 지원합니다. 빡곰5 스터디는 원할한 스터디를 지원합니다. 빡곰5 스터디는 원할한 스터디를 지원합니다. 빡곰5 스터디는 원할한 스터디를 지원합니다.",
-        population : 10,
-        study_thumbnail : "thumbnail.jpg",
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },{
-        study_id : 50,
-        name : "찜한빡곰56 빡곰6 빡곰6 빡곰6 빡곰6 빡곰6 빡곰6 빡곰6",
-        content : "찜한빡곰6 스터디는 원할한 스터디를 지원합니다. 빡곰6 스터디는 원할한 스터디를 지원합니다. 빡곰6 스터디는 원할한 스터디를 지원합니다. 빡곰6 스터디는 원할한 스터디를 지원합니다.",
-        population : 3,
-        study_thumbnail : "thumbnail.jpg",
-        joined_population: 2,
-        deadline: "2021-08-23"
-      }]
     })
 
     // 찜한 스터디 목록 가져오기
@@ -96,7 +43,7 @@ export default {
         .dispatch('root/requestLikeStudyList')
           .then(function(res) {
             console.log("가입한 스터디 목록 가져오기", res)
-            state.joinStudyList = res.data.content
+            state.joinStudyList = res.data.studyResult
           })
           .catch(function(err) {
             console.log("가입한 스터디 목록 가져오기 에러", err)
@@ -114,7 +61,7 @@ export default {
       router.push({
         name: 'studydetail-dialog',
         params: {
-          studyId: state.likeStudyListTest[id-1].study_id
+          studyId: state.likeStudyList[id-1].study_id
         }
       })
     }

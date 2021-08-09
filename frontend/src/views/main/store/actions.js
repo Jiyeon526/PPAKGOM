@@ -103,20 +103,21 @@ export function requestCreateRoom({ state }, payload) {
 
 // 스터디 목록 가져오기
 export function requestStudyList({state}) {
-  console.log(state)
   const url = '/study/'
   return $axios.get(url)
 }
 
 // 추천 스터디 목록 가져오기
 export function requestRecommendStudyList({state}) {
-  const url = `/study/interest/${state.userId}`
-  return $axios.get(url)
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/interest/4`
+  return $axios.get(url, { headers: headers })
 }
 
 // 검색어 스터디 목록 가져오기
 export function requestSearchStudyList({state}, param) {
-  let url = '/study'
+  console.log(param)
+  let url = '/study/'
   if (param.option === 1) {
     url += `?studyId=${param.searchValue}`
   }
@@ -148,12 +149,14 @@ export function requestNaverLogout({ state }) {
 
 // 가입한 스터디 목록 가져오기
 export function requestJoinStudyList({state}) {
-  const url = `study/join/${state.userId}`
-  return $axios.get(url)
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/users/join/${state.userpk}`
+  return $axios.get(url, { headers: headers })
 }
 
 // 찜한 스터디 목록 가져오기
 export function requestLikeStudyList({state}) {
-  const url = `study/like/${state.userId}`
-  return $axios.get(url)
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/like/${state.userpk}`
+  return $axios.get(url, { headers: headers })
 }
