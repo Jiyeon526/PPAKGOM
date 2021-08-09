@@ -57,13 +57,9 @@ export default {
       getJoinStudyList()
     });
 
-    const onClickStudyList = function (id) {
-      router.push({
-        name: 'studydetail-dialog',
-        params: {
-          studyId: state.joinStudyList[id-1].study_id
-        }
-      })
+    const onClickStudyList = (id) => {
+      const selectStudy = state.joinStudyList[id-1]
+      emit("openStudydetailDialog", selectStudy);
     }
 
     return { state, onClickStudyList, }

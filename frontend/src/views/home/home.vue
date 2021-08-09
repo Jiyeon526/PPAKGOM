@@ -27,7 +27,7 @@
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
   <el-carousel v-else :interval="4000" type="card" height="200px">
-    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i">
+    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
       <el-image style="width: 100%; height: 190px"
         :src="state.recommendStudyList[i-1].study_thumbnail"
         :fit="fit"
@@ -104,7 +104,7 @@ export default {
     Study
   },
 
-  setup() {
+  setup(props, { emit }) {
     const store = useStore()
     const router = useRouter()
     const state = reactive({
@@ -139,13 +139,14 @@ export default {
       ]
     })
 
-    const onClickStudyList = function(id) {
-      router.push({
-        name: "studydetail-dialog",
-        params: {
-          studyId: state.studyListTest[id - 1].study_id
-        }
-      })
+    const onClickRecommendStudyList = (id) => {
+      const selectStudy = state.recommendStudyList[id-1]
+      emit("openStudydetailDialog", selectStudy);
+    }
+
+    const onClickStudyList = (id) => {
+      const selectStudy = state.studyList[id-1]
+      emit("openStudydetailDialog", selectStudy);
     }
 
     // 방 목록 리스트 가져오기
@@ -225,7 +226,7 @@ export default {
       }
     }
 
-    return { state, onClickStudyList, searchStudy }
+    return { state, onClickStudyList, onClickRecommendStudyList, searchStudy }
   }
 }
 </script>

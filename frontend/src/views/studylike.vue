@@ -57,13 +57,9 @@ export default {
       getLikeStudyList()
     });
 
-    const onClickStudyList = function (id) {
-      router.push({
-        name: 'studydetail-dialog',
-        params: {
-          studyId: state.likeStudyList[id-1].study_id
-        }
-      })
+    const onClickStudyList = (id) => {
+      const selectStudy = state.likeStudyList[id-1]
+      emit("openStudydetailDialog", selectStudy);
     }
 
     return { state, onClickStudyList, }
