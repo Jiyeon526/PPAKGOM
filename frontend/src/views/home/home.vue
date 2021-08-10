@@ -26,9 +26,9 @@
   <h4 v-if="state.recommendStudyList.length === 0">
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
-  <el-carousel v-else :interval="4000" type="card" height="200px">
+  <el-carousel v-else :interval="4000" type="card" height="300px">
     <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
-      <el-image style="width: 100%; height: 190px"
+      <el-image style="width: 300px; height: 300px"
         :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
         :fit="fit"
         alt="PPAKGOM"
@@ -73,10 +73,21 @@
 /* carousel */
 .el-carousel {
   margin: 50px 0px;
+  display: flex;
+  flex-direction: column;
+}
+.el-carousel__container {
+  display: flex;
+  justify-content: center;
+}
+
+.el-carousel .el-carousel__item {
+  width: 300px;
+  height: 300px;
 }
 
 .el-carousel__item h3 {
-  color: #475669;
+  color: #d3dce6;
   font-size: 14px;
   opacity: 0.75;
   line-height: 200px;
@@ -84,7 +95,7 @@
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+  background-color: #d3dce6;
 }
 
 .el-carousel__item:nth-child(2n + 1) {
