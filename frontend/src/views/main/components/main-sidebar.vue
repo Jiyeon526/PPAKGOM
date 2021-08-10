@@ -9,10 +9,18 @@
         @select="menuSelect"
       >
         <div v-if="!state.isCollapse">
-          <el-menu-item style="display: flex; justify-content:flex-end; align-items:center" @click="onCollapse"><i class="el-icon-d-arrow-left"></i></el-menu-item>
+          <el-menu-item
+            style="display: flex; justify-content:flex-end; align-items:center"
+            @click="onCollapse"
+            ><i class="el-icon-d-arrow-left"></i
+          ></el-menu-item>
         </div>
         <div v-else>
-          <el-menu-item style="display: flex; justify-content:flex-end; align-items:center" @click="onCollapse"><i class="el-icon-d-arrow-right"></i></el-menu-item>
+          <el-menu-item
+            style="display: flex; justify-content:flex-end; align-items:center"
+            @click="onCollapse"
+            ><i class="el-icon-d-arrow-right"></i
+          ></el-menu-item>
         </div>
         <el-menu-item
           v-for="(item, index) in state.menuItems"
@@ -28,9 +36,18 @@
             <span>Mypage</span>
           </template>
           <el-menu-item-group title="">
-            <el-menu-item index="3"><i class="el-icon-reading"></i>가입한 스터디</el-menu-item>
-            <el-menu-item index="4"><i class="el-icon-star-on"></i>찜한 스터디</el-menu-item>
-            <el-menu-item index="5"><i class="el-icon-s-management"></i>방관리</el-menu-item>
+            <el-menu-item index="3"
+              ><i class="el-icon-reading"></i>가입한 스터디</el-menu-item
+            >
+            <el-menu-item index="4"
+              ><i class="el-icon-star-on"></i>찜한 스터디</el-menu-item
+            >
+            <el-menu-item index="5"
+              ><i class="el-icon-s-management"></i>가입/초대</el-menu-item
+            >
+            <el-menu-item index="6"
+              ><i class="el-icon-s-promotion"></i>스터디원 평가</el-menu-item
+            >
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
@@ -93,7 +110,7 @@ export default {
           menuArray.push(menuObject);
           return menuArray;
         }
-        for (let i = 0; i < keys.length - 3; ++i) {
+        for (let i = 0; i < keys.length - 4; ++i) {
           let menuObject = {};
           menuObject.icon = MenuItems[keys[i]].icon;
           menuObject.title = MenuItems[keys[i]].name;
@@ -116,7 +133,7 @@ export default {
       store.commit("root/setMenuActive", param);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
-      console.log(keys[param])
+      console.log(keys[param]);
       router.push({
         name: keys[param]
       });
@@ -131,14 +148,13 @@ export default {
     };
 
     const onCollapse = function() {
-      state.isCollapse = !state.isCollapse
+      state.isCollapse = !state.isCollapse;
       if (state.isCollapse) {
-        state.width = "70px"
+        state.width = "70px";
+      } else {
+        state.width = "200px";
       }
-      else {
-        state.width = "200px"
-      }
-    }
+    };
 
     return { state, menuSelect, clickLogout, onCollapse };
   }

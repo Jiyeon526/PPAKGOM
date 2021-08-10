@@ -100,6 +100,11 @@ import {
   ElNotification,
 } from 'element-plus';
 
+import VueChartkick from 'vue-chartkick'
+import 'chartkick/chart.js'
+
+
+
 const components = [
   ElAlert,
   ElAside,
@@ -200,7 +205,7 @@ app.use(VueAxios, axios)
 app.use(store)
 app.use(i18n)
 app.use(router)
-
+app.use(VueChartkick)
 components.forEach(component => {
   app.component(component.name, component)
 })
