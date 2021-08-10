@@ -78,9 +78,8 @@ public class StudyServiceImpl implements StudyService {
 		String path = BASE_PATH + studyId + "-" + studyThumbnail.getOriginalFilename();
 		File dest = new File(path);
 		studyThumbnail.transferTo(dest);
-		String pathForDB = getShortFilePath(path).replaceAll("\\\\", "/");
-		pathForDB = pathForDB.substring(0, pathForDB.length()-1);
-		study.setStudy_thumbnail(pathForDB);
+		study.setStudy_thumbnail(getShortFilePath(path));
+
 
 		if (studyInfo.getInterest() != null) {
 //		 관심사 테이블.
