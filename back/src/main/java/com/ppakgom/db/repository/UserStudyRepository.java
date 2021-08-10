@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserStudy;
 
 @Repository
@@ -15,5 +16,7 @@ public interface UserStudyRepository extends JpaRepository<UserStudy, Long> {
 	int getJoinedUserByStudyId(Long id);
 
 	List<UserStudy> findByUserId(Long userId);
+
+	List<UserStudy> findByStudy_Id(Long studyId);
 
 }
