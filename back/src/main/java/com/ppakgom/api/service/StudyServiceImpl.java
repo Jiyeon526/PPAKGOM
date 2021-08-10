@@ -204,14 +204,18 @@ public class StudyServiceImpl implements StudyService {
 	public void rateStudy(User user, StudyRatePostReq rateInfo) {
 		
 //		스터디 ID로 스터디 찾고
-		Optional<Study> study = studyRepository.findById(rateInfo.getStudyId());
+		Study study = studyRepository.findById(rateInfo.getStudyId()).get();
 //		멤버 ID로 멤버 찾기
 		User member = userRepository.findUserById(rateInfo.getStudyMemberId());
 //		평가 점수로 열정도 업데이트 로직
 		updateTemperature(member, rateInfo.getRating());
 		
 //		평가 다 했다고 check
-		studyRateRepository.save(new StudyRate(study.get(),user,member, true));
+		StudyRate studyRating = 
+				studyRateRepository.findByUserIdAndStudyIdAndStudyMemberId(user.getId(), study.getId(), member.getId());
+		studyRating.setChecked(true);
+		
+		studyRateRepository.save(studyRating);
 	}
 	
 	//member의 열정도를 업데이트 하좌.

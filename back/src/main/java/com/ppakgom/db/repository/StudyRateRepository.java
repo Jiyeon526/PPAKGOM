@@ -12,5 +12,7 @@ public interface StudyRateRepository extends JpaRepository<StudyRate,Long>{
 
 	List<StudyRate> findByUserId(Long userId);
 
+	StudyRate findByUserIdAndStudyIdAndStudyMemberId(Long userId, Long studyId, Long studyMemberId);
+
 
 }
