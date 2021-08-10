@@ -137,4 +137,9 @@ public class UserServiceImpl implements UserService {
 		userLikeStudyRepository.save(new UserLikeStudy(user, study));
 	}
 
+	@Override
+	public void unlikeStudy(User user, Study study) {
+		userLikeStudyRepository.deleteByUserIdAndStudyId(user.getId(), study.getId());
+	}
+
 }

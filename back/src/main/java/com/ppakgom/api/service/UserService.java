@@ -17,5 +17,6 @@ public interface UserService {
 	User getUserById(Long userId);
 	List<String> getInterest(Long userid);
 	void likeStudy(User user, Study study);
+	void unlikeStudy(User user, Study study);
 
 }
