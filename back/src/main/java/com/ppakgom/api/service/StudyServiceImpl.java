@@ -51,7 +51,8 @@ public class StudyServiceImpl implements StudyService {
 	StudyPlanRepository studyPlanRepository;
 	
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\study\\";
-
+	
+	
 	UserLikeStudyRepository userLikeStudyRepository;
 	
 	/* 스터디 생성 */
@@ -60,7 +61,6 @@ public class StudyServiceImpl implements StudyService {
 			throws IllegalStateException, IOException, ParseException {
 
 		Study study = new Study();
-
 		study.setName(studyInfo.getName());
 		study.setContent(studyInfo.getContent());
 		study.setTemperature(studyInfo.getTemperature());
@@ -78,7 +78,9 @@ public class StudyServiceImpl implements StudyService {
 		String path = BASE_PATH + studyId + "-" + studyThumbnail.getOriginalFilename();
 		File dest = new File(path);
 		studyThumbnail.transferTo(dest);
-		study.setStudy_thumbnail(getShortFilePath(path));
+		String pathForDB = getShortFilePath(path).replaceAll("\\\\", "/");
+		pathForDB = pathForDB.substring(0, pathForDB.length()-1);
+		study.setStudy_thumbnail(pathForDB);
 
 		if (studyInfo.getInterest() != null) {
 //		 관심사 테이블.
