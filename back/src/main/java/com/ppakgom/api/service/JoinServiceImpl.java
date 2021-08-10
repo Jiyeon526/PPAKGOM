@@ -40,7 +40,7 @@ public class JoinServiceImpl implements JoinService {
 		if(studyApply == null) return null; // 가입 신청 없으면 null 반환
 		
 		for(StudyApply study : studyApply) {
-			if(study.is_join() == false) continue; // 초대이면 넘기기
+			if(study.isJoin() == false) continue; // 초대이면 넘기기
 			JoinApplyListRes list = new JoinApplyListRes();
 			// 스터디 정보 가져오기
 			Optional<Study> s = studyRepository.findById(study.getStudy().getId());
@@ -86,7 +86,7 @@ public class JoinServiceImpl implements JoinService {
 		if(studyApply == null) return null; // 가입 요청 없으면 null 반환
 		
 		for(StudyApply study : studyApply) {
-			if(study.is_join() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
+			if(study.isJoin() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
 			JoinApplyListRes list = new JoinApplyListRes();
 			// 스터디 정보 가져오기
 			Optional<Study> s = studyRepository.findById(study.getStudy().getId());
@@ -155,7 +155,7 @@ public class JoinServiceImpl implements JoinService {
 		if(studyApply == null) return null; // 가입 요청 없으면 null 반환
 		
 		for(StudyApply study : studyApply) {
-			if(study.is_join() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
+			if(study.isJoin() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
 			StudyJoinApplyListRes list = new StudyJoinApplyListRes();
 			// 스터디 신청한 사람들 정보 저장
 			list.setUser_id(study.getSender().getUserId()); // 아이디 저장
