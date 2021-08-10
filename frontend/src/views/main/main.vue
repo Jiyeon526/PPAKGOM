@@ -1,5 +1,11 @@
 <template>
-  <el-container class="main-wrapper" v-loading="loading">
+  <el-container
+    class="main-wrapper"
+    v-loading="loading"
+    element-loading-text="Loading..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255, 255, 255, 0.5)"
+  >
     <main-header
       :height="`70px`"
       @openLoginDialog="onOpenLoginDialog"
@@ -13,10 +19,12 @@
     />
     <el-container class="main-container">
       <!-- <el-aside class="hide-on-small" > -->
-        <main-sidebar />
+      <main-sidebar />
       <!-- </el-aside> -->
       <el-main>
-        <router-view @openStudydetailDialog="onOpenStudydetailDialog"></router-view>
+        <router-view
+          @openStudydetailDialog="onOpenStudydetailDialog"
+        ></router-view>
       </el-main>
     </el-container>
     <main-footer :height="`50px`" />
@@ -120,7 +128,7 @@ export default {
 
     onOpenStudydetailDialog(selectStudy) {
       this.studydetailDialogOpen = true;
-      this.selectStudyDetail = selectStudy
+      this.selectStudyDetail = selectStudy;
     },
     onCloseStudydetailDialog() {
       this.studydetailDialogOpen = false;

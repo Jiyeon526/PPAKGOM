@@ -11,48 +11,51 @@
           <div class="logo-ppakgom">PPAKGOM</div>
         </el-col>
         <el-col :span="16">
-          <el-select v-model="value" placeholder="STUDY">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
+          <el-select v-model="state.value" placeholder="STUDY">
+            <el-option
+              v-for="item in state.options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
         </el-col>
         <el-col :span="4">
-        <div class="button-wrapper">
-          <div
-            v-if="
-              state.isLoggedIn ||
-                state.googleislogin ||
-                state.kakaoislogin ||
-                state.isNaverLoggedIn
-            "
-          >
-            <el-button type="success" plain @click="clickMypage" ><i class="el-icon-s-custom"></i> 프로필</el-button>
-            <el-button
-              type="success"
-              plain
-              icon="el-icon-switch-button"
-              @click="clickLogout"
-              > 로그아웃</el-button
+          <div class="button-wrapper">
+            <div
+              v-if="
+                state.isLoggedIn ||
+                  state.googleislogin ||
+                  state.kakaoislogin ||
+                  state.isNaverLoggedIn
+              "
             >
-          </div>
-          <div v-else>
-            <!-- <el-button type="primary" @click="clickOtherpeoplepage">타프로필</el-button>
+              <el-button type="success" plain @click="clickMypage"
+                ><i class="el-icon-s-custom"></i> 프로필</el-button
+              >
+              <el-button
+                type="success"
+                plain
+                icon="el-icon-switch-button"
+                @click="clickLogout"
+              >
+                로그아웃</el-button
+              >
+            </div>
+            <div v-else>
+              <!-- <el-button type="primary" @click="clickOtherpeoplepage">타프로필</el-button>
             <el-button type="primary" @click="clickMypage">프로필</el-button> -->
-            <el-button type="success" plain @click="clickRegister"
-              ><i class="el-icon-connection"></i> 회원가입</el-button
-            >
-            <el-button type="success" plain @click="clickLogin"><i class="el-icon-user"></i> 로그인</el-button>
+              <el-button type="success" plain @click="clickRegister"
+                ><i class="el-icon-connection"></i> 회원가입</el-button
+              >
+              <el-button type="success" plain @click="clickLogin"
+                ><i class="el-icon-user"></i> 로그인</el-button
+              >
+            </div>
           </div>
-
-      </div>
         </el-col>
       </el-row>
-
-
     </div>
     <div class="hide-on-big">
       <div class="menu-icon-wrapper" @click="changeCollapse">
@@ -114,7 +117,7 @@
   </el-row>
 </template>
 <script>
-import { reactive, computed } from "vue";
+import { reactive, computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -137,6 +140,7 @@ export default {
       isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
       isNaverLoggedIn: computed(() => store.getters["root/isNaverLoggedIn"]),
       userId: computed(() => store.getters["root/userId"]),
+      studyPk: computed(() => store.getters["root/getStudypk"]),
       naverToken: computed(() => store.getters["root/getNaverAccessToken"]),
       kakaoislogin: computed(() => store.getters["root/getKakaoIsLoggedIn"]),
       googleislogin: computed(() => store.getters["root/getGoogleIsLoggedIn"]),
@@ -161,9 +165,50 @@ export default {
         }
         return menuArray;
       }),
-      activeIndex: computed(() => store.getters["root/getActiveMenuIndex"])
+      activeIndex: computed(() => store.getters["root/getActiveMenuIndex"]),
+      options: [
+        {
+          value: "studyhome",
+          label: "홈"
+        },
+        {
+          value: "studyworkbook",
+          label: "문제집"
+        },
+        {
+          value: "studyscore",
+          label: "점수"
+        },
+        {
+          value: "studyattitude",
+          label: "출석현황"
+        },
+        {
+          value: "studyschedule",
+          label: "스터디 일정"
+        },
+        {
+          value: "studymeeting",
+          label: "화상회의"
+        },
+        {
+          value: "studymember",
+          label: "맴버관리"
+        }
+      ],
+      value: ""
     });
-
+    watch(
+      () => state.value,
+      () => {
+        router.push({
+          name: state.value
+          // params: {
+          //   studypk: state.studyPk
+          // }
+        });
+      }
+    );
     if (state.activeIndex === -1) {
       state.activeIndex = 0;
       store.commit("root/setMenuActive", 0);
@@ -393,20 +438,12 @@ export default {
   margin-right: 1%;
 }
 
-.main-header
-  .hide-on-small
-  .tool-wrapper
-  .el-input
-  .el-input__inner {
+.main-header .hide-on-small .tool-wrapper .el-input .el-input__inner {
   /* width: 88%; */
   height: 50px;
   margin-right: 1%;
 }
-.main-header
-  .hide-on-small
-  .tool-wrapper
-  .el-input
-  .el-input__prefix {
+.main-header .hide-on-small .tool-wrapper .el-input .el-input__prefix {
   top: 5px;
 }
 </style>

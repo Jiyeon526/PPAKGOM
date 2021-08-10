@@ -296,6 +296,7 @@ export default {
               //alert("accessToken: " + result.data.accessToken);
               localStorage.setItem("accessToken", result.data.accessToken);
               localStorage.setItem("userId", state.form.id);
+              localStorage.setItem("userPk", result.data.id);
               store.commit("root/setUserpk", result.data.id);
               console.log("기본키", store.getters["root/getUserpk"]);
               ElMessage({

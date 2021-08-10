@@ -32,6 +32,7 @@ export function requestLogout({ state }) {
   console.log('requestLogout', state)
   localStorage.removeItem('accessToken')
   localStorage.removeItem('userId')
+  localStorage.removeItem('userPk')
   return
 }
 
