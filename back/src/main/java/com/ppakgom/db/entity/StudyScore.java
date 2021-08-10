@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 public class StudyScore extends BaseEntity {
 	
-	short score;
+	Short score;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -26,6 +26,6 @@ public class StudyScore extends BaseEntity {
 	Study study;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "study_id")
+	@JoinColumn(name = "study_test_id")
 	StudyTest studyTest;
 }
