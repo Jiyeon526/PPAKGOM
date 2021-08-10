@@ -261,6 +261,11 @@ public class StudyController {
 		User receiver = userService.getUserById(req.getReceiver_id());
 		// study_id로 스터디 찾고
 		Study study = studyService.getStudyById(studyId).get();
+		
+		if(study.getTemperature() > receiver.getTemperature()) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(400,"열정도가 낮은 회원은 초대할 수 없습니다."));
+		}
+		
 		// owner_id 가 sender_id.
 		User sender = study.getUser();
 		// is_join 가지고
