@@ -18,11 +18,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.UserRegisterPostReq;
 import com.ppakgom.db.entity.Interest;
+import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
+import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.UserInterestRepository;
-
+import com.ppakgom.db.repository.UserLikeStudyRepository;
 import com.ppakgom.db.repository.UserRepository;
 
 @Service("UserService")
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
+	@Autowired
+	UserLikeStudyRepository userLikeStudyRepository;
+	
 	String BASE_PATH = System.getProperty("user.dir");
 
 	@Override
@@ -125,6 +130,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserById(Long userId) {
 		return userRepository.findUserById(userId);
+	}
+
+	@Override
+	public void likeStudy(User user, Study study) {
+		userLikeStudyRepository.save(new UserLikeStudy(user, study));
 	}
 
 }

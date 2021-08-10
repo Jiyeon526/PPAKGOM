@@ -236,4 +236,26 @@ public class UserController {
 		return ResponseEntity.ok(res);
 
 	}
+	
+	/* 스터디 찜하기 */
+	@PostMapping("/like/{userId}")
+	@ApiOperation(value = "스터디 찜하기", notes = "관심있는 스터디를 찜한다.")
+	public ResponseEntity<BaseResponseBody> searchStudyByUserJoin(
+			@PathVariable(value = "userId", required = true) Long userId, Long studyId ) {
+		
+		try {
+			
+		
+		User user = userService.getUserById(userId);
+		Study study =  studyService.getStudyById(studyId).get();
+		
+		userService.likeStudy(user, study);
+		
+		return ResponseEntity.ok(new BaseResponseBody(200, "찜하기 완료"));
+
+		}catch(Exception e) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+		}
+		
+	}
 }
