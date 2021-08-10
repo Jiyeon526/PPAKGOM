@@ -20,4 +20,10 @@ public class UserInterestServiceImpl implements UserInterestService {
 		return userInterestRepository.findInterestByUserId(user.getId());
 	}
 
+	@Override
+	public List<UserInterest> findByInterestId(Long interestId) {
+		return userInterestRepository.findUserInterestByInterestId(interestId);
+	}
+
+
 }

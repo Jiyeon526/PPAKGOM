@@ -17,19 +17,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
+import com.ppakgom.api.request.StudyRatePostReq;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
+
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyInterest;
+import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.StudyPlan;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
+import com.ppakgom.db.repository.StudyRateRepository;
 import com.ppakgom.db.repository.StudyPlanRepository;
 import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserLikeStudyRepository;
+import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 
 @Service("StudyService")
@@ -54,6 +59,12 @@ public class StudyServiceImpl implements StudyService {
 	
 	
 	UserLikeStudyRepository userLikeStudyRepository;
+
+	@Autowired
+	StudyRateRepository studyRateRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	/* 스터디 생성 */
 	@Override
@@ -197,6 +208,38 @@ public class StudyServiceImpl implements StudyService {
 	}
 
 	@Override
+	public void rateStudy(User user, StudyRatePostReq rateInfo) {
+		
+//		스터디 ID로 스터디 찾고
+		Study study = studyRepository.findById(rateInfo.getStudyId()).get();
+//		멤버 ID로 멤버 찾기
+		User member = userRepository.findUserById(rateInfo.getStudyMemberId());
+//		평가 점수로 열정도 업데이트 로직
+		updateTemperature(member, rateInfo.getRating());
+		
+//		평가 다 했다고 check
+		StudyRate studyRating = 
+				studyRateRepository.findByUserIdAndStudyIdAndStudyMemberId(user.getId(), study.getId(), member.getId());
+		studyRating.setChecked(true);
+		
+		studyRateRepository.save(studyRating);
+	}
+	
+	//member의 열정도를 업데이트 하좌.
+	public void updateTemperature(User member, int rate) {
+//		현재 열정도 가져오기
+		float curTemperature = member.getTemperature();
+		//0점 -> -2, 1점 -> -1, 2점 -> -0.5, 4점 -> +0.5, 5점 -> +1
+		
+		switch(rate) {
+		case 0 : member.setTemperature(curTemperature - 2f); break;
+		case 1 : member.setTemperature(curTemperature - 1f); break;
+		case 2 : member.setTemperature(curTemperature - 0.5f); break;
+		case 4 : member.setTemperature(curTemperature + 0.5f); break;
+		case 5 : member.setTemperature(curTemperature + 1f); break;
+		}
+	}
+		
 	public List<StudyScheduleMonthRes> getStudyScheduleMonth(Long studyId, int month) {
 		
 		// 해당 스터디 일정 전부 가져오기
