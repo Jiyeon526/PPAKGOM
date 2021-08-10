@@ -122,7 +122,7 @@
 }
 </style>
 <script>
-import { reactive, computed, ref, onMounted } from "vue";
+import { reactive, computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
@@ -191,8 +191,19 @@ export default {
         ]
       },
       dialogVisible: computed(() => props.open),
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      flag: ""
     });
+
+    watch(
+      () => state.flag,
+      () => {
+        localStorage.setItem(
+          "naveraccessToken",
+          naverLogin.accessToken.accessToken
+        );
+      }
+    );
 
     const isDisabled = function() {
       return "disabled";
@@ -208,13 +219,6 @@ export default {
         loginButton: { color: "green", type: 2, height: 40 } //로그인 버튼의 타입을 지정
       });
       naverLogin.init();
-      window.gapi.signin2.render("google-signin-btn", {
-        onsuccess: onSignIn
-      });
-    });
-
-    const naverlogin = function() {
-      //console.log("accessToken", naverLogin.accessToken.accessToken);
       naverLogin.getLoginStatus(status => {
         if (status) {
           console.log(status);
@@ -226,20 +230,28 @@ export default {
             alert("이메일은 필수정보입니다. 정보제공을 동의해주세요.");
             //사용자 정보 재동의를 위하여 다시 네아로 동의페이지로 이동함
             naverLogin.reprompt();
-            localStorage.setItem(
-              "naveraccessToken",
-              naverLogin.accessToken.accessToken
-            );
             return;
+          }
+
+          if (naverLogin.accessToken.accessToken) {
           }
         } else {
           console.log("callback 처리에 실패하였습니다.");
         }
+      });
+      window.gapi.signin2.render("google-signin-btn", {
+        onsuccess: onSignIn
+      });
+    });
+
+    const naverlogin = function() {
+      //console.log("accessToken", naverLogin.accessToken.accessToken);
+      if (naverLogin.accessToken.accessToken) {
         localStorage.setItem(
           "naveraccessToken",
           naverLogin.accessToken.accessToken
         );
-      });
+      }
       //console.log("accessToken", naverLogin.accessToken.accessToken);
 
       handleClose();
@@ -284,6 +296,8 @@ export default {
               //alert("accessToken: " + result.data.accessToken);
               localStorage.setItem("accessToken", result.data.accessToken);
               localStorage.setItem("userId", state.form.id);
+              store.commit("root/setUserpk", result.data.id);
+              console.log("기본키", store.getters["root/getUserpk"]);
               ElMessage({
                 message: "로그인 성공",
                 type: "success"

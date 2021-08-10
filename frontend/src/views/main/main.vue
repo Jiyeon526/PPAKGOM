@@ -9,23 +9,21 @@
       @openInviteDialog="onOpenInviteDialog"
       @openMakeworkbookDialog="onOpenMakeworkbookDialog"
       @openOtherpeopleDialog="onOpenOtherpeopleDialog"
-      @openStudydetailDialog="onOpenStudydetailDialog"
       @openStudyscheduleDialog="onOpenStudyscheduleDialog"
     />
     <el-container class="main-container">
-      <el-aside class="hide-on-small" width="240px">
-        <main-sidebar :width="`240px`" />
-      </el-aside>
+      <!-- <el-aside class="hide-on-small" > -->
+        <main-sidebar />
+      <!-- </el-aside> -->
       <el-main>
-        <router-view></router-view>
+        <router-view @openStudydetailDialog="onOpenStudydetailDialog"></router-view>
       </el-main>
     </el-container>
-    <main-footer :height="`80px`" />
+    <main-footer :height="`50px`" />
   </el-container>
   <login-dialog
     :open="loginDialogOpen"
     @closeLoginDialog="onCloseLoginDialog"
-    @openRegisterDialog="onOpenRegisterDialog"
   />
   <register-dialog
     :open="registerDialogOpen"
@@ -50,6 +48,7 @@
   />
   <studydetail-dialog
     :open="studydetailDialogOpen"
+    :selectStudy="selectStudyDetail"
     @closeStudydetailDialog="onCloseStudydetailDialog"
   />
   <studyschedule-dialog
@@ -107,6 +106,7 @@ export default {
       makeworkbookDialogOpen: false,
       otherpeopleDialogOpen: false,
       studydetailDialogOpen: false,
+      selectStudyDetail: [],
       studyscheduleDialogOpen: false
     };
   },
@@ -118,8 +118,9 @@ export default {
       this.studyscheduleDialogOpen = false;
     },
 
-    onOpenStudydetailDialog() {
+    onOpenStudydetailDialog(selectStudy) {
       this.studydetailDialogOpen = true;
+      this.selectStudyDetail = selectStudy
     },
     onCloseStudydetailDialog() {
       this.studydetailDialogOpen = false;

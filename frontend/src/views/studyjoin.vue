@@ -1,9 +1,9 @@
 <template>
   <h2>가입한 스터디</h2>
   <br>
-  <div v-if="state.joinStudyListTest">
-    <div v-for="i in state.joinStudyListTest.length" :key="i" @click="onClickStudyList(i)" class="study" >
-      <study :studyData="state.joinStudyListTest[i-1]"/>
+  <div v-if="state.joinStudyList.length !== 0">
+    <div v-for="i in state.joinStudyList.length" :key="i" @click="onClickStudyList(i)" class="study" >
+      <study :studyData="state.joinStudyList[i-1]"/>
     </div>
   </div>
   <el-alert v-else
@@ -35,56 +35,6 @@ export default {
     const store = useStore();
     const state = reactive({
       joinStudyList : [],
-      joinStudyListTest : [{
-        study_id : 1,
-        name : "빡곰",
-        content : "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population : 5,
-        study_thumbnail : "thumbnail.jpg",
-        owner_id : 2,
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 2,
-        name : "빡곰2 빡곰2 빡곰2 빡곰2 빡곰2 빡곰2 빡곰2",
-        content : "빡곰2 스터디는 원할한 스터디를 지원합니다.",
-        population : 6,
-        study_thumbnail : "thumbnail.jpg",
-        owner_id : 2,
-        joined_population: 4,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 3,
-        name : "빡곰3",
-        content : "빡곰3 스터디는 원할한 스터디를 지원합니다. 빡곰3 스터디는 원할한 스터디를 지원합니다. 빡곰3 스터디는 원할한 스터디를 지원합니다. 빡곰3 스터디는 원할한 스터디를 지원합니다.",
-        population : 7,
-        study_thumbnail : "thumbnail.jpg",
-        owner_id : 2,
-        joined_population: 5,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 4,
-        name : "빡곰4 빡곰4 빡곰4 빡곰4 빡곰4 빡곰4 빡곰4 빡곰4",
-        content : "빡곰4 스터디는 원할한 스터디를 지원합니다. 빡곰4 스터디는 원할한 스터디를 지원합니다. 빡곰4 스터디는 원할한 스터디를 지원합니다. 빡곰4 스터디는 원할한 스터디를 지원합니다.",
-        population : 6,
-        study_thumbnail : "thumbnail.jpg",
-        owner_id : 2,
-        joined_population: 5,
-        deadline: "2021-08-23"
-      },
-      {
-        study_id : 5,
-        name : "빡곰5 빡곰5 빡곰5 빡곰5 빡곰5 빡곰5 빡곰5 빡곰5",
-        content : "빡곰5 스터디는 원할한 스터디를 지원합니다. 빡곰5 스터디는 원할한 스터디를 지원합니다. 빡곰5 스터디는 원할한 스터디를 지원합니다. 빡곰5 스터디는 원할한 스터디를 지원합니다.",
-        population : 5,
-        study_thumbnail : "thumbnail.jpg",
-        owner_id : 2,
-        joined_population: 3,
-        deadline: "2021-08-23"
-      }]
     })
 
     // 가입한 스터디 목록 가져오기
@@ -93,7 +43,7 @@ export default {
         .dispatch('root/requestJoinStudyList')
           .then(function(res) {
             console.log("가입한 스터디 목록 가져오기", res)
-            state.joinStudyList = res.data.content
+            state.joinStudyList = res.data.studyResult
           })
           .catch(function(err) {
             console.log("가입한 스터디 목록 가져오기 에러", err)
@@ -107,13 +57,9 @@ export default {
       getJoinStudyList()
     });
 
-    const onClickStudyList = function (id) {
-      router.push({
-        name: 'studydetail-dialog',
-        params: {
-          studyId: state.joinStudyListTest[id-1].study_id
-        }
-      })
+    const onClickStudyList = (id) => {
+      const selectStudy = state.joinStudyList[id-1]
+      emit("openStudydetailDialog", selectStudy);
     }
 
     return { state, onClickStudyList, }

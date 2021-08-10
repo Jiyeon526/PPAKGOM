@@ -34,7 +34,7 @@ public class Study extends BaseEntity{
 	public String toString() {
 		return "Study [name=" + name + ", content=" + content + ", temperature=" + temperature + ", population="
 				+ population + ", study_thumbnail=" + study_thumbnail + ", deadline=" + deadline + ", user=" + user
-				+ "아뒤 = "+id+"]";
+				+ "ID = "+id+"]";
 	}
 
 	

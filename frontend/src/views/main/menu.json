@@ -10,14 +10,14 @@
     "name" : "스터디 모집",
     "hidden" : false,
     "path" : "/home",
-    "icon" : "el-icon-s-home",
+    "icon" : "el-icon-guide",
     "children" : []
   },
   "create" : {
     "name" : "스터디 생성",
     "hidden" : false,
     "path" : "/create",
-    "icon" : "el-icon-s-home",
+    "icon" : "el-icon-edit-outline",
     "children" : []
   },
   "join" : {

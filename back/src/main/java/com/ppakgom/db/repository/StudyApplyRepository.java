@@ -20,17 +20,6 @@ public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 
 	List<StudyApply> findBySenderId(Long senderId);
 
-//	List<StudyApply> findByStudyId(Long studyId);
-
-//	@Query(value = "SELECT * FROM STUDY_APPLY WHERE RECEIVER_ID = ?1 AND STATE = 2",nativeQuery = true )
-//	List<StudyApply> findByReceiverId(Long receiverId);
-
-
-//	void deleteBySenderIdAndStudyIdAndReceiverId(Long senderId, Long studyId, Long receiverId);
-
-//	StudyApply findByReceiverIdAndStudyIdAndSenderId(Long receiverId, Long studyId, Long senderId);
-
-//	void deleteBySenderIdAndStudyIdAndReceiverIdAndState(Long senderId, Long studyId, Long receiverId, short state);
 
 	List<StudyApply> findBySenderIdAndIsJoin(Long userId, boolean isJoin);
 
@@ -46,5 +35,17 @@ public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 
 	List<StudyApply> findByStudyIdAndIsJoin(Long studyId, boolean isJoin);
 
+
+
+//	@Query("SELECT * FROM STUDY_APPLY WHERE IS_JOIN = 1 AND SENDER_ID = ?1",nativeQuery = true)
+	List<StudyApply> findBySender_Id(Long sender_id);
+
+	StudyApply findBySender_IdAndStudy_IdAndReceiver_Id(Long userid, Long study_id, Long receiver_id);
+
+	List<StudyApply> findByReceiver_Id(Long userid);
+
+	StudyApply findByReceiver_IdAndStudy_IdAndSender_Id(Long userid, Long study_id, Long user_id);
+
+	List<StudyApply> findByStudy_Id(Long studyId);
 
 }

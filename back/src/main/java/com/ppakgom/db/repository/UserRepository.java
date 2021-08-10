@@ -20,4 +20,5 @@ public interface UserRepository extends JpaRepository<User,Long>{
 
 //	순번 아이디(PK)로 사용자 찾기
 	User findUserById(Long userId);
+
 }

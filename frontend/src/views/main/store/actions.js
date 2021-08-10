@@ -57,7 +57,7 @@ export function requestEmail({ state }, payload) {
   return $axios.post(url, body)
 }
 
-// 이메일 인증
+// 이메일 코드 인증
 export function requestEmailCode({ state }, payload) {
   console.log('requestEmailCode', state, payload)
   const url = '/users/verifyCode'
@@ -96,27 +96,28 @@ export function requestUpdateMyInfo({ state }, payload) {
 export function requestCreateRoom({ state }, payload) {
   console.log('requestCreateRoom', state, payload)
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '', 'Content-Type': 'multipart/form-data' } // 토큰
-  const url = '/conferences/conferences'
+  const url = '/study/'
   let body = payload
   return $axios.post(url, body, { headers: headers })
 }
 
 // 스터디 목록 가져오기
 export function requestStudyList({state}) {
-  console.log(state)
   const url = '/study/'
   return $axios.get(url)
 }
 
 // 추천 스터디 목록 가져오기
 export function requestRecommendStudyList({state}) {
-  const url = `/study/interest/${state.userId}`
-  return $axios.get(url)
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/interest/${state.userpk}`
+  return $axios.get(url, { headers: headers })
 }
 
 // 검색어 스터디 목록 가져오기
 export function requestSearchStudyList({state}, param) {
-  let url = '/study'
+  console.log(param)
+  let url = '/study/'
   if (param.option === 1) {
     url += `?studyId=${param.searchValue}`
   }
@@ -141,19 +142,21 @@ export function requestRoomInfoDetail({ state }, payload) {
 export function requestNaverLogout({ state }) {
   console.log('requestLogout', state)
   localStorage.removeItem('naveraccessToken')
-  localStorage.removeItem('com.naver.nid.access_token')
-  localStorage.removeItem('com.naver.nid.oauth.state_token')
+ // localStorage.removeItem('com.naver.nid.access_token')
+ // localStorage.removeItem('com.naver.nid.oauth.state_token')
   return
 }
 
 // 가입한 스터디 목록 가져오기
 export function requestJoinStudyList({state}) {
-  const url = `study/join/${state.userId}`
-  return $axios.get(url)
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/users/join/${state.userpk}`
+  return $axios.get(url, { headers: headers })
 }
 
 // 찜한 스터디 목록 가져오기
 export function requestLikeStudyList({state}) {
-  const url = `study/like/${state.userId}`
-  return $axios.get(url)
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/like/${state.userpk}`
+  return $axios.get(url, { headers: headers })
 }

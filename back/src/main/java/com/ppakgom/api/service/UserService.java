@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ppakgom.api.request.UserModifyInfoReq;
 import com.ppakgom.api.request.UserRegisterPostReq;
 import com.ppakgom.db.entity.User;
 
@@ -15,5 +16,6 @@ public interface UserService {
 	User getUserByUserId(String userId);
 	User getUserById(Long userId);
 	List<String> getInterest(Long userid);
+	boolean modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file);
 
 }

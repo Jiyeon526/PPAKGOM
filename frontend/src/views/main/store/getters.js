@@ -43,3 +43,11 @@ export function getKakaoIsLoggedIn(state) {
 export function getGoogleIsLoggedIn(state) {
   return state.googlelogin;
 }
+
+export function getUserpk(state) {
+  return state.userpk;
+}
+
+export function getStudypk(state) {
+  return state.studypk;
+}

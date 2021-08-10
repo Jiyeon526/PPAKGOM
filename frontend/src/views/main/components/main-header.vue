@@ -1,10 +1,26 @@
 <template>
   <el-row class="main-header" :gutter="10" :style="{ height: height }">
     <div class="hide-on-small">
-      <div class="logo-wrapper" @click="clickLogo">
-        <div class="ic ic-logo" />
-      </div>
-      <div class="tool-wrapper">
+      <el-row align="middle">
+        <el-col :span="1">
+          <div class="logo-wrapper" @click="clickLogo">
+            <div class="ic ic-logo"></div>
+          </div>
+        </el-col>
+        <el-col :span="3">
+          <div class="logo-ppakgom">PPAKGOM</div>
+        </el-col>
+        <el-col :span="16">
+          <el-select v-model="value" placeholder="STUDY">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+        </el-col>
+        <el-col :span="4">
         <div class="button-wrapper">
           <div
             v-if="
@@ -14,24 +30,29 @@
                 state.isNaverLoggedIn
             "
           >
-            <!-- <el-button @click="clickLogout">로그아웃</el-button> -->
-
+            <el-button type="success" plain @click="clickMypage" ><i class="el-icon-s-custom"></i> 프로필</el-button>
             <el-button
-              type="primary"
+              type="success"
+              plain
               icon="el-icon-switch-button"
               @click="clickLogout"
-              >로그아웃</el-button
+              > 로그아웃</el-button
             >
-            <el-button type="primary" @click="clickMypage">프로필</el-button>
           </div>
           <div v-else>
-            <el-button type="primary" @click="clickRegister"
-              >회원가입</el-button
+            <!-- <el-button type="primary" @click="clickOtherpeoplepage">타프로필</el-button>
+            <el-button type="primary" @click="clickMypage">프로필</el-button> -->
+            <el-button type="success" plain @click="clickRegister"
+              ><i class="el-icon-connection"></i> 회원가입</el-button
             >
-            <el-button type="primary" @click="clickLogin">로그인</el-button>
+            <el-button type="success" plain @click="clickLogin"><i class="el-icon-user"></i> 로그인</el-button>
           </div>
-        </div>
+
       </div>
+        </el-col>
+      </el-row>
+
+
     </div>
     <div class="hide-on-big">
       <div class="menu-icon-wrapper" @click="changeCollapse">
@@ -233,6 +254,10 @@ export default {
       });
     };
 
+    const clickOtherpeoplepage = () => {
+      emit("openOtherpeopleDialog");
+    };
+
     const changeCollapse = () => {
       state.isCollapse = !state.isCollapse;
     };
@@ -247,19 +272,21 @@ export default {
       clickRegister,
       changeCollapse,
       clickRoomCreation,
-      clicktestanswer
+      clicktestanswer,
+      clickOtherpeoplepage
     };
   }
 };
 </script>
 <style>
 .main-header {
-  padding: 10px 20px;
+  padding: 5px 20px;
+  background-color: rgb(143, 209, 141);
 }
 /*Mobile, Tablet*/
 .menu-icon-wrapper {
   display: inline-block;
-  vertical-align: top;
+  vertical-align: center;
   position: relative;
   top: 14px;
 }
@@ -335,13 +362,18 @@ export default {
 }
 
 /*Desktop - Need to add Class if Need*/
+.logo-ppakgom {
+  font-size: 32px;
+  font-weight: bold;
+  color: #005005;
+}
 .main-header .hide-on-small .logo-wrapper {
   cursor: pointer;
   display: inline-block;
 }
 .main-header .hide-on-small .logo-wrapper .ic.ic-logo {
   width: 70px;
-  height: 50px;
+  height: 60px;
   background-size: contain;
   background-repeat: no-repeat;
   background-image: url("../../../assets/images/ppakgom.png");

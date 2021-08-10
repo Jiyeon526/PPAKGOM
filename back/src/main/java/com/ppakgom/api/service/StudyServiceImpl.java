@@ -2,9 +2,11 @@ package com.ppakgom.api.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,16 +18,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.StudyScheduleMonthRes;
+
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyInterest;
 import com.ppakgom.db.entity.StudyRate;
+import com.ppakgom.db.entity.StudyPlan;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.StudyRateRepository;
+import com.ppakgom.db.repository.StudyPlanRepository;
 import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserLikeStudyRepository;
 import com.ppakgom.db.repository.UserRepository;
@@ -47,6 +53,11 @@ public class StudyServiceImpl implements StudyService {
 	UserStudyRepository userStudyRepository;
 	
 	@Autowired
+	StudyPlanRepository studyPlanRepository;
+	
+	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\study\\";
+	
+	
 	UserLikeStudyRepository userLikeStudyRepository;
 
 	@Autowired
@@ -55,15 +66,12 @@ public class StudyServiceImpl implements StudyService {
 	@Autowired
 	UserRepository userRepository;
 	
-	String BASE_PATH;
-	
 	/* 스터디 생성 */
 	@Override
 	public Study createStudy(StudyCreatePostReq studyInfo, User user, MultipartFile studyThumbnail)
 			throws IllegalStateException, IOException, ParseException {
 
 		Study study = new Study();
-
 		study.setName(studyInfo.getName());
 		study.setContent(studyInfo.getContent());
 		study.setTemperature(studyInfo.getTemperature());
@@ -78,12 +86,11 @@ public class StudyServiceImpl implements StudyService {
 		Long studyId = studyTmp.getId();
 
 //		 사진 관련 처리 -> image/study/방번호-파일명
-		BASE_PATH = System.getProperty("user.dir");
-		BASE_PATH += "\\src\\main\\resources\\image\\study\\";
 		String path = BASE_PATH + studyId + "-" + studyThumbnail.getOriginalFilename();
 		File dest = new File(path);
 		studyThumbnail.transferTo(dest);
 		study.setStudy_thumbnail(getShortFilePath(path));
+
 
 		if (studyInfo.getInterest() != null) {
 //		 관심사 테이블.
@@ -231,7 +238,34 @@ public class StudyServiceImpl implements StudyService {
 		case 4 : member.setTemperature(curTemperature + 0.5f); break;
 		case 5 : member.setTemperature(curTemperature + 1f); break;
 		}
+	}
 		
+	public List<StudyScheduleMonthRes> getStudyScheduleMonth(Long studyId, int month) {
+		
+		// 해당 스터디 일정 전부 가져오기
+		List<StudyPlan> list = studyPlanRepository.findByStudy_Id(studyId);
+		List<StudyScheduleMonthRes> res = new ArrayList<>();
+		
+		for(StudyPlan studyPlan : list) {
+			DateFormat sdFormat = new SimpleDateFormat("yyyy-MM");
+			Date nowDate = new Date();
+			String today = sdFormat.format(nowDate); // 오늘 날짜(연, 월)
+			
+			String studyMonth = Integer.toString(month); // 검색할 월
+			if(studyMonth.length() != 2) studyMonth = "0" + studyMonth;
+			today = today.substring(0, 5) + studyMonth; 
+			
+			String studySchedule = sdFormat.format(studyPlan.getDate()); // 스터디 날짜
+			
+			if(!today.equals(studySchedule)) continue; // 날짜 다르면 넘김
+			
+			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
+					studyPlan.getTitle(), studyPlan.getDetail(), studyPlan.getDate());
+			// 저장
+			res.add(s);
+		}
+		
+		return res;
 	}
 
 }
