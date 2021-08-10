@@ -35,4 +35,6 @@ public class StudyRate extends BaseEntity{
 	   this.setUser(user);
 	   this.setStudyMember(studyMember);
    }
+   
+   public StudyRate() {}
 }

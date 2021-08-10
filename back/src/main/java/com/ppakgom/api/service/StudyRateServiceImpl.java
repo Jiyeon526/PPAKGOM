@@ -12,11 +12,11 @@ import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyRateRepository;
 import com.ppakgom.db.repository.UserInterestRepository;
+import com.ppakgom.db.entity.StudyRate;
+import com.ppakgom.db.repository.StudyRateRepository;
 
 @Service("StudyRateService")
 public class StudyRateServiceImpl implements StudyRateService {
-
-//	   public StudyRate(Study study, User user, User studyMember, boolean check) {
 
 	@Autowired
 	StudyRateRepository studyRateRepository;
@@ -33,6 +33,12 @@ public class StudyRateServiceImpl implements StudyRateService {
 			studyRateRepository.save(new StudyRate(study, newUser, originUser, false));
 		}
 
+	}
+	
+	@Override
+//	user가 평가해야 하는 평가 목록
+	public List<StudyRate> getRateListByUserId(Long userId) {
+		return studyRateRepository.findByUserId(userId);
 	}
 
 }

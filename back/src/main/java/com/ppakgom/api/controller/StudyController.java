@@ -29,6 +29,7 @@ import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
+import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.entity.UserStudy;
@@ -37,11 +38,13 @@ import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.InviteGetResByStudy;
 import com.ppakgom.api.response.InviteResByStudy;
 import com.ppakgom.api.response.SearchMember;
+import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.service.InterestService;
 import com.ppakgom.api.service.StudyApplyService;
+import com.ppakgom.api.service.StudyRateService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserStudyService;
@@ -82,18 +85,19 @@ public class StudyController {
 	
 	@Autowired
 	UserStudyService userStudyService;
-	
+
 	private final StudyRes STUDY_RES = new StudyRes();
 
+	@Autowired
+	StudyRateService studyRateService;
+	
 	/* 스터디 생성 */
 	@PostMapping("/")
 	@ApiOperation(value = "스터디 생성", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.", consumes = "multipart/form-data", produces = "multipart/form-data")
-	public ResponseEntity<?> createStudy(
-			@ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
+	public ResponseEntity<?> createStudy(@ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
 			@RequestPart(value = "study_thumbnail", required = false) MultipartFile studyThumbnail,
 			@ApiIgnore Authentication authentication) {
 
-		
 		Study study = null;
 
 		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
@@ -117,7 +121,7 @@ public class StudyController {
 
 		}
 //		성공 응답 -> 아뒤
-		StudyCreatePostRes res= new StudyCreatePostRes(study.getId());
+		StudyCreatePostRes res = new StudyCreatePostRes(study.getId());
 		return ResponseEntity.ok(res);
 	}
 
@@ -201,52 +205,58 @@ public class StudyController {
 		return ResponseEntity.ok(res);
 
 	}
-	
-	
+
 	/* 스터디 상세 정보 불러오기 */
 	@GetMapping("/{studyId}/detail")
 	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
-	public ResponseEntity<StudySearchGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId) {
-		
+	public ResponseEntity<StudySearchGetRes> getStudyDetail(
+			@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId) {
+
 		StudySearchGetRes res = new StudySearchGetRes();
-		res.setStudyResult(new ArrayList<>()); //배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
-		
+		res.setStudyResult(new ArrayList<>()); // 배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
+
 		Optional<Study> study = studyService.getStudyById(studyId);
-		if(study.isPresent()) {
+		if (study.isPresent()) {
 			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository));
 		}
 		return ResponseEntity.ok(res);
-		
-	}
 
+	}
 
 	/* 평가 점수 입력 */
 	@PostMapping("/rating/{userId}")
 	@ApiOperation(value = "스터디원 평가하기", notes = "스터디원 점수를 5점 만점에 정수로 평가하기")
-	public ResponseEntity<BaseResponseBody> rateStudyMember
-	(@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId,
-	 @ApiParam(value = "평가 내용", required = true) StudyRatePostReq rateInfo) {
+	public ResponseEntity<BaseResponseBody> rateStudyMember(
+			@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId,
+			@ApiParam(value = "평가 내용", required = true) StudyRatePostReq rateInfo) {
 
 //		유저 ID, 스터디 ID, 스터디 멤버 ID
 		try {
 //			유저 ID로 평가자 객체 찾기
 			User user = userService.getUserById(userId);
-			studyService.rateStudy(user,rateInfo);
+			studyService.rateStudy(user, rateInfo);
 			return ResponseEntity.status(200).body(new BaseResponseBody(200, "평가 완료"));
 		}
 //		존재 하지 않는 스터디 || 존재하지 않는 유저 || 존재하지 않는 멤버
-		catch(Exception e) {
+		catch (Exception e) {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
 		}
 	}
-	
+
 	/* 평가 목록 불러오기 */
-	//내가 가입한 스터디 중 내가 평가 한 or 평가 해야 하는 스터디 목록이 쫘르르 나온다.
-//	스터디에 가입승인 or 초대 승인 해서 가입되면 하면 스터디 - rate 테이블에 check false로 해서 추가시켜야 함.(나 - 현재 가입 회원들 , 현재 가입회원들 - 나)
-//그 이후에 user-study 테이블에 삽입해야 함(뉴비와 기존 회원구별 위해 뒤늦게 뉴비 추가.)
-	//	@GetMapping("/rating/{userId}")
-//	@ApiOperation(value = "평가할 스터디원 목록.", notes = "평가 했던 or 평가 해야할 스터디원 목록 불러오기")
-//	public ResponseEntity<>
+	// 내가 가입한 스터디 중 내가 평가 한 or 평가 해야 하는 스터디 목록이 쫘르르 나온다.
+	@GetMapping("/rating/{userId}")
+	@ApiOperation(value = "평가할 스터디원 목록.", notes = "평가 했던 or 평가 해야할 스터디원 목록 불러오기")
+	public ResponseEntity<?> getRateList(@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId){
+		List<StudyRate> rateList = studyRateService.getRateListByUserId(userId);
+		List<RateRes> rateRes = new ArrayList<>();
+		
+		for(StudyRate sr : rateList) {
+			rateRes.add(new RateRes(sr));
+		}
+		
+		return ResponseEntity.ok(rateRes);
+	}
 	
 	
 	
@@ -273,7 +283,6 @@ public class StudyController {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400,"실패"));
 		}
 	}
-	
 	
 	/* 초대한 회원 리스트 */
 	@GetMapping("/{studyId}/invitelist")
