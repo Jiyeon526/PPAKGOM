@@ -30,7 +30,9 @@
           <el-menu-item-group title="">
             <el-menu-item index="3"><i class="el-icon-reading"></i>가입한 스터디</el-menu-item>
             <el-menu-item index="4"><i class="el-icon-star-on"></i>찜한 스터디</el-menu-item>
-            <el-menu-item index="5"><i class="el-icon-s-management"></i>방관리</el-menu-item>
+            <!-- <el-menu-item index="5"><i class="el-icon-s-management"></i>방관리</el-menu-item> -->
+            <el-menu-item index="5"><i class="el-icon-s-management"></i>가입/초대</el-menu-item>
+            <el-menu-item index="5"><i class="el-icon-s-management"></i>평가</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
