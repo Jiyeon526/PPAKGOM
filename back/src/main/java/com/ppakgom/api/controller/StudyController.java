@@ -239,7 +239,7 @@ public class StudyController {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
 		}
 	}
-	
+
 	/* 스터디 초대하기 */
 //	스터디에 초대한다(방장만 가능)
 	@PostMapping("/{studyId}/member")

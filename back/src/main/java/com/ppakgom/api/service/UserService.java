@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.UserRegisterPostReq;
+import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 
 public interface UserService {
@@ -15,5 +16,7 @@ public interface UserService {
 	User getUserByUserId(String userId);
 	User getUserById(Long userId);
 	List<String> getInterest(Long userid);
+	void likeStudy(User user, Study study);
+	void unlikeStudy(User user, Study study);
 
 }
