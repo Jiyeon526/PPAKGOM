@@ -144,6 +144,8 @@ public class StudyController {
 		List<Study> resultSet = new ArrayList<>();
 		Optional<Study> study;
 
+		try {
+			
 //		스터디 전체 검색
 		if (studyId == null && name == null && interest == null)
 			resultSet = studyService.getAllStudy();
@@ -168,6 +170,9 @@ public class StudyController {
 		for (Study s : resultSet) {
 			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
 			res.getStudyResult().add(sr);
+		}
+		}catch(Exception e) {
+			System.out.println("에러");
 		}
 		return ResponseEntity.ok(res);
 
