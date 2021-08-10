@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyScheduleReq;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
+import com.ppakgom.api.response.StudyTestScoreTotalRes;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 
@@ -33,5 +34,7 @@ public interface StudyService {
 	List<Study> getUserJoinStudy(User user);
 
 	boolean postStudySchedule(Long studyId, StudyScheduleReq req);
+
+	List<StudyTestScoreTotalRes> getStudyTestScore(Long studyId);
 
 }
