@@ -47,7 +47,7 @@
         <!-- <div id="main-video" class="col-md-6">
         <user-video :stream-manager="mainStreamManager" />
       </div> -->
-        <el-row>
+        <el-row :gutter="20">
           <el-col :span="18">
             <el-container class="room">
               <user-video
@@ -62,21 +62,45 @@
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
               />
+              <user-video
+                class="screen-res"
+                :stream-manager="screenPublisher"
+                @click="updateMainVideoStreamManager(screenPublisher)"
+              />
+              <user-video
+                class="screen-res"
+                v-for="sub in screenSubscribers"
+                :key="sub.stream.connection.connectionId"
+                :stream-manager="sub"
+                @click="updateMainVideoStreamManager(sub)"
+              />
             </el-container>
           </el-col>
           <el-col :span="6">
-            <el-collapse>
-              <el-collapse-item title="채팅" name="1">
-                <el-scrollbar max-height="400px">
-                  <p class="item" v-for="item in count">{{ item }}</p>
-                </el-scrollbar>
-              </el-collapse-item>
-            </el-collapse>
+            <div style="height:550px;">
+              <el-collapse v-model="activeNames">
+                <el-collapse-item title="채팅" name="1">
+                  <el-scrollbar height="500px" always>
+                    <p v-for="(item, i) in messages" :key="i">
+                      {{ item.from }}:{{ item.content }}
+                    </p>
+                  </el-scrollbar>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+            <el-input
+              v-model="message"
+              type="textarea"
+              clearable
+              :rows="2"
+              placeholder="채팅 내용을 입력하세요"
+              maxlength="100"
+              @keyup.enter="sendMessage"
+              show-word-limit
+            />
           </el-col>
         </el-row>
       </div>
-
-      <!-- <input v-model="message" type="text" @keyup.enter="sendMessage" /> -->
     </el-main>
   </el-container>
   <el-container style="height:3%">
@@ -113,7 +137,22 @@
           icon="el-icon-video-play"
           >화상 중지</el-button
         >
-        <el-button type="success" icon="el-icon-monitor">화상공유</el-button>
+
+        <el-button
+          type="success"
+          icon="el-icon-monitor"
+          v-if="!screenSession"
+          @click="toggleShareScreen"
+          >화상공유</el-button
+        >
+
+        <el-button
+          type="danger"
+          icon="el-icon-s-platform"
+          v-if="screenSession"
+          @click="toggleShareScreen"
+          >화상공유 중지</el-button
+        >
         <el-button
           type="success"
           icon="el-icon-switch-button"
@@ -130,6 +169,7 @@ import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./openviducomponents/UserVideo";
 import WindowPopup from "./WindowPopup";
+import Swal from "sweetalert2";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -148,18 +188,37 @@ export default {
     return {
       count: 3,
       open: false,
+
+      //채팅
       message: "",
+      messages: [],
+      activeNames: ["1"],
+      test: "",
+
+      //화상회의
       OV: undefined,
       session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
       subscribers: [],
+      mySessionId: "SessionA",
+      myUserName: "Participant" + Math.floor(Math.random() * 100),
+
+      //마이크 ONOFF 카메라 ONOFF
       audioOn: true,
       videoOn: true,
-      mySessionId: "SessionA",
-      myUserName: "Participant" + Math.floor(Math.random() * 100)
+
+      // screen share
+      screenOV: undefined,
+      screenSession: undefined,
+      screenMainStreamManager: undefined,
+      screenPublisher: undefined,
+      screenSubscribers: [],
+      screenOvToken: null,
+      isSharingMode: false
     };
   },
+
   mounted: function() {
     console.log("들어가기전 훅");
   },
@@ -169,6 +228,95 @@ export default {
     console.log("파괴");
   },
   methods: {
+    stopShareScreen() {
+      if (this.screenSession) this.screenSession.disconnect();
+      this.screenOV = undefined;
+      this.screenMainStreamManager = undefined;
+      this.screenPublisher = undefined;
+      this.screenSession = undefined;
+      this.screenSubscribers = [];
+      this.screenOvToken = null;
+      // state.session.signal({
+      //   data: "F",
+      //   to: [],
+      //   type: "share"
+      // });
+    },
+    startShareScreen() {
+      const screenOV = new OpenVidu();
+
+      const screenSession = screenOV.initSession();
+
+      const screenSubscribers = [];
+      screenSession.on("streamCreated", ({ stream }) => {
+        const screenSubscriber = screenSession.subscribe(stream);
+        screenSubscribers.push(screenSubscriber);
+      });
+      // On every Stream destroyed...
+      screenSession.on("streamDestroyed", ({ stream }) => {
+        const index2 = screenSubscribers.indexOf(stream.streamManager, 0);
+        if (index2 >= 0) {
+          screenSubscribers.splice(index2, 1);
+        }
+      });
+
+      this.getToken(this.mySessionId).then(token2 => {
+        let screenPublisher = screenOV.initPublisher(undefined, {
+          audioSource: false, // The source of audio. If undefined default microphone
+          videoSource: "screen", // The source of video. If undefined default webcam
+          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true, // Whether you want to start publishing with your video enabled or not
+          resolution: "1920x1080", // The resolution of your video
+          frameRate: 30, // The frame rate of your video
+          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+          mirror: false // Whether to mirror your local video or not
+        });
+        screenSession
+          .connect(token2, { clientData: this.myUserName + "screen" })
+          .then(() => {
+            screenPublisher.once("accessAllowed", () => {
+              screenPublisher.stream
+                .getMediaStream()
+                .getVideoTracks()[0]
+                .addEventListener("ended", () => {
+                  dispatch("stopShareScreen");
+                });
+              screenSession.publish(screenPublisher);
+              //       screenOV: undefined,
+              // screenSession: undefined,
+              // screenMainStreamManager: undefined,
+              // screenPublisher: undefined,
+              // screenSubscribers: [],
+              // screenOvToken: null,
+              // isSharingMode: false
+              this.screenOV = screenOV;
+              this.screenMainStreamManager = screenPublisher;
+              this.screenPublisher = screenPublisher;
+              this.screenSession = screenSession;
+              this.screenSubscribers = screenSubscribers;
+              this.screenOvToken = token2;
+              // state.session.signal({
+              //   data: "T",
+              //   to: [],
+              //   type: "share"
+              // });
+            });
+            screenPublisher.once("accessDenied", () => {
+              console.warn("ScreenShare: Access Denied");
+            });
+            screenPublisher.once("accessDenied", () => {
+              console.warn("ScreenShare: Access Denied");
+            });
+          })
+          .catch(error => {
+            console.log(
+              "There was an error connecting to the session:",
+              error.code,
+              error.message
+            );
+          });
+      });
+    },
     joinSession() {
       // --- Get an OpenVidu object ---
       this.OV = new OpenVidu();
@@ -235,7 +383,7 @@ export default {
       });
       this.session.on("signal:chat", event => {
         let eventData = JSON.parse(event.data);
-        console.log("받은 메시지", eventData);
+        this.messages.push(eventData);
       });
       window.addEventListener("beforeunload", this.leaveSession);
     },
@@ -251,7 +399,7 @@ export default {
       this.OV = undefined;
       this.audioOn = true;
       this.videoOn = true;
-
+      this.messages = [];
       window.removeEventListener("beforeunload", this.leaveSession);
     },
 
@@ -328,8 +476,9 @@ export default {
     sendMessage() {
       var messageData = {
         content: this.message,
-        secretName: this.myUserName
+        from: this.myUserName
       };
+      this.message = "";
       this.session.signal({
         type: "chat",
         data: JSON.stringify(messageData),
@@ -354,6 +503,35 @@ export default {
           .then(data => resolve(data.token))
           .catch(error => reject(error.response));
       });
+    },
+    toggleShareScreen() {
+      if (this.screenPublisher) {
+        Swal.fire({
+          html: "화면공유를 중단 하시겠습니까?",
+          showCancelButton: true,
+          confirmButtonText: "네",
+          cancelButtonText: "아니요",
+          icon: "warning"
+        }).then(result => {
+          if (result.value) {
+            this.stopShareScreen();
+            console.log("공유 정지", result.value);
+          }
+        });
+      } else {
+        Swal.fire({
+          html: "화면공유를 시작 하시겠습니까?",
+          showCancelButton: true,
+          confirmButtonText: "네",
+          cancelButtonText: "아니요",
+          icon: "warning"
+        }).then(result => {
+          if (result.value) {
+            this.startShareScreen();
+            console.log("공유 시작", result.value);
+          }
+        });
+      }
     }
   }
 };
