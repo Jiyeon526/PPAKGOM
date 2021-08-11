@@ -27,6 +27,7 @@ import com.ppakgom.api.request.StudyScheduleReq;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudyScoreMember;
 import com.ppakgom.api.response.StudyTestListRes;
+import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.response.StudyTestScoreTotalRes;
 
 import com.ppakgom.db.entity.Interest;
@@ -389,6 +390,45 @@ public class StudyServiceImpl implements StudyService {
 					us.getUser().getId(), us.getUser().getProfile_thumbnail());
 			res.add(member);
 		}
+		
+		return res;
+	}
+
+	@Override
+	public StudyTestScoreRes postStudyTestScore(List<String> answer, Long userId, Long testId) {
+		StudyTestScoreRes res = new StudyTestScoreRes();
+		StudyScore score = new StudyScore();
+		
+		// 답 가져오기
+		Optional<StudyTest> test = studyTestRepository.findById(testId);
+		if(!test.isPresent()) return null;
+		
+		// 테이블 insert할 객체들
+		score.setStudy(test.get().getStudy()); // 해당 스터디 저장
+		score.setStudyTest(test.get()); // 문제집 저장
+		Optional<User> user = userRepository.findById(userId); // 문제 푼 사람 저장
+		if(user.isPresent()) score.setUser(user.get());
+		
+		res.setNumber(test.get().getNumber()); // 문항 개수 세팅
+		String[] testAnswer = test.get().getAnswer().split(","); // 정답 , 로 구분하기
+		
+		Short cCnt = 0; // 맞은 갯수
+		for(int i=0;i<testAnswer.length;i++) {
+			if(answer.get(i) == null) continue;
+			if(testAnswer[i].equals(answer.get(i))) {
+				cCnt++;
+			}
+		}
+		
+		res.setCorrect(cCnt);
+		score.setScore(cCnt);
+		
+		StudyScore origin = studyScoreRepository.findByStudyTestIdAndUserId(testId, userId);
+		if(origin != null) {// 원래 점수가 있던 사람
+			origin.setScore(cCnt);
+			studyScoreRepository.save(origin);
+		} else
+			studyScoreRepository.save(score);
 		
 		return res;
 	}
