@@ -15,9 +15,11 @@ import com.ppakgom.api.response.JoinApplyListRes;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
+import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyApplyRepository;
+import com.ppakgom.db.repository.StudyRateRepository;
 import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
@@ -36,6 +38,9 @@ public class JoinServiceImpl implements JoinService {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	StudyRateRepository studyRateRepository;
 	
 	@Override
 	public List<JoinApplyListRes> getJoinApplyList(Long user_id) { // 가입 신청 현황 가져오기
@@ -124,9 +129,20 @@ public class JoinServiceImpl implements JoinService {
 		if(studyPopulation >= study.get().getPopulation())
 			return "population";
 		
+		// 스터디 평가에 사람 추가
+		// 스터디원들 가져오기
+		List<UserStudy> userStudyList = userStudyRepository.findByStudyId(study.get().getId());
+		for(UserStudy us : userStudyList) {
+			User originUser = us.getUser();
+//					팀원들이 새로운 멤버를 평가해야 하고
+			studyRateRepository.save(new StudyRate(study.get(), originUser, studyApply.getSender(), false));
+//					새로운 멤버도 팀원들을 평가해야 함.
+			studyRateRepository.save(new StudyRate(study.get(), studyApply.getSender(), originUser, false));
+		}
 		// 스터디에 유저 추가
 		UserStudy userStudy = new UserStudy(studyApply.getSender(), study.get());
 		userStudyRepository.save(userStudy);
+		
 		return "ok";
 	}
 
