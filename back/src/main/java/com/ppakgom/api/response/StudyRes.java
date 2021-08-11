@@ -36,9 +36,10 @@ public class StudyRes {
 	int joined_population; // 가입한 회원 수
 	String deadline;// 마감날짜
 	Long owner_id;
-	
+	float temperature; 
+	boolean enter;
 
-	public StudyRes of(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository) {
+	public StudyRes of(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository, List<Study> studyList) {
 
 		StudyRes res = new StudyRes();
 		
@@ -67,6 +68,18 @@ public class StudyRes {
 		
 //		5.마감 날짜 파싱해서 집어넣기
 		res.setDeadline(parseDate(study.getDeadline()));
+		
+//		6. 열정도 추가
+		res.setTemperature(study.getTemperature());
+		
+//		입장버튼 추가
+		for(Study s : studyList) {
+			if(res.getStudy_id().equals(s.getId())) {
+				res.setEnter(true);
+				break;
+			}
+		}
+		
 		return res;
 	}
 
