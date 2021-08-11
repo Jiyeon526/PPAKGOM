@@ -54,7 +54,7 @@
   >
   </el-alert>
 </template>
-<style>
+<style scoped>
 .study {
   display: inline-block;
 }
