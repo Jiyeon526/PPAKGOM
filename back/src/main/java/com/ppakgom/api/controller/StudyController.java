@@ -50,6 +50,7 @@ import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
+import com.ppakgom.api.response.StudyTestScoreTotalRes;
 import com.ppakgom.api.service.JoinService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
@@ -255,6 +256,15 @@ public class StudyController {
 		
 		return ResponseEntity.status(201).body(BaseResponseBody.of(201, "일정 등록 완료"));
 	}
-
+	
+	@GetMapping("/{studyId}/score")
+	@ApiOperation(value = "문제 푼 점수 결과 가져오기", notes = "통계 페이지를 위한 결과")
+	public ResponseEntity<List<StudyTestScoreTotalRes>> getStudyTestScore(@PathVariable(value = "studyId") Long studyId) {
+		
+		// 스터디에 있는 문제집들 점수 회원별로 가져와서 저장
+		List<StudyTestScoreTotalRes> res = studyService.getStudyTestScore(studyId);
+		return ResponseEntity.status(200).body(res);
+		
+	}
 }
 
