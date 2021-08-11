@@ -22,11 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ppakgom.api.request.UserModifyInfoReq;
 import com.ppakgom.api.request.UserRegisterPostReq;
 import com.ppakgom.db.entity.Interest;
+import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
+import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.repository.InterestRepository;
 import com.ppakgom.db.repository.UserInterestRepository;
-
+import com.ppakgom.db.repository.UserLikeStudyRepository;
 import com.ppakgom.db.repository.UserRepository;
 
 @Service("UserService")
@@ -44,11 +46,11 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
-
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image";
 	
+	@Autowired
+	UserLikeStudyRepository userLikeStudyRepository;
 	
-
 	@Override
 	public User createUser(UserRegisterPostReq registerInfo, MultipartFile thumbnail) { // 사용자 회원가입
 
@@ -218,5 +220,15 @@ public class UserServiceImpl implements UserService {
 
 	
 
+
+	@Override
+	public void likeStudy(User user, Study study) {
+		userLikeStudyRepository.save(new UserLikeStudy(user, study));
+	}
+
+	@Override
+	public void unlikeStudy(User user, Study study) {
+		userLikeStudyRepository.deleteByUserIdAndStudyId(user.getId(), study.getId());
+	}
 
 }
