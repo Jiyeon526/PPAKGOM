@@ -2,6 +2,7 @@ package com.ppakgom.api.controller;
 
 import java.text.ParseException;
 
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,10 +46,12 @@ import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
+import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.response.StudyTestListRes;
+import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.service.InterestService;
 import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyRateService;
@@ -399,12 +402,30 @@ public class StudyController {
 		
 	}
 	
-	@GetMapping("/study/{studyId}/workbook")
+	@GetMapping("/{studyId}/workbook")
 	@ApiOperation(value = "문제집 리스트 가져오기", notes = "문제집 리스트 가져오기")
 	public ResponseEntity<List<StudyTestListRes>> getStudyTestList(@PathVariable(value = "studyId") Long studyId) {
 		
 		List<StudyTestListRes> res = studyService.getStudyTestList(studyId);
 		return ResponseEntity.status(200).body(res);
+	}
+	
+	@GetMapping("/{studyId}/info/member")
+	@ApiOperation(value = "스터디 내 멤버들 정보 가져오기", notes = "스터디 내 멤버들 정보 가져오기")
+	public ResponseEntity<List<StudyMemberInfoRes>> getStudyMemberInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyMemberInfoRes> res = studyService.getStudyMemberInfo(studyId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@PostMapping("/{userId}/score/{testId}")
+	@ApiOperation(value = "스터디 문제집 풀이 제출 시 채점 결과 리턴", notes = "스터디 문제집 풀이 제출 시 채점 결과 리턴")
+	public ResponseEntity<StudyTestScoreRes> postStudyTestScore(@PathVariable(value = "userId") Long userId, 
+			@PathVariable(value = "testId") Long testId, @RequestBody List<String> answer) {
+
+		StudyTestScoreRes res = studyService.postStudyTestScore(answer, userId, testId);
+		return ResponseEntity.status(200).body(res);
+		
 	}
 }
 
