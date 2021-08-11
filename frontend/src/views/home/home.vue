@@ -26,10 +26,10 @@
   <h4 v-if="state.recommendStudyList.length === 0">
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
-  <el-carousel v-else :interval="4000" type="card" height="200px">
+  <el-carousel v-else :interval="4000" type="card" height="300px">
     <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
-      <el-image style="width: 100%; height: 190px"
-        :src="state.recommendStudyList[i-1].study_thumbnail"
+      <el-image style="width: 300px; height: 300px"
+        :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
         :fit="fit"
         alt="PPAKGOM"
       >
@@ -54,7 +54,7 @@
   >
   </el-alert>
 </template>
-<style>
+<style scoped>
 .study {
   display: inline-block;
 }
@@ -73,10 +73,21 @@
 /* carousel */
 .el-carousel {
   margin: 50px 0px;
+  display: flex;
+  flex-direction: column;
+}
+.el-carousel__container {
+  display: flex;
+  justify-content: center;
+}
+
+.el-carousel .el-carousel__item {
+  width: 300px;
+  height: 300px;
 }
 
 .el-carousel__item h3 {
-  color: #475669;
+  color: #d3dce6;
   font-size: 14px;
   opacity: 0.75;
   line-height: 200px;
@@ -84,7 +95,7 @@
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+  background-color: #d3dce6;
 }
 
 .el-carousel__item:nth-child(2n + 1) {
@@ -172,18 +183,21 @@ export default {
           state.recommendStudyList = res.data.studyResult
           // 받아온 study_thumbnail에 'https://localhost:8443/'를 붙여서 주소로 만들고 src로 넣어준다.
           // 1개나 2개의 데이터를 받아오는 경우 기본 이미지를 출력하기 위해
-          const recommendStudIndex = state.recommendStudyList.length
-          let cnt = 0
-          while (cnt < recommendStudIndex) {
-            state.recommendStudyList[cnt].study_thumbnail = 'https://localhost:8443/' + state.recommendStudyList[cnt].study_thumbnail
-            cnt += 1
-          }
-          if (0 < state.recommendStudyList.length < 3) {
-            state.recommendStudyList.push(state.addRecommendStudy)
-            if (0 < state.recommendStudyList.length < 3) {
-              state.recommendStudyList.push(state.addRecommendStudy)
-            }
-          }
+          // const recommendStudyIndex = state.recommendStudyList.length
+          // console.log("너는 몇이니", recommendStudyIndex)
+          // let cnt = 0
+          // while (cnt < recommendStudyIndex) {
+          //   state.recommendStudyList[cnt].study_thumbnail = 'https://localhost:8443/' + state.recommendStudyList[cnt].study_thumbnail
+          //   cnt += 1
+          // }
+          // console.log("여기!",state.recommendStudyList.length)
+          // console.log(0 < state.recommendStudyList.length && state.recommendStudyList.length < 3)
+          // if (0 < state.recommendStudyList.length && state.recommendStudyList.length < 3) {
+          //   state.recommendStudyList.push(state.addRecommendStudy)
+          //   if (0 < state.recommendStudyList.length && state.recommendStudyList.length < 3) {
+          //     state.recommendStudyList.push(state.addRecommendStudy)
+          //   }
+          // }
         })
         .catch(function(err) {
           console.log('추천 리스트 응답 에러', err)

@@ -23,6 +23,8 @@
 </template>
 <style>
 .el-card {
+  width: 300px;
+  height: 300px;
   margin: 0 8px;
   margin-bottom: 40px;
 }
@@ -31,7 +33,7 @@
   height: 190px;
 }
 .el-card .title {
-  width: 345px;
+  width: 300px;
   display:-webkit-box;
   font-weight: bold;
   word-wrap:break-word;
@@ -41,7 +43,7 @@
   -webkit-line-clamp: 1;
 }
 .el-card .bottom {
-  width: 345px;
+  width: 300px;
   margin-top: 5px;
   display:-webkit-box;
   word-wrap:break-word;
