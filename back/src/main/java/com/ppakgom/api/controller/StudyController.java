@@ -185,62 +185,70 @@ public class StudyController {
 
 	}
 
-//	/* 사용자 관심 스터디 불러오기 */
-//	@GetMapping("/interest/{userId}")
-//	@ApiOperation(value = "관심사 기반 스터디 검색", notes = "사용자 관심사 기반 스터디 검색")
-//	public ResponseEntity<StudySearchGetRes> searchStudyByUserInterest(
-//			@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId) {
-//		StudySearchGetRes res = new StudySearchGetRes();
-//		res.setStudyResult(new ArrayList<>());
-//		// 사용자의 관심사들에 매칭된 스터디가 겹칠 경우.
-//		// 예: 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
-//		HashSet<Study> tmp = new HashSet<>();
-//
-////		1. 사용자 관심사 불러오기.
-//		User user = userService.getUserById(userId);
-//		List<UserInterest> userInterest = userInterestService.getInterestByUser(user);
-////		2. 관심사에 맞는 스터디 불러오기
-//		List<Study> resultSet;
-////		관심사 있는지부터 체크
-//		if (userInterest != null) {
-//			for (UserInterest ui : userInterest) {
-////				최대 3개만 저장스
-//				resultSet = studyService.getStudyByInterest(ui.getInterest().getName());
-//				for (Study s : resultSet) {
-//					tmp.add(s);
-//					if (tmp.size() == 3)
-//						break;
-//				}
-//				if (tmp.size() == 3)
-//					break;
-//			}
-//		}
-//
-//		/* 검색 결과 삽입 */
-//		for (Study s : tmp) {
-//			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
-//			res.getStudyResult().add(sr);
-//		}
-//
-//		return ResponseEntity.ok(res);
-//
-//	}
+	/* 사용자 관심 스터디 불러오기 */
+	@GetMapping("/interest/{userId}")
+	@ApiOperation(value = "관심사 기반 스터디 검색", notes = "사용자 관심사 기반 스터디 검색")
+	public ResponseEntity<StudySearchGetRes> searchStudyByUserInterest(
+			@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId) {
+		StudySearchGetRes res = new StudySearchGetRes();
+		res.setStudyResult(new ArrayList<>());
+		// 사용자의 관심사들에 매칭된 스터디가 겹칠 경우.
+		// 예: 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
+		HashSet<Study> tmp = new HashSet<>();
 
-//	/* 스터디 상세 정보 불러오기 */
-//	@GetMapping("/{studyId}/detail")
-//	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
-//	public ResponseEntity<StudySearchGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId) {
-//		
-//		StudySearchGetRes res = new StudySearchGetRes();
-//		res.setStudyResult(new ArrayList<>()); //배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
-//		
-//		Optional<Study> study = studyService.getStudyById(studyId);
-//		if(study.isPresent()) {
-//			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository));
-//		}
-//		return ResponseEntity.ok(res);
-//		
-//	}
+//		1. 사용자 관심사 불러오기.
+		User user = userService.getUserById(userId);
+		List<UserInterest> userInterest = userInterestService.getInterestByUser(user);
+//		2. 관심사에 맞는 스터디 불러오기
+		List<Study> resultSet;
+//		관심사 있는지부터 체크
+		if (userInterest != null) {
+			for (UserInterest ui : userInterest) {
+//				최대 3개만 저장스
+				resultSet = studyService.getStudyByInterest(ui.getInterest().getName());
+				for (Study s : resultSet) {
+					tmp.add(s);
+					if (tmp.size() == 3)
+						break;
+				}
+				if (tmp.size() == 3)
+					break;
+			}
+		}
+		List<Study> userStudy = studyService.getUserJoinStudy(user);
+		/* 검색 결과 삽입 */
+		for (Study s : tmp) {
+			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy);
+			res.getStudyResult().add(sr);
+		}
+
+		return ResponseEntity.ok(res);
+
+	}
+
+	/* 스터디 상세 정보 불러오기 */
+	@GetMapping("/{studyId}/detail")
+	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
+	public ResponseEntity<StudySearchGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId,
+			@ApiIgnore Authentication authentication) {
+		
+		StudySearchGetRes res = new StudySearchGetRes();
+		res.setStudyResult(new ArrayList<>()); //배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
+		
+		Optional<Study> study = studyService.getStudyById(studyId);
+//		입장 버튼 추가용
+		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
+		String userId = userDetails.getUsername();
+		User user = userService.getUserByUserId(userId);
+		
+		List<Study> userStudy = studyService.getUserJoinStudy(user);
+		
+		if(study.isPresent()) {
+			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy));
+		}
+		return ResponseEntity.ok(res);
+		
+	}
 
 	/* 평가 점수 입력 */
 	@PostMapping("/rating/{userId}")
