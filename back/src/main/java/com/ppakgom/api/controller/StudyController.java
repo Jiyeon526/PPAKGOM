@@ -45,6 +45,7 @@ import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
+import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
@@ -399,12 +400,21 @@ public class StudyController {
 		
 	}
 	
-	@GetMapping("/study/{studyId}/workbook")
+	@GetMapping("/{studyId}/workbook")
 	@ApiOperation(value = "문제집 리스트 가져오기", notes = "문제집 리스트 가져오기")
 	public ResponseEntity<List<StudyTestListRes>> getStudyTestList(@PathVariable(value = "studyId") Long studyId) {
 		
 		List<StudyTestListRes> res = studyService.getStudyTestList(studyId);
 		return ResponseEntity.status(200).body(res);
 	}
+	
+	@GetMapping("/{studyId}/info/member")
+	@ApiOperation(value = "스터디 내 멤버들 정보 가져오기", notes = "스터디 내 멤버들 정보 가져오기")
+	public ResponseEntity<List<StudyMemberInfoRes>> getStudyMemberInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyMemberInfoRes> res = studyService.getStudyMemberInfo(studyId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
 }
 
