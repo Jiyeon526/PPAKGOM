@@ -10,4 +10,6 @@ public interface StudyScoreRepository extends JpaRepository<StudyScore, Long> {
 
 	Optional<StudyScore> findByUserIdAndStudyTestId(Long userId, Long testId);
 
+	StudyScore findByStudyTestIdAndUserId(Long testId, Long userId);
+
 }

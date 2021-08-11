@@ -17,7 +17,7 @@ public class StudyTest extends BaseEntity {
     String test_url;
     String answer;
     Short number;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     Study study;
