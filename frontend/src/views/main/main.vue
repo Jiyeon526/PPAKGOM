@@ -24,6 +24,8 @@
       <el-main>
         <router-view
           @openStudydetailDialog="onOpenStudydetailDialog"
+          @openAnswerworkbookDialog="onOpenAnswerWorkbookDialog"
+          @openMakeworkbookDialog="onOpenMakeworkbookDialog"
         ></router-view>
       </el-main>
     </el-container>
