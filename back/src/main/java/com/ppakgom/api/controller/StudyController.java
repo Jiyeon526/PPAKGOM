@@ -2,6 +2,7 @@ package com.ppakgom.api.controller;
 
 import java.text.ParseException;
 
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,7 +63,6 @@ import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.api.service.UserInterestService;
-import com.ppakgom.api.request.StudyAnswerReq;
 import com.ppakgom.api.request.StudyCreatePostReq;
 
 import com.ppakgom.api.request.StudyInvitePostReq;
