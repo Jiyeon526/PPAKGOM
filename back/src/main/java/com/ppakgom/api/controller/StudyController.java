@@ -1,10 +1,16 @@
 package com.ppakgom.api.controller;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -42,20 +49,30 @@ import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
+import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
+import com.ppakgom.api.response.StudyTestListRes;
+import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.service.InterestService;
 import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyRateService;
+
+import com.ppakgom.api.response.StudyTestScoreTotalRes;
+
 import com.ppakgom.api.service.JoinService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.api.service.UserInterestService;
 import com.ppakgom.api.request.StudyCreatePostReq;
+
 import com.ppakgom.api.request.StudyInvitePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+
+import com.ppakgom.api.request.StudyScheduleReq;
+
 
 /**
  * 스터디 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -87,10 +104,10 @@ public class StudyController {
 
 	@Autowired
 	UserInterestService userInterestService;
-	
+
 	@Autowired
 	InterestService interestService;
-	
+
 	@Autowired
 	UserStudyService userStudyService;
 
@@ -133,43 +150,67 @@ public class StudyController {
 		return ResponseEntity.ok(res);
 	}
 
-	/* 스터디 검색 */
+//	/* 스터디 검색 */
 	@GetMapping("/")
 	@ApiOperation(value = "스터디 검색", notes = "전체 스터디 목록 검색")
 	public ResponseEntity<StudySearchGetRes> searchStudyById(@RequestParam(required = false) Long studyId,
-			@RequestParam(required = false) String name, @RequestParam(required = false) String interest) {
+			@RequestParam(required = false) String name, @RequestParam(required = false) String interest,
+			@ApiIgnore Authentication authentication) {
 
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
 		List<Study> resultSet = new ArrayList<>();
 		Optional<Study> study;
+		try {
 
 		try {
 			
 //		스터디 전체 검색
-		if (studyId == null && name == null && interest == null)
-			resultSet = studyService.getAllStudy();
+			if (studyId == null && name == null && interest == null)
+				resultSet = studyService.getAllStudy();
 
 //		아이디로 검색
-		if (studyId != null) {
-			study = studyService.getStudyById(studyId);
-			resultSet.add(study.orElse(null));
-		}
+			if (studyId != null) {
+				study = studyService.getStudyById(studyId);
+				resultSet.add(study.orElse(null));
+			}
 
 //		스터디명으로 검색
-		if (name != null) {
-			resultSet = studyService.getStudyByName(name);
-		}
+			if (name != null) {
+				resultSet = studyService.getStudyByName(name);
+			}
 
 //		관심사로 검색
-		if (interest != null) {
-			resultSet = studyService.getStudyByInterest(interest);
-		}
+			if (interest != null) {
+				resultSet = studyService.getStudyByInterest(interest);
+			}
 
-		/* 검색 결과 삽입 */
-		for (Study s : resultSet) {
-			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
-			res.getStudyResult().add(sr);
+			List<Study> userJoinStudy = new ArrayList<Study>();
+			if (authentication == null) {
+				System.out.println("로그인된 사용자 없음");
+			} else {
+				SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
+				String userId = userDetails.getUsername();
+				User curUser = userService.getUserByUserId(userId);
+				System.out.println("로그인한 사용자 " + curUser);
+				userJoinStudy = studyService.getUserJoinStudy(curUser);
+			}
+
+//			오늘 날짜 받기
+			Date today = new Date();
+			System.out.println("오늘 날짜 "+today);
+			/* 검색 결과 삽입 */
+			for (Study s : resultSet) {
+//				마감날짜 지났으면 pass
+				Date strDate = s.getDeadline();
+				if(strDate.before(today)) {
+					continue;
+				}
+				StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userJoinStudy);
+				res.getStudyResult().add(sr);
+			}
+		} catch (Exception e) {
+			System.out.println("검색 결과 없음!");
 		}
 		}catch(Exception e) {
 			System.out.println("에러");
@@ -227,10 +268,10 @@ public class StudyController {
 					break;
 			}
 		}
-
+		List<Study> userStudy = studyService.getUserJoinStudy(user);
 		/* 검색 결과 삽입 */
 		for (Study s : tmp) {
-			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
+			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy);
 			res.getStudyResult().add(sr);
 		}
 
@@ -241,20 +282,27 @@ public class StudyController {
 	/* 스터디 상세 정보 불러오기 */
 	@GetMapping("/{studyId}/detail")
 	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
-	public ResponseEntity<StudySearchGetRes> getStudyDetail(
-			@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId) {
-
+	public ResponseEntity<StudySearchGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId,
+			@ApiIgnore Authentication authentication) {
+		
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>()); // 배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
 
 		Optional<Study> study = studyService.getStudyById(studyId);
-		if (study.isPresent()) {
-			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository));
+//		입장 버튼 추가용
+		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
+		String userId = userDetails.getUsername();
+		User user = userService.getUserByUserId(userId);
+		
+		List<Study> userStudy = studyService.getUserJoinStudy(user);
+		
+		if(study.isPresent()) {
+			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy));
 		}
 		return ResponseEntity.ok(res);
 
 	}
-
+	
 	/* 평가 점수 입력 */
 	@PostMapping("/rating/{userId}")
 	@ApiOperation(value = "스터디원 평가하기", notes = "스터디원 점수를 5점 만점에 정수로 평가하기")
@@ -296,73 +344,130 @@ public class StudyController {
 //	스터디에 초대한다(방장만 가능)
 	@PostMapping("/{studyId}/member")
 	@ApiOperation(value = "스터디에 초대하기", notes = "방장이 스터디에 회원을 초대한다.")
-	public ResponseEntity<BaseResponseBody> inviteMember(@PathVariable(value = "studyId") Long studyId, 
-			@ApiParam(value = "스터디 초대 내용",required = true) StudyInvitePostReq req){
+	public ResponseEntity<BaseResponseBody> inviteMember(@PathVariable(value = "studyId") Long studyId,
+			@ApiParam(value = "스터디 초대 내용", required = true) StudyInvitePostReq req) {
 		try {
-		// receiver_id로 회원 찾고
-		User receiver = userService.getUserById(req.getReceiver_id());
-		// study_id로 스터디 찾고
-		Study study = studyService.getStudyById(studyId).get();
-		// owner_id 가 sender_id.
-		User sender = study.getUser();
-		// is_join 가지고
-		// state는 2
-		studyApplyService.inviteStudy(sender, study, receiver, req.is_join());
-		
-		return ResponseEntity.ok(new BaseResponseBody(200,"성공"));
-		}catch(Exception e) {
+			// receiver_id로 회원 찾고
+			User receiver = userService.getUserById(req.getReceiver_id());
+			// study_id로 스터디 찾고
+			Study study = studyService.getStudyById(studyId).get();
+
+			if (study.getTemperature() > receiver.getTemperature()) {
+				return ResponseEntity.status(400).body(new BaseResponseBody(400, "열정도가 낮은 회원은 초대할 수 없습니다."));
+			}
+
+			// owner_id 가 sender_id.
+			User sender = study.getUser();
+			// is_join 가지고
+			// state는 2
+			studyApplyService.inviteStudy(sender, study, receiver, req.is_join());
+
+			return ResponseEntity.ok(new BaseResponseBody(200, "성공"));
+		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(400).body(new BaseResponseBody(400,"실패"));
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "실패"));
 		}
 	}
-	
 	/* 초대한 회원 리스트 */
 	@GetMapping("/{studyId}/invitelist")
 	@ApiOperation(value = "스터디에 초대한 회원 리스트 ", notes = "방장이 스터디에 초대한 회원 리스트")
-	public ResponseEntity<?> getInviteListOfStudy(@PathVariable(value = "studyId")Long studyId){
-		
+	public ResponseEntity<?> getInviteListOfStudy(@PathVariable(value = "studyId") Long studyId) {
+
 //		study로 질의
 		List<StudyApply> temp = studyApplyService.getInviteListByStudyAndIsJoin(studyId, false);
-		
+
 		InviteGetResByStudy res = new InviteGetResByStudy();
-		for(StudyApply sa : temp) {
+		for (StudyApply sa : temp) {
 			InviteResByStudy resByStudy = new InviteResByStudy();
 			res.getInviteResult().add(resByStudy.of(sa));
 		}
-		
+
 		return ResponseEntity.ok(res);
 	}
-	
+
 	/* 검색한 해시태그로 회원 리스트 불러오기 */
 	@GetMapping("/{studyId}/member/{interest}")
 	@ApiOperation(value = "관심사를 가진 회원 리스트", notes = "해당 관심사를 가진 회원 리스트")
-	public ResponseEntity<?> getMemberByInterest(@PathVariable(value = "studyId")Long studyId,@PathVariable (value = "interest")String interest){
-		
+	public ResponseEntity<?> getMemberByInterest(@PathVariable(value = "studyId") Long studyId,
+			@PathVariable(value = "interest") String interest) {
+
 		List<SearchMember> res = new ArrayList<>();
-		
+		try {
+			
 		
 //		1. 해당 단어가 포함된 관심사를 불러온다.
-		List<Interest> interestThings = interestService.getInterestByName(interest);
-		
-		HashSet<User> interestedUsers = new HashSet<>();
-		
+			List<Interest> interestThings = interestService.getInterestByName(interest);
+
+			HashSet<User> interestedUsers = new HashSet<>();
+
 //		2. 회원 - 관심사 테이블에서 그에 맞는 회원을 리스트로 가져온다.
-		for(Interest i : interestThings ) {
-			List<UserInterest> userInterest = userInterestService.findByInterestId(i.getId());
-			for(UserInterest ui : userInterest) {
-				interestedUsers.add(ui.getUser());
+			for (Interest i : interestThings) {
+				List<UserInterest> userInterest = userInterestService.findByInterestId(i.getId());
+				for (UserInterest ui : userInterest) {
+					interestedUsers.add(ui.getUser());
+				}
 			}
-		}
-		
+
 //		3. 회원이 가입한 스터디를 회원 - 스터디 테이블에서 가져오고, 그에 맞게 응답 객체를 생성하고 삽입한다.
-		for(User u : interestedUsers) {
-			List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
-			res.add(new SearchMember(u, studyList));
+			for (User u : interestedUsers) {
+				List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
+				res.add(new SearchMember(u, studyList));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println("검색결과 없음");
 		}
-		
 		return ResponseEntity.ok(res);
+
+	}
+	@PostMapping("/{studyId}/schedule")
+	@ApiOperation(value = "스터디 방 스케줄 입력", notes = "스터디 방 스케줄 입력")
+	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId, 
+			@RequestBody StudyScheduleReq req) {
+		// 값이 다 들어왔는지 확인
+		if(req.getTitle().length() == 0 || req.getDetail().length() == 0 || req.getDate().length() == 0)
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		// 저장하기
+		if(!studyService.postStudySchedule(studyId, req))
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		
+		return ResponseEntity.status(201).body(BaseResponseBody.of(201, "일정 등록 완료"));
+	}
+	
+	@GetMapping("/{studyId}/score")
+	@ApiOperation(value = "문제 푼 점수 결과 가져오기", notes = "통계 페이지를 위한 결과")
+	public ResponseEntity<List<StudyTestScoreTotalRes>> getStudyTestScore(@PathVariable(value = "studyId") Long studyId) {
+		
+		// 스터디에 있는 문제집들 점수 회원별로 가져와서 저장
+		List<StudyTestScoreTotalRes> res = studyService.getStudyTestScore(studyId);
+		return ResponseEntity.status(200).body(res);
 		
 	}
 	
+	@GetMapping("/{studyId}/workbook")
+	@ApiOperation(value = "문제집 리스트 가져오기", notes = "문제집 리스트 가져오기")
+	public ResponseEntity<List<StudyTestListRes>> getStudyTestList(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyTestListRes> res = studyService.getStudyTestList(studyId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@GetMapping("/{studyId}/info/member")
+	@ApiOperation(value = "스터디 내 멤버들 정보 가져오기", notes = "스터디 내 멤버들 정보 가져오기")
+	public ResponseEntity<List<StudyMemberInfoRes>> getStudyMemberInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyMemberInfoRes> res = studyService.getStudyMemberInfo(studyId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@PostMapping("/{userId}/score/{testId}")
+	@ApiOperation(value = "스터디 문제집 풀이 제출 시 채점 결과 리턴", notes = "스터디 문제집 풀이 제출 시 채점 결과 리턴")
+	public ResponseEntity<StudyTestScoreRes> postStudyTestScore(@PathVariable(value = "userId") Long userId, 
+			@PathVariable(value = "testId") Long testId, @RequestBody List<String> answer) {
+
+		StudyTestScoreRes res = studyService.postStudyTestScore(answer, userId, testId);
+		return ResponseEntity.status(200).body(res);
+		
+	}
 }
 

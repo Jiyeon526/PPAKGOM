@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -173,10 +173,13 @@ public class UserController {
 
 		User user = userService.getUserById(userId);
 		List<Study> resultSet = studyService.getUserLikeStudy(user);
-
+		
+//		사용자가 가입한 스터디.
+		List<Study> userStudyList = studyService.getUserJoinStudy(user);
+			
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository,userStudyList));
 		}
 
 		return ResponseEntity.ok(res);
@@ -185,7 +188,7 @@ public class UserController {
 
 	@PostMapping("/email")
 	@ApiOperation(value = "이메일 인증 코드 보내기", notes = "<strong>이메일</strong>인증 코드 보내기.")
-	public ResponseEntity<? extends BaseResponseBody> sendEmailAuth(String email) throws Exception {
+	public ResponseEntity<? extends BaseResponseBody> sendEmailAuth(@RequestBody String email) throws Exception {
 
 		String code = emailService.sendAuthMessage(email);
 		emailRepository.put(email, code); // 해당 사용자의 인증 코드 저장
@@ -261,7 +264,6 @@ public class UserController {
 		return ResponseEntity.status(200).body(userInfoRes);
 	}
 
-	
 	/* 가입한 스터디 가져오기 */
 	@GetMapping("/join/{userId}")
 	@ApiOperation(value = "가입한 스터디", notes = "사용자가 가입한 스터디를 가져온다")
@@ -279,10 +281,51 @@ public class UserController {
 
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, resultSet));
 		}
 
 		return ResponseEntity.ok(res);
+
+	}
+
+	/* 스터디 찜하기 */
+	@PostMapping("/like/{userId}")
+	@ApiOperation(value = "스터디 찜하기", notes = "관심있는 스터디를 찜한다.")
+	public ResponseEntity<BaseResponseBody> likeStudy(@PathVariable(value = "userId", required = true) Long userId,
+			Long studyId) {
+
+		try {
+
+			User user = userService.getUserById(userId);
+			Study study = studyService.getStudyById(studyId).get();
+
+			userService.likeStudy(user, study);
+
+			return ResponseEntity.ok(new BaseResponseBody(200, "찜하기 완료"));
+
+		} catch (Exception e) {
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+		}
+
+	}
+
+	/* 스터디 찜 취소 */
+	@DeleteMapping("/like/{userId}")
+	@ApiOperation(value = "스터디 찜하기 취소", notes = "찜했던 스터디를 취소한다.")
+	public ResponseEntity<BaseResponseBody> unlikeStudy(@PathVariable(value = "userId", required = true) Long userId,
+			Long studyId) {
+
+		try {
+			User user = userService.getUserById(userId);
+			Study study = studyService.getStudyById(studyId).get();
+			userService.unlikeStudy(user, study);
+
+			return ResponseEntity.ok(new BaseResponseBody(200, "찜하기 취소 완료"));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+		}
 
 	}
 }

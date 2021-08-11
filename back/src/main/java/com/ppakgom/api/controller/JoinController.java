@@ -116,4 +116,22 @@ public class JoinController {
 		joinService.modifyJoinApply(studyApply);
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "가입 거절 완료"));
 	}
+	
+	@PostMapping("/{userId}")
+	@ApiOperation(value="가입 하기", notes="사용자의 가입 하기")
+	public ResponseEntity<? extends BaseResponseBody> joinStudy(@PathVariable Long userId
+			, Long studyId) {
+
+
+		String res = joinService.studyApply(studyId, userId);
+		if(res.equals("population")) { // 인원초과일 경우
+			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "인원 초과입니다."));
+		} else if(res.equals("ok")) { // 가입 승인 완료
+			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "스터디 가입 요청을 보냈습니다."));
+		} else if(res.equals("deadline")) { // 모집 날짜 초과
+			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "마감한 스터디입니다."));
+		} else { // 그 외
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		}
+	}
 }

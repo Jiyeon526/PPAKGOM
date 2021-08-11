@@ -26,4 +26,18 @@ public class StudyPlan extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "study_id")
 	Study study;
+
+	public StudyPlan(String title, String detail, Date date, Study study) {
+		super();
+		this.title = title;
+		this.detail = detail;
+		this.date = date;
+		this.study = study;
+	}
+
+	public StudyPlan() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 }
