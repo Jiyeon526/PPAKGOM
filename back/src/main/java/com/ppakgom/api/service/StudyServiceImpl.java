@@ -25,6 +25,7 @@ import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.request.StudyScheduleReq;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudyScoreMember;
+import com.ppakgom.api.response.StudyTestListRes;
 import com.ppakgom.api.response.StudyTestScoreTotalRes;
 
 import com.ppakgom.db.entity.Interest;
@@ -354,6 +355,23 @@ public class StudyServiceImpl implements StudyService {
 			
 			study.setData(scores); // study 객체에 저장
 			res.add(study); // 반환 객체에 저장
+		}
+		
+		return res;
+	}
+
+	@Override
+	public List<StudyTestListRes> getStudyTestList(Long studyId) {
+		
+		// 스터디 문제집 가져오기
+		List<StudyTest> studyTest = studyTestRepository.findByStudy_Id(studyId);
+		List<StudyTestListRes> res = new ArrayList<>();
+		
+		if(studyTest == null) return null;
+		
+		for(StudyTest st: studyTest) {
+			StudyTestListRes s = new StudyTestListRes(st.getId(), st.getUser().getName(), st.getTitle());
+			res.add(s);
 		}
 		
 		return res;
