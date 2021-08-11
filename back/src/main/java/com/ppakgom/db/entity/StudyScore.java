@@ -1,7 +1,5 @@
 package com.ppakgom.db.entity;
 
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;

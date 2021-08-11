@@ -246,18 +246,12 @@ public class StudyServiceImpl implements StudyService {
 	}
 	
 	//member의 열정도를 업데이트 하좌.
+//	0개 = -1.8 / 1개 = - 0.8 / 2개 = -0.2 / 3개 = 0 / 4개 = +0.2 / 5개 = +0.8
+//	( (abs(별 갯수 - 3) * (별갯수 - 3) ) / 5) ? + 기존 온도에 더하기
 	public void updateTemperature(User member, int rate) {
 //		현재 열정도 가져오기
 		float curTemperature = member.getTemperature();
-		//0점 -> -2, 1점 -> -1, 2점 -> -0.5, 4점 -> +0.5, 5점 -> +1
-		
-		switch(rate) {
-		case 0 : member.setTemperature(curTemperature - 2f); break;
-		case 1 : member.setTemperature(curTemperature - 1f); break;
-		case 2 : member.setTemperature(curTemperature - 0.5f); break;
-		case 4 : member.setTemperature(curTemperature + 0.5f); break;
-		case 5 : member.setTemperature(curTemperature + 1f); break;
-		}
+		member.setTemperature(Math.abs(rate - 3f) * (rate - 3f) / 5 + curTemperature);
 	}
 		
 	public List<StudyScheduleMonthRes> getStudyScheduleMonth(Long studyId, int month) {
