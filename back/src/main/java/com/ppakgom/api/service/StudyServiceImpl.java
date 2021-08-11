@@ -1,6 +1,7 @@
 package com.ppakgom.api.service;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -10,6 +11,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
+
+import com.ppakgom.api.request.StudyScheduleReq;
+import com.ppakgom.api.response.StudyScheduleMonthRes;
+import com.ppakgom.api.response.StudyScoreMember;
+import com.ppakgom.api.response.StudyTestListRes;
+import com.ppakgom.api.response.StudyTestScoreRes;
+import com.ppakgom.api.response.StudyTestScoreTotalRes;
 
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyInterest;
 import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.StudyPlan;
+import com.ppakgom.db.entity.StudyScore;
+import com.ppakgom.db.entity.StudyTest;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.entity.UserStudy;
@@ -33,6 +45,8 @@ import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.StudyRateRepository;
 import com.ppakgom.db.repository.StudyPlanRepository;
 import com.ppakgom.db.repository.StudyRepository;
+import com.ppakgom.db.repository.StudyScoreRepository;
+import com.ppakgom.db.repository.StudyTestRepository;
 import com.ppakgom.db.repository.UserLikeStudyRepository;
 import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
@@ -54,6 +68,12 @@ public class StudyServiceImpl implements StudyService {
 	
 	@Autowired
 	StudyPlanRepository studyPlanRepository;
+	
+	@Autowired
+	StudyScoreRepository studyScoreRepository;
+	
+	@Autowired
+	StudyTestRepository studyTestRepository;
 	
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\study\\";
 	
@@ -258,6 +278,151 @@ public class StudyServiceImpl implements StudyService {
 			// 저장
 			res.add(s);
 		}
+		
+		return res;
+	}
+
+	@Override
+	public boolean postStudySchedule(Long studyId, StudyScheduleReq req) {
+		
+		try {
+			// 해당 스터디 가져오기
+			Optional<Study> study = studyRepository.findById(studyId);
+			// 없다면 false 리턴
+			if(!study.isPresent()) return false;
+			
+			// 날짜 변환
+			Date date;
+			date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
+			
+			// 스터디 일정 객체 생성
+			StudyPlan studyPlan = new StudyPlan(req.getTitle(), 
+					req.getDetail(), date,study.get());
+			// 객체 생성 안되면 false
+			if(studyPlan == null) return false;
+			
+			// DB에 저장
+			studyPlanRepository.save(studyPlan);
+			
+		} catch (ParseException e) {
+			System.out.println("날짜 변환 에러");
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+
+	@Override
+	public List<StudyTestScoreTotalRes> getStudyTestScore(Long studyId) {
+		
+		if(studyId == null) return null;
+		
+		// 해당 스터디의 스터디원들 가져오기
+		List<UserStudy> studyUsersIds = userStudyRepository.findByStudyId(studyId);
+
+		// 해당 스터디에 있는 스터디 문제집들 가져오기
+		List<StudyTest> studyTests = studyTestRepository.findByStudy_Id(studyId);
+		
+		if(studyTests == null || studyUsersIds == null) return null; // 문제집이나 회원이 아예 없을 때 
+		
+		// 스터디 문제집에 따른 멤버들 점수 저장
+		List<StudyTestScoreTotalRes> res = new ArrayList<>();
+		for(UserStudy user : studyUsersIds) {
+			
+			StudyTestScoreTotalRes study = new StudyTestScoreTotalRes(); // res 저장 객체
+			List<StudyScoreMember> scores = new ArrayList<>(); // 문제집 별 점수
+			
+			study.setName(user.getUser().getName()); // 닉네임 저장
+
+			for(StudyTest test : studyTests) {
+				StudyScoreMember member = new StudyScoreMember(); // 문제집 + 해당 점수
+				member.setTest_title(test.getTitle()); // 문제집 이름
+				
+				// 해당 문제집에서의 내 점수 
+				Optional<StudyScore> score = studyScoreRepository.findByUserIdAndStudyTestId(user.getUser().getId(), test.getId());
+
+				if(score.isPresent()) // 내 점수가 있다면
+					member.setScore(score.get().getScore());
+				else
+					member.setScore((short) 0); // 없다면 0으로
+				
+				scores.add(member); // scores에 저장
+			}
+			
+			study.setData(scores); // study 객체에 저장
+			res.add(study); // 반환 객체에 저장
+		}
+		
+		return res;
+	}
+
+	@Override
+	public List<StudyTestListRes> getStudyTestList(Long studyId) {
+		
+		// 스터디 문제집 가져오기
+		List<StudyTest> studyTest = studyTestRepository.findByStudy_Id(studyId);
+		List<StudyTestListRes> res = new ArrayList<>();
+		
+		if(studyTest == null) return null;
+		
+		for(StudyTest st: studyTest) {
+			StudyTestListRes s = new StudyTestListRes(st.getId(), st.getUser().getName(), st.getTitle());
+			res.add(s);
+		}
+		
+		return res;
+	}
+
+	@Override
+	public List<StudyMemberInfoRes> getStudyMemberInfo(Long studyId) {
+		List<UserStudy> userStudy = userStudyRepository.findByStudyId(studyId);
+		if(userStudy == null) return null;
+		
+		List<StudyMemberInfoRes> res = new ArrayList<>();
+		for(UserStudy us: userStudy) {
+			StudyMemberInfoRes member = new StudyMemberInfoRes(us.getUser().getName(), us.getUser().getUserId(),
+					us.getUser().getId(), us.getUser().getProfile_thumbnail());
+			res.add(member);
+		}
+		
+		return res;
+	}
+
+	@Override
+	public StudyTestScoreRes postStudyTestScore(List<String> answer, Long userId, Long testId) {
+		StudyTestScoreRes res = new StudyTestScoreRes();
+		StudyScore score = new StudyScore();
+		
+		// 답 가져오기
+		Optional<StudyTest> test = studyTestRepository.findById(testId);
+		if(!test.isPresent()) return null;
+		
+		// 테이블 insert할 객체들
+		score.setStudy(test.get().getStudy()); // 해당 스터디 저장
+		score.setStudyTest(test.get()); // 문제집 저장
+		Optional<User> user = userRepository.findById(userId); // 문제 푼 사람 저장
+		if(user.isPresent()) score.setUser(user.get());
+		
+		res.setNumber(test.get().getNumber()); // 문항 개수 세팅
+		String[] testAnswer = test.get().getAnswer().split(","); // 정답 , 로 구분하기
+		
+		Short cCnt = 0; // 맞은 갯수
+		for(int i=0;i<testAnswer.length;i++) {
+			if(answer.get(i) == null) continue;
+			if(testAnswer[i].equals(answer.get(i))) {
+				cCnt++;
+			}
+		}
+		
+		res.setCorrect(cCnt);
+		score.setScore(cCnt);
+		
+		StudyScore origin = studyScoreRepository.findByStudyTestIdAndUserId(testId, userId);
+		if(origin != null) {// 원래 점수가 있던 사람
+			origin.setScore(cCnt);
+			studyScoreRepository.save(origin);
+		} else
+			studyScoreRepository.save(score);
 		
 		return res;
 	}

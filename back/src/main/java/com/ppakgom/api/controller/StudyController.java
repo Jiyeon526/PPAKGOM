@@ -2,11 +2,15 @@ package com.ppakgom.api.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -44,20 +49,30 @@ import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
+import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
+import com.ppakgom.api.response.StudyTestListRes;
+import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.service.InterestService;
 import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyRateService;
+
+import com.ppakgom.api.response.StudyTestScoreTotalRes;
+
 import com.ppakgom.api.service.JoinService;
 import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.api.service.UserInterestService;
 import com.ppakgom.api.request.StudyCreatePostReq;
+
 import com.ppakgom.api.request.StudyInvitePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+
+import com.ppakgom.api.request.StudyScheduleReq;
+
 
 /**
  * 스터디 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -148,6 +163,8 @@ public class StudyController {
 		Optional<Study> study;
 		try {
 
+		try {
+			
 //		스터디 전체 검색
 			if (studyId == null && name == null && interest == null)
 				resultSet = studyService.getAllStudy();
@@ -194,6 +211,9 @@ public class StudyController {
 			}
 		} catch (Exception e) {
 			System.out.println("검색 결과 없음!");
+		}
+		}catch(Exception e) {
+			System.out.println("에러");
 		}
 		return ResponseEntity.ok(res);
 
@@ -282,7 +302,7 @@ public class StudyController {
 		return ResponseEntity.ok(res);
 
 	}
-
+	
 	/* 평가 점수 입력 */
 	@PostMapping("/rating/{userId}")
 	@ApiOperation(value = "스터디원 평가하기", notes = "스터디원 점수를 5점 만점에 정수로 평가하기")
@@ -400,6 +420,54 @@ public class StudyController {
 		return ResponseEntity.ok(res);
 
 	}
+	@PostMapping("/{studyId}/schedule")
+	@ApiOperation(value = "스터디 방 스케줄 입력", notes = "스터디 방 스케줄 입력")
+	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId, 
+			@RequestBody StudyScheduleReq req) {
+		// 값이 다 들어왔는지 확인
+		if(req.getTitle().length() == 0 || req.getDetail().length() == 0 || req.getDate().length() == 0)
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		// 저장하기
+		if(!studyService.postStudySchedule(studyId, req))
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		
+		return ResponseEntity.status(201).body(BaseResponseBody.of(201, "일정 등록 완료"));
+	}
+	
+	@GetMapping("/{studyId}/score")
+	@ApiOperation(value = "문제 푼 점수 결과 가져오기", notes = "통계 페이지를 위한 결과")
+	public ResponseEntity<List<StudyTestScoreTotalRes>> getStudyTestScore(@PathVariable(value = "studyId") Long studyId) {
+		
+		// 스터디에 있는 문제집들 점수 회원별로 가져와서 저장
+		List<StudyTestScoreTotalRes> res = studyService.getStudyTestScore(studyId);
+		return ResponseEntity.status(200).body(res);
+		
+	}
+	
+	@GetMapping("/{studyId}/workbook")
+	@ApiOperation(value = "문제집 리스트 가져오기", notes = "문제집 리스트 가져오기")
+	public ResponseEntity<List<StudyTestListRes>> getStudyTestList(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyTestListRes> res = studyService.getStudyTestList(studyId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@GetMapping("/{studyId}/info/member")
+	@ApiOperation(value = "스터디 내 멤버들 정보 가져오기", notes = "스터디 내 멤버들 정보 가져오기")
+	public ResponseEntity<List<StudyMemberInfoRes>> getStudyMemberInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyMemberInfoRes> res = studyService.getStudyMemberInfo(studyId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@PostMapping("/{userId}/score/{testId}")
+	@ApiOperation(value = "스터디 문제집 풀이 제출 시 채점 결과 리턴", notes = "스터디 문제집 풀이 제출 시 채점 결과 리턴")
+	public ResponseEntity<StudyTestScoreRes> postStudyTestScore(@PathVariable(value = "userId") Long userId, 
+			@PathVariable(value = "testId") Long testId, @RequestBody List<String> answer) {
 
+		StudyTestScoreRes res = studyService.postStudyTestScore(answer, userId, testId);
+		return ResponseEntity.status(200).body(res);
+		
+	}
 }
 

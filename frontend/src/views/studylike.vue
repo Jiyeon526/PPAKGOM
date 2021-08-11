@@ -31,7 +31,7 @@ export default {
     Study,
   },
 
-  setup() {
+  setup(props, { emit }) {
     const store = useStore();
     const state = reactive({
       likeStudyList : [],

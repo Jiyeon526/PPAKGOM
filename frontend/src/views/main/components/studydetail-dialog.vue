@@ -5,60 +5,38 @@
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-    <el-card :body-style="{ padding: '0px' }">
-    <div class="image-wrapper">
-      <el-image style="width: 100%; height: 190px"
-        :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
-        :fit="fit"
-        >
-      </el-image>
+  <el-divider style="margin: 5px"></el-divider>
+    <el-image style="width: 100%; height: 300px"
+      :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
+      :fit="fit"
+      >
+    </el-image>
+    <div>
+      <h4>내용</h4>
+      <p>{{ selectStudy.content }}</p>
     </div>
-    <div style="text-align: left; padding: 14px;">
-      <span class="title">{{ selectStudy.name }}</span>
-      <div class="bottom">
-        <span>{{ selectStudy.content }}</span>
-      </div>
+    <el-divider style="margin: 5px"></el-divider>
+    <div class="detail-dialog-footer">
+      <h4 style="display: inline-block">열정도 : {{ selectStudy.content }}</h4>
+      <el-button type="success" plain style="height: 30px">입장</el-button>
     </div>
-  </el-card>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="success">입장</el-button>
-      </span>
-    </template>
   </el-dialog>
 </template>
-<style scoped>
+<style >
 .studydetail-dialog {
   width: 50%;
 }
-.el-card {
-  margin: 0 8px;
-  margin-bottom: 40px;
+.el-dialog__header {
+  padding: 20px !important
 }
-.el-card .image-wrapper {
-  width: 100%;
-  height: 190px;
+.el-dialog__body {
+  padding: 5px 20px !important
 }
-.el-card .title {
-  width: 345px;
-  display:-webkit-box;
-  font-weight: bold;
-  word-wrap:break-word;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  -webkit-line-clamp: 1;
+.detail-dialog-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.el-card .bottom {
-  width: 345px;
-  margin-top: 5px;
-  display:-webkit-box;
-  word-wrap:break-word;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
 /* 테블릿, 모바일의 경우 두 줄 말줄임표시 */
 @media (max-width: 1269px) {
   .el-card .bottom {
