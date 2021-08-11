@@ -50,6 +50,7 @@ import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 import com.ppakgom.api.response.StudyTestListRes;
+import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.service.InterestService;
 import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyRateService;
@@ -61,6 +62,7 @@ import com.ppakgom.api.service.StudyService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.api.service.UserInterestService;
+import com.ppakgom.api.request.StudyAnswerReq;
 import com.ppakgom.api.request.StudyCreatePostReq;
 
 import com.ppakgom.api.request.StudyInvitePostReq;
@@ -416,5 +418,14 @@ public class StudyController {
 		return ResponseEntity.status(200).body(res);
 	}
 	
+	@PostMapping("/{userId}/score/{testId}")
+	@ApiOperation(value = "스터디 문제집 풀이 제출 시 채점 결과 리턴", notes = "스터디 문제집 풀이 제출 시 채점 결과 리턴")
+	public ResponseEntity<StudyTestScoreRes> postStudyTestScore(@PathVariable(value = "userId") Long userId, 
+			@PathVariable(value = "testId") Long testId, @RequestBody List<String> answer) {
+
+		StudyTestScoreRes res = studyService.postStudyTestScore(answer, userId, testId);
+		return ResponseEntity.status(200).body(res);
+		
+	}
 }
 
