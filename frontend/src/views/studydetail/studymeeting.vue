@@ -80,11 +80,15 @@
             <div style="height:550px;">
               <el-collapse v-model="activeNames">
                 <el-collapse-item title="채팅" name="1">
-                  <el-scrollbar height="500px" always>
-                    <p v-for="(item, i) in messages" :key="i">
+                  <!-- <el-scrollbar height="500px" id="chat-area"> -->
+
+                  <div id="chat-area" style=" height:520px; overflow:scroll;">
+                    <div v-for="(item, i) in messages" :key="i">
                       {{ item.from }}:{{ item.content }}
-                    </p>
-                  </el-scrollbar>
+                    </div>
+                  </div>
+
+                  <!-- </el-scrollbar> -->
                 </el-collapse-item>
               </el-collapse>
             </div>
@@ -218,7 +222,9 @@ export default {
       isSharingMode: false
     };
   },
-
+  watch: {
+    messages() {}
+  },
   mounted: function() {
     console.log("들어가기전 훅");
   },
@@ -381,9 +387,23 @@ export default {
             );
           });
       });
+      var num = 0;
       this.session.on("signal:chat", event => {
         let eventData = JSON.parse(event.data);
         this.messages.push(eventData);
+        setTimeout(() => {
+          var chatDiv = document.getElementById("chat-area");
+
+          console.log(chatDiv);
+          console.log(chatDiv.scrollHeight);
+          console.log(chatDiv.clientHeight);
+          console.log(num);
+          chatDiv.scrollTo({
+            top: chatDiv.scrollHeight,
+            behavior: "smooth"
+          });
+          num += 20;
+        }, 50);
       });
       window.addEventListener("beforeunload", this.leaveSession);
     },
@@ -537,6 +557,12 @@ export default {
 };
 </script>
 <style>
+.message-wrap {
+  padding: 0 15px;
+  height: calc(100% - 80px);
+  overflow: auto;
+}
+
 .screen-res {
   position: block;
   height: auto;
