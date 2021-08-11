@@ -51,3 +51,7 @@ export function getUserpk(state) {
 export function getStudypk(state) {
   return state.studypk;
 }
+
+export function getSelectOption(state) {
+  return state.selectOption;
+}

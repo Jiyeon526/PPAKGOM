@@ -196,13 +196,26 @@ export default {
           label: "맴버관리"
         }
       ],
-      value: ""
+      value: "",  // computed는 readonly이기 때문에 이후에 option에서 value값을 바꿔도 바뀌지 않음 -> 변수를 나누어 2개로 설정
+      value2: computed(() => store.getters["root/getSelectOption"]),
     });
     watch(
       () => state.value,
       () => {
         router.push({
           name: state.value
+          // params: {
+          //   studypk: state.studyPk
+          // }
+        });
+      }
+    );
+    watch(
+      () => state.value2,
+      () => {
+        state.value = state.value2
+        router.push({
+          name: state.value2
           // params: {
           //   studypk: state.studyPk
           // }
