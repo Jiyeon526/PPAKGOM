@@ -160,10 +160,16 @@ public class UserController {
 
 		User user = userService.getUserById(userId);
 		List<Study> resultSet = studyService.getUserLikeStudy(user);
-
+		
+//		사용자가 가입한 스터디.
+		List<Study> userStudyList = studyService.getUserJoinStudy(user);
+		System.out.println("@@@@@가입한 스터디");
+		for(Study s : userStudyList)
+			System.out.println(s);
+			
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository,userStudyList));
 		}
 
 		return ResponseEntity.ok(res);
@@ -229,7 +235,7 @@ public class UserController {
 
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository));
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, resultSet));
 		}
 
 		return ResponseEntity.ok(res);

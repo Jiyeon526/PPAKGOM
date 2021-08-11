@@ -121,103 +121,103 @@ public class StudyController {
 		return ResponseEntity.ok(res);
 	}
 
-	/* 스터디 검색 */
-	@GetMapping("/")
-	@ApiOperation(value = "스터디 검색", notes = "전체 스터디 목록 검색")
-	public ResponseEntity<StudySearchGetRes> searchStudyById(@RequestParam(required = false) Long studyId,
-			@RequestParam(required = false) String name, @RequestParam(required = false) String interest) {
-
-		StudySearchGetRes res = new StudySearchGetRes();
-		res.setStudyResult(new ArrayList<>());
-		List<Study> resultSet = new ArrayList<>();
-		Optional<Study> study;
-
-//		스터디 전체 검색
-		if (studyId == null && name == null && interest == null)
-			resultSet = studyService.getAllStudy();
-
-//		아이디로 검색
-		if (studyId != null) {
-			study = studyService.getStudyById(studyId);
-			resultSet.add(study.orElse(null));
-		}
-
-//		스터디명으로 검색
-		if (name != null) {
-			resultSet = studyService.getStudyByName(name);
-		}
-
-//		관심사로 검색
-		if (interest != null) {
-			resultSet = studyService.getStudyByInterest(interest);
-		}
-
-		/* 검색 결과 삽입 */
-		for (Study s : resultSet) {
-			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
-			res.getStudyResult().add(sr);
-		}
-		return ResponseEntity.ok(res);
-
-	}
-
-	/* 사용자 관심 스터디 불러오기 */
-	@GetMapping("/interest/{userId}")
-	@ApiOperation(value = "관심사 기반 스터디 검색", notes = "사용자 관심사 기반 스터디 검색")
-	public ResponseEntity<StudySearchGetRes> searchStudyByUserInterest(
-			@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId) {
-		StudySearchGetRes res = new StudySearchGetRes();
-		res.setStudyResult(new ArrayList<>());
-		// 사용자의 관심사들에 매칭된 스터디가 겹칠 경우.
-		// 예: 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
-		HashSet<Study> tmp = new HashSet<>();
-
-//		1. 사용자 관심사 불러오기.
-		User user = userService.getUserById(userId);
-		List<UserInterest> userInterest = userInterestService.getInterestByUser(user);
-//		2. 관심사에 맞는 스터디 불러오기
-		List<Study> resultSet;
-//		관심사 있는지부터 체크
-		if (userInterest != null) {
-			for (UserInterest ui : userInterest) {
-//				최대 3개만 저장스
-				resultSet = studyService.getStudyByInterest(ui.getInterest().getName());
-				for (Study s : resultSet) {
-					tmp.add(s);
-					if (tmp.size() == 3)
-						break;
-				}
-				if (tmp.size() == 3)
-					break;
-			}
-		}
-
-		/* 검색 결과 삽입 */
-		for (Study s : tmp) {
-			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
-			res.getStudyResult().add(sr);
-		}
-
-		return ResponseEntity.ok(res);
-
-	}
+//	/* 스터디 검색 */
+//	@GetMapping("/")
+//	@ApiOperation(value = "스터디 검색", notes = "전체 스터디 목록 검색")
+//	public ResponseEntity<StudySearchGetRes> searchStudyById(@RequestParam(required = false) Long studyId,
+//			@RequestParam(required = false) String name, @RequestParam(required = false) String interest) {
+//
+//		StudySearchGetRes res = new StudySearchGetRes();
+//		res.setStudyResult(new ArrayList<>());
+//		List<Study> resultSet = new ArrayList<>();
+//		Optional<Study> study;
+//
+////		스터디 전체 검색
+//		if (studyId == null && name == null && interest == null)
+//			resultSet = studyService.getAllStudy();
+//
+////		아이디로 검색
+//		if (studyId != null) {
+//			study = studyService.getStudyById(studyId);
+//			resultSet.add(study.orElse(null));
+//		}
+//
+////		스터디명으로 검색
+//		if (name != null) {
+//			resultSet = studyService.getStudyByName(name);
+//		}
+//
+////		관심사로 검색
+//		if (interest != null) {
+//			resultSet = studyService.getStudyByInterest(interest);
+//		}
+//
+//		/* 검색 결과 삽입 */
+//		for (Study s : resultSet) {
+//			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
+//			res.getStudyResult().add(sr);
+//		}
+//		return ResponseEntity.ok(res);
+//
+//	}
+//
+//	/* 사용자 관심 스터디 불러오기 */
+//	@GetMapping("/interest/{userId}")
+//	@ApiOperation(value = "관심사 기반 스터디 검색", notes = "사용자 관심사 기반 스터디 검색")
+//	public ResponseEntity<StudySearchGetRes> searchStudyByUserInterest(
+//			@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId) {
+//		StudySearchGetRes res = new StudySearchGetRes();
+//		res.setStudyResult(new ArrayList<>());
+//		// 사용자의 관심사들에 매칭된 스터디가 겹칠 경우.
+//		// 예: 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
+//		HashSet<Study> tmp = new HashSet<>();
+//
+////		1. 사용자 관심사 불러오기.
+//		User user = userService.getUserById(userId);
+//		List<UserInterest> userInterest = userInterestService.getInterestByUser(user);
+////		2. 관심사에 맞는 스터디 불러오기
+//		List<Study> resultSet;
+////		관심사 있는지부터 체크
+//		if (userInterest != null) {
+//			for (UserInterest ui : userInterest) {
+////				최대 3개만 저장스
+//				resultSet = studyService.getStudyByInterest(ui.getInterest().getName());
+//				for (Study s : resultSet) {
+//					tmp.add(s);
+//					if (tmp.size() == 3)
+//						break;
+//				}
+//				if (tmp.size() == 3)
+//					break;
+//			}
+//		}
+//
+//		/* 검색 결과 삽입 */
+//		for (Study s : tmp) {
+//			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository);
+//			res.getStudyResult().add(sr);
+//		}
+//
+//		return ResponseEntity.ok(res);
+//
+//	}
 	
 	
-	/* 스터디 상세 정보 불러오기 */
-	@GetMapping("/{studyId}/detail")
-	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
-	public ResponseEntity<StudySearchGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId) {
-		
-		StudySearchGetRes res = new StudySearchGetRes();
-		res.setStudyResult(new ArrayList<>()); //배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
-		
-		Optional<Study> study = studyService.getStudyById(studyId);
-		if(study.isPresent()) {
-			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository));
-		}
-		return ResponseEntity.ok(res);
-		
-	}
+//	/* 스터디 상세 정보 불러오기 */
+//	@GetMapping("/{studyId}/detail")
+//	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
+//	public ResponseEntity<StudySearchGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId) {
+//		
+//		StudySearchGetRes res = new StudySearchGetRes();
+//		res.setStudyResult(new ArrayList<>()); //배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
+//		
+//		Optional<Study> study = studyService.getStudyById(studyId);
+//		if(study.isPresent()) {
+//			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository));
+//		}
+//		return ResponseEntity.ok(res);
+//		
+//	}
 
 
 	/* 평가 점수 입력 */
