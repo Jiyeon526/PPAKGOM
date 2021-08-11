@@ -4,68 +4,125 @@
     <button @click="open = true">open</button>
     {{ open }}
   </div> -->
-  <div id="main-container" class="container">
-    <div id="join" v-if="!session">
-      <div id="join-dialog" class="jumbotron vertical-center">
-        <h1>Join a video session</h1>
-        <div class="form-group">
-          <p>
-            <label>Participant</label>
-            <input
-              v-model="myUserName"
-              class="form-control"
-              type="text"
-              required
-            />
-          </p>
-          <p>
-            <label>Session</label>
-            <input
-              v-model="mySessionId"
-              class="form-control"
-              type="text"
-              required
-            />
-          </p>
-          <p class="text-center">
-            <button class="btn btn-lg btn-success" @click="joinSession()">
-              Join!
-            </button>
-          </p>
+  <el-container style="height:97%">
+    <el-main>
+      <div id="join" v-if="!session">
+        <div id="join-dialog" class="jumbotron vertical-center">
+          <h1>Join a video session</h1>
+          <div class="form-group">
+            <p>
+              <label>Participant</label>
+              <input
+                v-model="myUserName"
+                class="form-control"
+                type="text"
+                required
+              />
+            </p>
+            <p>
+              <label>Session</label>
+              <input
+                v-model="mySessionId"
+                class="form-control"
+                type="text"
+                required
+              />
+            </p>
+            <p class="text-center">
+              <button class="btn btn-lg btn-success" @click="joinSession()">
+                Join!
+              </button>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div id="session" v-if="session">
-      <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input
-          class="btn btn-large btn-danger"
-          type="button"
-          id="buttonLeaveSession"
-          @click="leaveSession"
-          value="Leave session"
-        />
-      </div>
-      <!-- <div id="main-video" class="col-md-6">
+      <div id="session" v-if="session">
+        <el-row>
+          <div id="session-header">
+            <h1 id="session-title">{{ mySessionId }}</h1>
+          </div>
+        </el-row>
+
+        <!-- <div id="main-video" class="col-md-6">
         <user-video :stream-manager="mainStreamManager" />
       </div> -->
-      <div id="video-container" class="col-md-6">
-        <user-video
-          :stream-manager="publisher"
-          @click="updateMainVideoStreamManager(publisher)"
-        />
-        <user-video
-          v-for="sub in subscribers"
-          :key="sub.stream.connection.connectionId"
-          :stream-manager="sub"
-          @click="updateMainVideoStreamManager(sub)"
-        />
+        <el-row>
+          <el-col :span="18">
+            <el-container class="room">
+              <user-video
+                class="screen-res"
+                :stream-manager="publisher"
+                @click="updateMainVideoStreamManager(publisher)"
+              />
+              <user-video
+                class="screen-res"
+                v-for="sub in subscribers"
+                :key="sub.stream.connection.connectionId"
+                :stream-manager="sub"
+                @click="updateMainVideoStreamManager(sub)"
+              />
+            </el-container>
+          </el-col>
+          <el-col :span="6">
+            <el-collapse>
+              <el-collapse-item title="채팅" name="1">
+                <el-scrollbar max-height="400px">
+                  <p class="item" v-for="item in count">{{ item }}</p>
+                </el-scrollbar>
+              </el-collapse-item>
+            </el-collapse>
+          </el-col>
+        </el-row>
       </div>
-    </div>
-    <input v-model="message" type="text" @keyup.enter="sendMessage" />
-    <button @click="receiveMessage">방 참여</button>
-  </div>
+
+      <!-- <input v-model="message" type="text" @keyup.enter="sendMessage" /> -->
+    </el-main>
+  </el-container>
+  <el-container style="height:3%">
+    <el-footer>
+      <el-button-group v-if="session">
+        <el-button
+          v-if="audioOn"
+          type="success"
+          @click="audioOnOOff"
+          icon="el-icon-microphone"
+          >음성중</el-button
+        >
+
+        <el-button
+          v-if="!audioOn"
+          type="danger"
+          @click="audioOnOOff"
+          icon="el-icon-turn-off-microphone"
+          >음소거</el-button
+        >
+
+        <el-button
+          v-if="videoOn"
+          type="success"
+          @click="videoOnOOff"
+          icon="el-icon-video-pause"
+          >화상 시작</el-button
+        >
+
+        <el-button
+          v-if="!videoOn"
+          type="danger"
+          @click="videoOnOOff"
+          icon="el-icon-video-play"
+          >화상 중지</el-button
+        >
+        <el-button type="success" icon="el-icon-monitor">화상공유</el-button>
+        <el-button
+          type="success"
+          icon="el-icon-switch-button"
+          @click="leaveSession"
+          >나가기</el-button
+        >
+      </el-button-group>
+    </el-footer>
+  </el-container>
 </template>
 
 <script>
@@ -89,6 +146,7 @@ export default {
 
   data() {
     return {
+      count: 3,
       open: false,
       message: "",
       OV: undefined,
@@ -96,12 +154,20 @@ export default {
       mainStreamManager: undefined,
       publisher: undefined,
       subscribers: [],
-
+      audioOn: true,
+      videoOn: true,
       mySessionId: "SessionA",
       myUserName: "Participant" + Math.floor(Math.random() * 100)
     };
   },
-
+  mounted: function() {
+    console.log("들어가기전 훅");
+  },
+  beforeDestroy: function() {
+    if (this.session) this.session.disconnect();
+    window.removeEventListener("beforeunload", this.leaveSession);
+    console.log("파괴");
+  },
   methods: {
     joinSession() {
       // --- Get an OpenVidu object ---
@@ -167,7 +233,10 @@ export default {
             );
           });
       });
-
+      this.session.on("signal:chat", event => {
+        let eventData = JSON.parse(event.data);
+        console.log("받은 메시지", eventData);
+      });
       window.addEventListener("beforeunload", this.leaveSession);
     },
 
@@ -180,6 +249,8 @@ export default {
       this.publisher = undefined;
       this.subscribers = [];
       this.OV = undefined;
+      this.audioOn = true;
+      this.videoOn = true;
 
       window.removeEventListener("beforeunload", this.leaveSession);
     },
@@ -188,7 +259,17 @@ export default {
       if (this.mainStreamManager === stream) return;
       this.mainStreamManager = stream;
     },
+    audioOnOOff() {
+      this.audioOn = !this.audioOn;
 
+      this.publisher.publishAudio(this.audioOn);
+    },
+
+    videoOnOOff() {
+      this.videoOn = !this.videoOn;
+
+      this.publisher.publishVideo(this.videoOn);
+    },
     /**
      * --------------------------
      * SERVER-SIDE RESPONSIBILITY
@@ -255,12 +336,6 @@ export default {
         to: []
       });
     },
-    receiveMessage() {
-      this.session.on("signal:chat", event => {
-        let eventData = JSON.parse(event.data);
-        console.log("받은 메시지", eventData);
-      });
-    },
     // See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-openviduapisessionsltsession_idgtconnection
     createToken(sessionId) {
       return new Promise((resolve, reject) => {
@@ -284,36 +359,43 @@ export default {
 };
 </script>
 <style>
-.navbar-header {
-  width: 100%;
+.screen-res {
+  position: block;
+  height: auto;
+  width: inherit;
+  /* min-width: 33%; */
+  max-width: 33%;
+}
+.room {
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
-.nav-icon {
-  padding: 5px 15px 5px 15px;
-  float: right;
+.room p {
+  padding-left: 1px;
+  padding-right: 1px;
+  color: #ffffff;
+  font-weight: bold;
+  border-bottom-right-radius: 1px;
 }
 
-nav a {
-  color: #ccc !important;
+.room video + div {
+  float: left;
+  position: relative;
+  margin-left: -50%;
 }
 
-nav i.fa {
-  font-size: 40px;
-  color: #ccc;
-}
+.room video {
+  float: left;
+  display: block;
+  cursor: pointer;
 
-nav a:hover {
-  color: #a9a9a9 !important;
+  height: auto;
 }
-
-nav i.fa:hover {
-  color: #a9a9a9;
-}
-
-#main-container {
-  padding-bottom: 80px;
-}
-
 /*vertical-center {
 	position: relative;
 	top: 30%;
@@ -321,52 +403,17 @@ nav i.fa:hover {
 	transform: translate(-50%, -50%);
 }*/
 
-.horizontal-center {
-  margin: 0 auto;
-}
-
-.form-control {
-  color: #0088aa;
-  font-weight: bold;
-}
-
-.form-control:focus {
-  border-color: #0088aa;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
-    0 0 8px rgba(0, 136, 170, 0.6);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
-    0 0 8px rgba(0, 136, 170, 0.6);
-}
-
-input.btn {
-  font-weight: bold;
-}
-
-.btn {
-  font-weight: bold !important;
-}
-
-.btn-success {
-  background-color: #06d362 !important;
-  border-color: #06d362;
-}
-
-.btn-success:hover {
-  background-color: #1abd61 !important;
-  border-color: #1abd61;
-}
-
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
+  position: relative;
+  bottom: 20;
+
+  height: 0px;
   background-color: #4d4d4d;
 }
 
 .footer .text-muted {
   margin: 20px 0;
-  float: left;
+  align-items: center;
   color: #ccc;
 }
 
