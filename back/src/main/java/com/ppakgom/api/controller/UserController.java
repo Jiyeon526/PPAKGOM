@@ -163,9 +163,6 @@ public class UserController {
 		
 //		사용자가 가입한 스터디.
 		List<Study> userStudyList = studyService.getUserJoinStudy(user);
-		System.out.println("@@@@@가입한 스터디");
-		for(Study s : userStudyList)
-			System.out.println(s);
 			
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
