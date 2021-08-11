@@ -1,6 +1,9 @@
 package com.ppakgom.api.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +33,9 @@ public class JoinServiceImpl implements JoinService {
 	
 	@Autowired
 	UserStudyRepository userStudyRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 	
 	@Override
 	public List<JoinApplyListRes> getJoinApplyList(Long user_id) { // 가입 신청 현황 가져오기
@@ -110,7 +116,7 @@ public class JoinServiceImpl implements JoinService {
 		Optional<Study> study = studyRepository.findById(studyApply.getStudy().getId());
 		// study_apply에서 삭제
 		deleteJoinApply(studyApply);
-		System.out.println(studyPopulation);
+	
 		// 스터디 존재안함
 		if(!study.isPresent()) return "error";
 		
@@ -166,6 +172,34 @@ public class JoinServiceImpl implements JoinService {
 		}
 		
 		return res;
+	}
+
+	@Override
+	public String studyApply(Long studyId, Long userId) {
+		// 스터디 정보 가져오기
+		Optional<Study> study = studyRepository.findById(studyId);
+		if(!study.isPresent()) return "error"; // 스터디 없으면 반환
+		
+		// 현재 스터디 인원
+		int studyPopulation = userStudyRepository.getJoinedUserByStudyId(studyId);
+		// 스터디 인원 초과
+		if(studyPopulation >= study.get().getPopulation())
+			return "population";
+		
+		// 모집 날짜
+		DateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date nowDate = new Date();
+		String today = sdFormat.format(nowDate); // 오늘 날짜(연, 월)
+		String studyDate = sdFormat.format(study.get().getDeadline()); // 스터디 모집 날짜
+		if(today.compareTo(studyDate) > 0) return "deadline";
+		
+		// 사용자
+		User user = userRepository.findUserById(userId);
+		Short state = 2; // 대기 상태
+		StudyApply studyApply = new StudyApply(true, state, study.get().getUser(), 
+				user, study.get());
+		studyApplyRepository.save(studyApply); // DB 저장
+		return "ok";
 	}
 
 }

@@ -26,3 +26,4 @@ public class StudyTest extends BaseEntity {
     @JoinColumn(name = "user_id")
     User user;
 }
+
