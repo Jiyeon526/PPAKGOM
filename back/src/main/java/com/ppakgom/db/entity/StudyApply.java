@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StudyApply extends BaseEntity {
-	
+
 	boolean is_join;
 	Short state;
 	
@@ -29,4 +29,18 @@ public class StudyApply extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "study_id")
 	Study study;
+
+	public StudyApply(boolean is_join, Short state, User receiver, User sender, Study study) {
+		super();
+		this.is_join = is_join;
+		this.state = state;
+		this.receiver = receiver;
+		this.sender = sender;
+		this.study = study;
+	}
+
+	public StudyApply() {
+		super();
+	}
+
 }
