@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 
 import com.ppakgom.api.request.StudyScheduleReq;
@@ -372,6 +373,21 @@ public class StudyServiceImpl implements StudyService {
 		for(StudyTest st: studyTest) {
 			StudyTestListRes s = new StudyTestListRes(st.getId(), st.getUser().getName(), st.getTitle());
 			res.add(s);
+		}
+		
+		return res;
+	}
+
+	@Override
+	public List<StudyMemberInfoRes> getStudyMemberInfo(Long studyId) {
+		List<UserStudy> userStudy = userStudyRepository.findByStudyId(studyId);
+		if(userStudy == null) return null;
+		
+		List<StudyMemberInfoRes> res = new ArrayList<>();
+		for(UserStudy us: userStudy) {
+			StudyMemberInfoRes member = new StudyMemberInfoRes(us.getUser().getName(), us.getUser().getUserId(),
+					us.getUser().getId(), us.getUser().getProfile_thumbnail());
+			res.add(member);
 		}
 		
 		return res;
