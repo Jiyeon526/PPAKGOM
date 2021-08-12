@@ -57,7 +57,6 @@ public class StudyServiceImpl implements StudyService {
 	
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\study\\";
 	
-	
 	UserLikeStudyRepository userLikeStudyRepository;
 
 	@Autowired

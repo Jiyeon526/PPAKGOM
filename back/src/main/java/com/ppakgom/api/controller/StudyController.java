@@ -1,5 +1,6 @@
 package com.ppakgom.api.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,12 +53,14 @@ import com.ppakgom.api.service.StudyApplyService;
 import com.ppakgom.api.service.StudyRateService;
 import com.ppakgom.api.service.JoinService;
 import com.ppakgom.api.service.StudyService;
+import com.ppakgom.api.service.StudyTestService;
 import com.ppakgom.api.service.UserService;
 import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.api.service.UserInterestService;
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyInvitePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.request.WorkbookCreatePostReq;
 
 /**
  * 스터디 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -83,7 +86,6 @@ public class StudyController {
 	@Autowired
 	UserStudyRepository userStudyRepository;
 
-	
 	@Autowired
 	JoinService joinService;
 
@@ -100,7 +102,10 @@ public class StudyController {
 
 	@Autowired
 	StudyRateService studyRateService;
-	
+
+	@Autowired
+	StudyTestService studyTestService;
+
 	/* 스터디 생성 */
 	@PostMapping("/")
 	@ApiOperation(value = "스터디 생성", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.", consumes = "multipart/form-data", produces = "multipart/form-data")
@@ -181,12 +186,12 @@ public class StudyController {
 
 //			오늘 날짜 받기
 			Date today = new Date();
-			System.out.println("오늘 날짜 "+today);
+			System.out.println("오늘 날짜 " + today);
 			/* 검색 결과 삽입 */
 			for (Study s : resultSet) {
 //				마감날짜 지났으면 pass
 				Date strDate = s.getDeadline();
-				if(strDate.before(today)) {
+				if (strDate.before(today)) {
 					continue;
 				}
 				StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userJoinStudy);
@@ -202,21 +207,20 @@ public class StudyController {
 	@GetMapping("/{studyId}/joinlist")
 	@ApiOperation(value = "스터디 내에서 가입 요청 리스트 가져오기", notes = "스터디 내에서 가입 요청 리스트 가져오기")
 	public ResponseEntity<List<StudyJoinApplyListRes>> studyJoinApplyListRes(@PathVariable Long studyId) {
-		
+
 		List<StudyJoinApplyListRes> res = joinService.getStudyJoinApplyList(studyId);
 		return ResponseEntity.status(200).body(res);
 	}
-	
+
 	@GetMapping("/{studyId}/schedule")
 	@ApiOperation(value = "스터디 방 스케줄 정보 가져오기", notes = "스터디 방 스케줄 정보 가져오기")
 	public ResponseEntity<List<StudyScheduleMonthRes>> studyScheduleMonth(@PathVariable Long studyId,
 			@RequestParam(required = true) int month) {
-		
+
 		// 스터디 방 스케쥴 정보 가져오기
 		List<StudyScheduleMonthRes> res = studyService.getStudyScheduleMonth(studyId, month);
 		return ResponseEntity.status(200).body(res);
 	}
-
 
 	/* 사용자 관심 스터디 불러오기 */
 	@GetMapping("/interest/{userId}")
@@ -262,9 +266,10 @@ public class StudyController {
 	/* 스터디 상세 정보 불러오기 */
 	@GetMapping("/{studyId}/detail")
 	@ApiOperation(value = "스터디 상세 정보 조회", notes = "방장 id를 포함한 상세 정보 조회")
-	public ResponseEntity<StudySearchGetRes> getStudyDetail(@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId,
+	public ResponseEntity<StudySearchGetRes> getStudyDetail(
+			@PathVariable(value = "studyId") @ApiParam(value = "스터디 ID", required = true) Long studyId,
 			@ApiIgnore Authentication authentication) {
-		
+
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>()); // 배열로 안줘도 되는데 내가 배열로 준다고 해버려서 ... 추후 논의쓰
 
@@ -273,11 +278,12 @@ public class StudyController {
 		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
 		String userId = userDetails.getUsername();
 		User user = userService.getUserByUserId(userId);
-		
+
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
-		
-		if(study.isPresent()) {
-			res.getStudyResult().add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy));
+
+		if (study.isPresent()) {
+			res.getStudyResult()
+					.add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy));
 		}
 		return ResponseEntity.ok(res);
 
@@ -307,19 +313,18 @@ public class StudyController {
 	// 내가 가입한 스터디 중 내가 평가 한 or 평가 해야 하는 스터디 목록이 쫘르르 나온다.
 	@GetMapping("/rating/{userId}")
 	@ApiOperation(value = "평가할 스터디원 목록.", notes = "평가 했던 or 평가 해야할 스터디원 목록 불러오기")
-	public ResponseEntity<?> getRateList(@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId){
+	public ResponseEntity<?> getRateList(
+			@PathVariable(value = "userId") @ApiParam(value = "사용자 ID", required = true) Long userId) {
 		List<StudyRate> rateList = studyRateService.getRateListByUserId(userId);
 		List<RateRes> rateRes = new ArrayList<>();
-		
-		for(StudyRate sr : rateList) {
+
+		for (StudyRate sr : rateList) {
 			rateRes.add(new RateRes(sr));
 		}
-		
+
 		return ResponseEntity.ok(rateRes);
 	}
-	
-	
-	
+
 	/* 스터디 초대하기 */
 //	스터디에 초대한다(방장만 가능)
 	@PostMapping("/{studyId}/member")
@@ -348,6 +353,7 @@ public class StudyController {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "실패"));
 		}
 	}
+
 	/* 초대한 회원 리스트 */
 	@GetMapping("/{studyId}/invitelist")
 	@ApiOperation(value = "스터디에 초대한 회원 리스트 ", notes = "방장이 스터디에 초대한 회원 리스트")
@@ -373,8 +379,7 @@ public class StudyController {
 
 		List<SearchMember> res = new ArrayList<>();
 		try {
-			
-		
+
 //		1. 해당 단어가 포함된 관심사를 불러온다.
 			List<Interest> interestThings = interestService.getInterestByName(interest);
 
@@ -393,7 +398,7 @@ public class StudyController {
 				List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
 				res.add(new SearchMember(u, studyList));
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("검색결과 없음");
 		}
@@ -401,5 +406,31 @@ public class StudyController {
 
 	}
 
-}
+	/* 스터디 문제집 만들기 */
+	@PostMapping("/{studyId}")
+	@ApiOperation(value = "문제집 만들기", notes = "요청에 따라 문제집을 받고 저장한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
+	public ResponseEntity<BaseResponseBody> createWorkbook(
+			@ApiParam(value = "로그인 정보", required = true) WorkbookCreatePostReq workbookInfo,
+			@RequestPart(value = "study_thumbnail", required = false) MultipartFile testFile,
+			@PathVariable(value = "studyId") Long studyId) {
+	
+		try {
+			Study study = studyService.getStudyById(studyId).get();
+			User writer = userService.getUserById(workbookInfo.getTest().getUserId());
+			studyTestService.createWorkbook(study, writer, workbookInfo, testFile);
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+			System.out.println("파일 저장 시 서버 에러");
+			return ResponseEntity.status(500).body(new BaseResponseBody(500, "서버 에러"));
+		} catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(" 유저 ,스터디 번호 잘못됨.");
+			return ResponseEntity.status(404).body(new BaseResponseBody(404, "존재하지 않는 id 인자값"));
+		}
 
+		return ResponseEntity.status(200).body(new BaseResponseBody(200, "문제집 생성 완료"));
+
+
+	}
+
+}
