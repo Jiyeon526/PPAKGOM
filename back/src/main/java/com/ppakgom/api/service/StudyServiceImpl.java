@@ -300,17 +300,23 @@ public class StudyServiceImpl implements StudyService {
 			if(!study.isPresent()) return false;
 			
 			// 날짜 변환
-			Date date;
-			date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
+			Date date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
 			
 			// 스터디 일정 객체 생성
-			StudyPlan studyPlan = new StudyPlan(req.getTitle(), 
-					req.getDetail(), date,study.get());
+			StudyPlan studyPlan = new StudyPlan(req.getTitle(), date, study.get());
 			// 객체 생성 안되면 false
 			if(studyPlan == null) return false;
 			
 			// DB에 저장
-			studyPlanRepository.save(studyPlan);
+			studyPlan = studyPlanRepository.save(studyPlan);
+			
+			// 스터디 출석현황 저장
+			// 스터디 유저들 가져오기
+			List<UserStudy> users = userStudyRepository.findByStudyId(studyId);
+			for(UserStudy user: users) { // 멤버들 마다 일정 생길 때 마다 스터디 출석 현황에 넣어주기
+				StudyAttend studyAttend = new StudyAttend(study.get(), user.getUser(), studyPlan, false);
+				studyAttendRepository.save(studyAttend);
+			}
 			
 		} catch (ParseException e) {
 			System.out.println("날짜 변환 에러");
