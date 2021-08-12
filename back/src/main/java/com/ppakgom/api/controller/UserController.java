@@ -328,4 +328,10 @@ public class UserController {
 		}
 
 	}
+	
+	@PostMapping("/social")
+	@ApiOperation(value = "소셜 로그인", notes = "소셜 로그인")
+	public ResponseEntity<BaseResponseBody> userSocialLogin() {
+		return ResponseEntity.ok(new BaseResponseBody(200, "소셜 로그인 성공"));
+	}
 }
