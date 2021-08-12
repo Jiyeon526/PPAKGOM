@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.StudyDetailInfo;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudyTestInfoRes;
@@ -56,5 +57,7 @@ public interface StudyService {
 	StudyTestScoreRes postStudyTestScore(List<String> answer, Long studyId, Long testId);
 
 	StudyTestInfoRes getStudyTestInfo(Long studyId, Long testId);
+
+	List<StudyDetailInfo> getStudyDetailInfo(Long studyId);
 
 }

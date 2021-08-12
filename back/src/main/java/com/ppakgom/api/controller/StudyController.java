@@ -48,6 +48,7 @@ import com.ppakgom.api.response.InviteResByStudy;
 import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
+import com.ppakgom.api.response.StudyDetailInfo;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
@@ -426,7 +427,7 @@ public class StudyController {
 	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId, 
 			@RequestBody StudyScheduleReq req) {
 		// 값이 다 들어왔는지 확인
-		if(req.getTitle().length() == 0 || req.getDetail().length() == 0 || req.getDate().length() == 0)
+		if(req.getTitle().length() == 0 || req.getDate().length() == 0)
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		// 저장하기
 		if(!studyService.postStudySchedule(studyId, req))
@@ -477,6 +478,15 @@ public class StudyController {
 			@PathVariable(value = "testId") Long testId) {
 		
 		StudyTestInfoRes res = studyService.getStudyTestInfo(studyId, testId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@GetMapping("/{studyId}/info")
+	@ApiOperation(value = "스터디 방 상세 정보 가져오기", notes = "스터디 방 상세 정보 가져오기")
+	public ResponseEntity<List<StudyDetailInfo>> getStudyDetailInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyDetailInfo> res = studyService.getStudyDetailInfo(studyId);
+		
 		return ResponseEntity.status(200).body(res);
 	}
 }
