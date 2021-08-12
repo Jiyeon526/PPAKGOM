@@ -48,6 +48,7 @@ import com.ppakgom.api.response.InviteResByStudy;
 import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
+import com.ppakgom.api.response.StudyDetailInfo;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
@@ -477,6 +478,15 @@ public class StudyController {
 			@PathVariable(value = "testId") Long testId) {
 		
 		StudyTestInfoRes res = studyService.getStudyTestInfo(studyId, testId);
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@GetMapping("/{studyId}/info")
+	@ApiOperation(value = "스터디 방 상세 정보 가져오기", notes = "스터디 방 상세 정보 가져오기")
+	public ResponseEntity<List<StudyDetailInfo>> getStudyDetailInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyDetailInfo> res = studyService.getStudyDetailInfo(studyId);
+		
 		return ResponseEntity.status(200).body(res);
 	}
 }
