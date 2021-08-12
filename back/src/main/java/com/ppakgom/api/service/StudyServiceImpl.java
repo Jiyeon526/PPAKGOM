@@ -477,10 +477,18 @@ public class StudyServiceImpl implements StudyService {
 		study.setTemperature(studyInfo.getTemperature());
 		study = studyRepository.save(study);
 //		썸네일 저장하기
+
 //		 사진 관련 처리 -> image/study/방번호-파일명
-		String path = BASE_PATH + study.getId() + "-" + studyThumbnail.getOriginalFilename();
-		File dest = new File(path);
-		studyThumbnail.transferTo(dest);
+		String path = BASE_PATH;;
+		if(studyThumbnail == null) {
+//			디폴트 사진 처리
+			path += "default.png";
+		}
+		else {
+			path +=study.getId() + "-" + studyThumbnail.getOriginalFilename();
+			File dest = new File(path);
+			studyThumbnail.transferTo(dest);
+		}
 		study.setStudy_thumbnail(getShortFilePath(path));
 		study = studyRepository.save(study);
 //		관심사 수정 처리
