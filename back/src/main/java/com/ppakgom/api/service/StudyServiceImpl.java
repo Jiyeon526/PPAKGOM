@@ -282,7 +282,7 @@ public class StudyServiceImpl implements StudyService {
 			if(!today.equals(studySchedule)) continue; // 날짜 다르면 넘김
 			
 			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
-					studyPlan.getTitle(), studyPlan.getDetail(), studyPlan.getDate());
+					studyPlan.getTitle(), studyPlan.getDate());
 			// 저장
 			res.add(s);
 		}
