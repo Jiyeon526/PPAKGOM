@@ -38,17 +38,15 @@
       </div>
 
       <div id="session" v-if="session">
-        <el-row>
+        <!-- <el-row>
           <div id="session-header">
             <h1 id="session-title">{{ mySessionId }}</h1>
           </div>
-        </el-row>
+        </el-row> -->
 
-        <!-- <div id="main-video" class="col-md-6">
-        <user-video :stream-manager="mainStreamManager" />
-      </div> -->
         <el-row :gutter="20">
           <el-col :span="18">
+            <user-video v-if="mainmode" :stream-manager="mainStreamManager" />
             <el-container class="room">
               <user-video
                 class="screen-res"
@@ -62,7 +60,7 @@
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
               />
-              <user-video
+              <!-- <user-video
                 class="screen-res"
                 :stream-manager="screenPublisher"
                 @click="updateMainVideoStreamManager(screenPublisher)"
@@ -73,35 +71,37 @@
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
-              />
+              /> -->
             </el-container>
           </el-col>
           <el-col :span="6">
-            <div style="height:550px;">
-              <el-collapse v-model="activeNames">
-                <el-collapse-item title="채팅" name="1">
-                  <!-- <el-scrollbar height="500px" id="chat-area"> -->
+            <el-popover placement="left" :width="580" trigger="click">
+              <div style="height:550px;">
+                <el-collapse v-model="activeNames">
+                  <el-collapse-item title="채팅" name="1">
+                    <!-- <el-scrollbar height="500px" id="chat-area"> -->
 
-                  <div id="chat-area" style=" height:520px; overflow:scroll;">
-                    <div v-for="(item, i) in messages" :key="i">
-                      {{ item.from }}:{{ item.content }}
+                    <div id="chat-area" style=" height:520px; overflow:scroll;">
+                      <div v-for="(item, i) in messages" :key="i">
+                        {{ item.from }}:{{ item.content }}
+                      </div>
                     </div>
-                  </div>
 
-                  <!-- </el-scrollbar> -->
-                </el-collapse-item>
-              </el-collapse>
-            </div>
-            <el-input
-              v-model="message"
-              type="textarea"
-              clearable
-              :rows="2"
-              placeholder="채팅 내용을 입력하세요"
-              maxlength="100"
-              @keyup.enter="sendMessage"
-              show-word-limit
-            />
+                    <!-- </el-scrollbar> -->
+                  </el-collapse-item>
+                </el-collapse>
+              </div>
+              <el-input
+                v-model="message"
+                type="textarea"
+                clearable
+                :rows="2"
+                placeholder="채팅 내용을 입력하세요"
+                maxlength="100"
+                @keyup.enter="sendMessage"
+                show-word-limit
+              />
+            </el-popover>
           </el-col>
         </el-row>
       </div>
@@ -151,11 +151,27 @@
         >
 
         <el-button
+          v-if="!videoOn"
+          type="danger"
+          @click="videoOnOOff"
+          icon="el-icon-video-play"
+          >화상 중지</el-button
+        >
+
+        <el-button
+          type="success"
+          icon="el-icon-monitor"
+          v-if="!mainmode"
+          @click="toggleMainmode"
+          >메인모드</el-button
+        >
+
+        <el-button
           type="danger"
           icon="el-icon-s-platform"
-          v-if="screenSession"
-          @click="toggleShareScreen"
-          >화상공유 중지</el-button
+          v-if="mainmode"
+          @click="toggleMainmode"
+          >분할모드</el-button
         >
         <el-button
           type="success"
@@ -174,6 +190,7 @@ import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./openviducomponents/UserVideo";
 import WindowPopup from "./WindowPopup";
 import Swal from "sweetalert2";
+import { ElNotification } from "element-plus";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -198,7 +215,8 @@ export default {
       messages: [],
       activeNames: ["1"],
       test: "",
-
+      //메인모드
+      mainmode: false,
       //화상회의
       OV: undefined,
       session: undefined,
@@ -253,18 +271,18 @@ export default {
 
       const screenSession = screenOV.initSession();
 
-      const screenSubscribers = [];
-      screenSession.on("streamCreated", ({ stream }) => {
-        const screenSubscriber = screenSession.subscribe(stream);
-        screenSubscribers.push(screenSubscriber);
-      });
-      // On every Stream destroyed...
-      screenSession.on("streamDestroyed", ({ stream }) => {
-        const index2 = screenSubscribers.indexOf(stream.streamManager, 0);
-        if (index2 >= 0) {
-          screenSubscribers.splice(index2, 1);
-        }
-      });
+      // const screenSubscribers = [];
+      // screenSession.on("streamCreated", ({ stream }) => {
+      //   const screenSubscriber = screenSession.subscribe(stream);
+      //   screenSubscribers.push(screenSubscriber);
+      // });
+      // // On every Stream destroyed...
+      // screenSession.on("streamDestroyed", ({ stream }) => {
+      //   const index2 = screenSubscribers.indexOf(stream.streamManager, 0);
+      //   if (index2 >= 0) {
+      //     screenSubscribers.splice(index2, 1);
+      //   }
+      // });
 
       this.getToken(this.mySessionId).then(token2 => {
         let screenPublisher = screenOV.initPublisher(undefined, {
@@ -272,13 +290,13 @@ export default {
           videoSource: "screen", // The source of video. If undefined default webcam
           publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
           publishVideo: true, // Whether you want to start publishing with your video enabled or not
-          resolution: "1920x1080", // The resolution of your video
+          resolution: "1440x1080", // The resolution of your video
           frameRate: 30, // The frame rate of your video
           insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
           mirror: false // Whether to mirror your local video or not
         });
         screenSession
-          .connect(token2, { clientData: this.myUserName + "screen" })
+          .connect(token2, { clientData: this.myUserName + "s" })
           .then(() => {
             screenPublisher.once("accessAllowed", () => {
               screenPublisher.stream
@@ -288,13 +306,6 @@ export default {
                   dispatch("stopShareScreen");
                 });
               screenSession.publish(screenPublisher);
-              //       screenOV: undefined,
-              // screenSession: undefined,
-              // screenMainStreamManager: undefined,
-              // screenPublisher: undefined,
-              // screenSubscribers: [],
-              // screenOvToken: null,
-              // isSharingMode: false
               this.screenOV = screenOV;
               this.screenMainStreamManager = screenPublisher;
               this.screenPublisher = screenPublisher;
@@ -335,6 +346,13 @@ export default {
       // On every new Stream received...
       this.session.on("streamCreated", ({ stream }) => {
         const subscriber = this.session.subscribe(stream);
+        let client = JSON.parse(subscriber.stream.connection.data);
+
+        ElNotification({
+          title: "입장",
+          message: `${client.clientData} 님이 입장하셨습니다.`,
+          type: "success"
+        });
         this.subscribers.push(subscriber);
       });
 
@@ -342,10 +360,25 @@ export default {
       this.session.on("streamDestroyed", ({ stream }) => {
         const index = this.subscribers.indexOf(stream.streamManager, 0);
         if (index >= 0) {
+          let client = JSON.parse(
+            this.subscribers[index].stream.connection.data
+          );
+
+          ElNotification({
+            title: "퇴장",
+            message: `${client.clientData} 님이 퇴장하셨습니다.`,
+            type: "warning"
+          });
           this.subscribers.splice(index, 1);
         }
       });
-
+      this.session.on("signal:share", event => {
+        if (event.data === "F") {
+          this.isSharingMode = false;
+        } else {
+          this.isSharingMode = true;
+        }
+      });
       // On every asynchronous exception...
       this.session.on("exception", ({ exception }) => {
         console.warn(exception);
@@ -425,6 +458,7 @@ export default {
 
     updateMainVideoStreamManager(stream) {
       if (this.mainStreamManager === stream) return;
+      console.log(stream);
       this.mainStreamManager = stream;
     },
     audioOnOOff() {
@@ -552,6 +586,9 @@ export default {
           }
         });
       }
+    },
+    toggleMainmode() {
+      this.mainmode = !this.mainmode;
     }
   }
 };
@@ -723,9 +760,20 @@ video {
   width: 100%;
   height: auto;
 }
+#main-video {
+  position: relative;
+  display: inline-block;
+  background: #f8f8f8;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 22px;
+  color: #777777;
+  font-weight: bold;
+  border-bottom-right-radius: 4px;
+}
 
 #main-video p {
-  position: absolute;
+  position: relative;
   display: inline-block;
   background: #f8f8f8;
   padding-left: 5px;

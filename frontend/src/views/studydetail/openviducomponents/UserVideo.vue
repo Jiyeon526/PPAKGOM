@@ -1,12 +1,17 @@
 <template>
   <span v-if="streamManager">
     <ov-video :stream-manager="streamManager" />
-    <div>
+    <div class="font-shadow">
       <p>{{ clientData }}</p>
     </div>
   </span>
 </template>
-
+<style>
+.font-shadow {
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: rgb(0, 0, 0);
+}
+</style>
 <script>
 import OvVideo from "./OvVideo";
 
