@@ -15,7 +15,6 @@
       @openInviteDialog="onOpenInviteDialog"
       @openMakeworkbookDialog="onOpenMakeworkbookDialog"
       @openOtherpeopleDialog="onOpenOtherpeopleDialog"
-      @openStudyscheduleDialog="onOpenStudyscheduleDialog"
     />
     <el-container class="main-container">
       <!-- <el-aside class="hide-on-small" > -->
@@ -24,6 +23,7 @@
       <el-main>
         <router-view
           @openStudydetailDialog="onOpenStudydetailDialog"
+          @openStudyscheduleDialog="onOpenStudyscheduleDialog"
         ></router-view>
       </el-main>
     </el-container>
@@ -115,12 +115,14 @@ export default {
       otherpeopleDialogOpen: false,
       studydetailDialogOpen: false,
       selectStudyDetail: [],
-      studyscheduleDialogOpen: false
+      studyscheduleDialogOpen: false,
+      // selectScheduleDate: null
     };
   },
   methods: {
-    onOpenStudyscheduleDialog() {
+    onOpenStudyscheduleDialog(selectDate) {
       this.studyscheduleDialogOpen = true;
+      // this.selectScheduleDate=selectDate
     },
     onCloseStudyscheduleDialog() {
       this.studyscheduleDialogOpen = false;
