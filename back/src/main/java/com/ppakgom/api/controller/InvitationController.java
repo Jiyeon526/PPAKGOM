@@ -38,6 +38,8 @@ import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.InviteGetRes;
 import com.ppakgom.api.response.InviteRes;
+import com.ppakgom.api.response.InvitedGetRes;
+import com.ppakgom.api.response.InvitedRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
@@ -106,10 +108,10 @@ public class InvitationController {
 			@PathVariable(value = "userId") @ApiParam(value = "현재 유저", required = true) Long userId) {
 
 		try {
-			InviteGetRes res = new InviteGetRes();
+			InvitedGetRes res = new InvitedGetRes();
 			List<StudyApply> inviteList = studyApplyService.getInvitedList(userId, false);
 			for (StudyApply sa : inviteList) {
-				InviteRes ir = new InviteRes();
+				InvitedRes ir = new InvitedRes();
 				res.getInviteResult().add(ir.of(sa));
 			}
 			return ResponseEntity.ok(res);
