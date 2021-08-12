@@ -15,6 +15,7 @@ import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
+import com.ppakgom.api.response.StudyTestInfoRes;
 import com.ppakgom.api.response.StudyTestListRes;
 import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.request.StudyScheduleReq;
@@ -53,5 +54,7 @@ public interface StudyService {
 	List<StudyMemberInfoRes> getStudyMemberInfo(Long studyId);
 
 	StudyTestScoreRes postStudyTestScore(List<String> answer, Long studyId, Long testId);
+
+	StudyTestInfoRes getStudyTestInfo(Long studyId, Long testId);
 
 }

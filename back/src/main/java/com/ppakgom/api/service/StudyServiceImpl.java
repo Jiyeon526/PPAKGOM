@@ -26,10 +26,11 @@ import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.request.StudyScheduleReq;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudyScoreMember;
+import com.ppakgom.api.response.StudyTestInfoRes;
 import com.ppakgom.api.response.StudyTestListRes;
 import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.response.StudyTestScoreTotalRes;
-
+import com.ppakgom.api.response.StudyTests;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyInterest;
@@ -430,6 +431,27 @@ public class StudyServiceImpl implements StudyService {
 		} else
 			studyScoreRepository.save(score);
 		
+		return res;
+	}
+
+	@Override
+	public StudyTestInfoRes getStudyTestInfo(Long studyId, Long testId) {
+		StudyTestInfoRes res = new StudyTestInfoRes();
+		
+		// 문제집 정보
+		Optional<StudyTest> st = studyTestRepository.findById(testId);
+		if(!st.isPresent()) return null;
+		
+		// 정보 저장
+		StudyTests test = new StudyTests(testId, st.get().getUser().getUserId(),
+				st.get().getTitle(), st.get().getTest_url());
+		// 반환 객체에 저장
+		res.setTest(test);
+		
+		// 답 ,로 스플릿해서 저장
+		String[] answer = st.get().getAnswer().split(",");
+		res.setAnswer(answer);
+
 		return res;
 	}
 
