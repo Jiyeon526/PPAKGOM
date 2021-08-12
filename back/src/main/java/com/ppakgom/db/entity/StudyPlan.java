@@ -27,10 +27,9 @@ public class StudyPlan extends BaseEntity {
 	@JoinColumn(name = "study_id")
 	Study study;
 
-	public StudyPlan(String title, String detail, Date date, Study study) {
+	public StudyPlan(String title, Date date, Study study) {
 		super();
 		this.title = title;
-		this.detail = detail;
 		this.date = date;
 		this.study = study;
 	}
