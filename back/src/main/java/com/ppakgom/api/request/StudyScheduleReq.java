@@ -15,9 +15,6 @@ public class StudyScheduleReq {
 	@ApiModelProperty(name="title", example="ssafy 일정")
 	String title;
 	
-	@ApiModelProperty(name="detail", example="ssafy 일정 - 다음주 수요일, 32쪽까지")
-	String detail;
-	
 	@ApiModelProperty(name="date", example="2021-09-23")
 	String date;
 }
