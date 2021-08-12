@@ -53,6 +53,7 @@ import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudySearchGetRes;
+import com.ppakgom.api.response.StudyTestInfoRes;
 import com.ppakgom.api.response.StudyTestListRes;
 import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.service.InterestService;
@@ -468,6 +469,15 @@ public class StudyController {
 		StudyTestScoreRes res = studyService.postStudyTestScore(answer, userId, testId);
 		return ResponseEntity.status(200).body(res);
 		
+	}
+	
+	@GetMapping("/{studyId}/workbook/{testId}")
+	@ApiOperation(value = "스터디 문제집 클릭 시 정보 가져오기", notes = "스터디 문제집 클릭 시 정보 가져오기")
+	public ResponseEntity<StudyTestInfoRes> getStudyTestInfo(@PathVariable(value = "studyId") Long studyId, 
+			@PathVariable(value = "testId") Long testId) {
+		
+		StudyTestInfoRes res = studyService.getStudyTestInfo(studyId, testId);
+		return ResponseEntity.status(200).body(res);
 	}
 }
 
