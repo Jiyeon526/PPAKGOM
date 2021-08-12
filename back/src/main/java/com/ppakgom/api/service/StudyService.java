@@ -57,4 +57,6 @@ public interface StudyService {
 
 	StudyTestInfoRes getStudyTestInfo(Long studyId, Long testId);
 
+	void updateStudy(Study study, MultipartFile studyThumbnail, StudyCreatePostReq studyInfo) throws ParseException, IllegalStateException, IOException;
+
 }
