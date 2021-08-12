@@ -8,6 +8,15 @@ import Createpage from '@/views/createpage'
 import Studyjoin from '@/views/studyjoin'
 import Studylike from '@/views/studylike'
 import Studymanage from '@/views/studymanage'
+import Studyevaluate from '@/views/studyevaluate'
+import Studyattitude from '@/views/studydetail/studyattitude'
+import Studyhome from '@/views/studydetail/studyhome'
+import Studymeeting from '@/views/studydetail/studymeeting'
+import Studymember from '@/views/studydetail/studymember'
+import Studyschedule from '@/views/studydetail/studyschedule'
+import Studyscore from '@/views/studydetail/studyscore'
+import Studyworkbook from '@/views/studydetail/studyworkbook'
+
 
 const fullMenu = require('@/views/main/menu.json')
 function makeRoutesFromMenu() {
@@ -24,6 +33,8 @@ function makeRoutesFromMenu() {
       return { path: fullMenu[key].path, name: key, component: Studyjoin }
     }else if (key === 'like') {
       return { path: fullMenu[key].path, name: key, component: Studylike }
+    }else if (key === 'evaluate') {
+      return { path: fullMenu[key].path, name: key, component: Studyevaluate }
     }
     else if (key === 'manage') {
       return { path: fullMenu[key].path, name: key, component: Studymanage }
@@ -44,6 +55,42 @@ function makeRoutesFromMenu() {
       name: 'mypage',
       component: Mypage
     },
+    {
+      path: '/studyscore',
+      name: 'studyscore',
+      component: Studyscore
+    },
+    {
+      path: '/studyattitude',
+      name: 'studyattitude',
+      component: Studyattitude
+    },
+    {
+      path: '/studyhome',
+      name: 'studyhome',
+      component: Studyhome
+    },
+    {
+      path: '/studymeeting',
+      name: 'studymeeting',
+      component: Studymeeting
+    },
+    {
+      path: '/studymember',
+      name: 'studymember',
+      component: Studymember
+    },
+    {
+      path: '/studyschedule',
+      name: 'studyschedule',
+      component: Studyschedule
+    },
+    {
+      path: '/studyworkbook',
+      name: 'studyworkbook',
+      component: Studyworkbook
+    },
+
 
   )
   return routes

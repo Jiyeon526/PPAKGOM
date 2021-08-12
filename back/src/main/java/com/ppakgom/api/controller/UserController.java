@@ -188,7 +188,7 @@ public class UserController {
 
 	@PostMapping("/email")
 	@ApiOperation(value = "이메일 인증 코드 보내기", notes = "<strong>이메일</strong>인증 코드 보내기.")
-	public ResponseEntity<? extends BaseResponseBody> sendEmailAuth(String email) throws Exception {
+	public ResponseEntity<? extends BaseResponseBody> sendEmailAuth(@RequestBody String email) throws Exception {
 
 		String code = emailService.sendAuthMessage(email);
 		emailRepository.put(email, code); // 해당 사용자의 인증 코드 저장

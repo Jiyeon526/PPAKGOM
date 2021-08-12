@@ -1,6 +1,9 @@
 package com.ppakgom.api.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,9 +15,11 @@ import com.ppakgom.api.response.JoinApplyListRes;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
+import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyApplyRepository;
+import com.ppakgom.db.repository.StudyRateRepository;
 import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
@@ -30,6 +35,12 @@ public class JoinServiceImpl implements JoinService {
 	
 	@Autowired
 	UserStudyRepository userStudyRepository;
+	
+	@Autowired
+	UserRepository userRepository;
+	
+	@Autowired
+	StudyRateRepository studyRateRepository;
 	
 	@Override
 	public List<JoinApplyListRes> getJoinApplyList(Long user_id) { // 가입 신청 현황 가져오기
@@ -110,7 +121,7 @@ public class JoinServiceImpl implements JoinService {
 		Optional<Study> study = studyRepository.findById(studyApply.getStudy().getId());
 		// study_apply에서 삭제
 		deleteJoinApply(studyApply);
-		System.out.println(studyPopulation);
+	
 		// 스터디 존재안함
 		if(!study.isPresent()) return "error";
 		
@@ -118,9 +129,20 @@ public class JoinServiceImpl implements JoinService {
 		if(studyPopulation >= study.get().getPopulation())
 			return "population";
 		
+		// 스터디 평가에 사람 추가
+		// 스터디원들 가져오기
+		List<UserStudy> userStudyList = userStudyRepository.findByStudyId(study.get().getId());
+		for(UserStudy us : userStudyList) {
+			User originUser = us.getUser();
+//					팀원들이 새로운 멤버를 평가해야 하고
+			studyRateRepository.save(new StudyRate(study.get(), originUser, studyApply.getSender(), false));
+//					새로운 멤버도 팀원들을 평가해야 함.
+			studyRateRepository.save(new StudyRate(study.get(), studyApply.getSender(), originUser, false));
+		}
 		// 스터디에 유저 추가
 		UserStudy userStudy = new UserStudy(studyApply.getSender(), study.get());
 		userStudyRepository.save(userStudy);
+		
 		return "ok";
 	}
 
@@ -166,6 +188,34 @@ public class JoinServiceImpl implements JoinService {
 		}
 		
 		return res;
+	}
+
+	@Override
+	public String studyApply(Long studyId, Long userId) {
+		// 스터디 정보 가져오기
+		Optional<Study> study = studyRepository.findById(studyId);
+		if(!study.isPresent()) return "error"; // 스터디 없으면 반환
+		
+		// 현재 스터디 인원
+		int studyPopulation = userStudyRepository.getJoinedUserByStudyId(studyId);
+		// 스터디 인원 초과
+		if(studyPopulation >= study.get().getPopulation())
+			return "population";
+		
+		// 모집 날짜
+		DateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date nowDate = new Date();
+		String today = sdFormat.format(nowDate); // 오늘 날짜(연, 월)
+		String studyDate = sdFormat.format(study.get().getDeadline()); // 스터디 모집 날짜
+		if(today.compareTo(studyDate) > 0) return "deadline";
+		
+		// 사용자
+		User user = userRepository.findUserById(userId);
+		Short state = 2; // 대기 상태
+		StudyApply studyApply = new StudyApply(true, state, study.get().getUser(), 
+				user, study.get());
+		studyApplyRepository.save(studyApply); // DB 저장
+		return "ok";
 	}
 
 }

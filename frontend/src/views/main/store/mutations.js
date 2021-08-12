@@ -27,6 +27,7 @@ export function setUserId(state) {
 export function deleteToken(state) {
   state.accessToken = ''
   state.userId = ''
+  state.userpk = 0
 }
 
 // 검색한 문자열 업데이트
