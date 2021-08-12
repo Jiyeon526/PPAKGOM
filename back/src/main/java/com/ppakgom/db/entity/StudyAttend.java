@@ -1,5 +1,7 @@
 package com.ppakgom.db.entity;
 
+import java.util.Optional;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -12,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StudyAttend extends BaseEntity {
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "study_id")
 	Study study;
@@ -26,4 +28,18 @@ public class StudyAttend extends BaseEntity {
 	StudyPlan studyPlan;
 	
 	boolean isAttend;
+
+	public StudyAttend(Study study, User user, StudyPlan studyPlan, boolean isAttend) {
+		super();
+		this.study = study;
+		this.user = user;
+		this.studyPlan = studyPlan;
+		this.isAttend = isAttend;
+	}
+
+	public StudyAttend() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 }
