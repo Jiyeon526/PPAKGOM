@@ -123,7 +123,7 @@ public class UserController {
 	@ApiOperation(value = "회원가입 생성", notes = "회원가입", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> register(
 			@ApiParam(value = "생성할 방 정보", required = true) UserRegisterPostReq registerInfo,
-			@RequestPart("file") MultipartFile thumbnail) {
+			@RequestPart(value = "file", required = false) MultipartFile thumbnail) {
 
 		/*
 		 * 임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음.
@@ -230,7 +230,7 @@ public class UserController {
 	@PutMapping("/{userId}")
 	@ApiOperation(value = "회원 본인 정보 수정", notes = "로그인한 회원 본인의 정보를 수정한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> modifyUserInfo(UserModifyInfoReq userReq,
-			@RequestPart("thumbnail") MultipartFile file,
+			@RequestPart(value = "thumbnail", required = false) MultipartFile file,
 			@PathVariable @ApiParam(value = "User ID", required = true) Long userId,
 			@ApiIgnore Authentication authentication) {
 		
