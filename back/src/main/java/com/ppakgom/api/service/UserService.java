@@ -3,6 +3,7 @@ package com.ppakgom.api.service;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,4 +23,6 @@ public interface UserService {
 	void likeStudy(User user, Study study);
 	void unlikeStudy(User user, Study study);
 	Optional<User> getUserByUserNickname(String userName);
+	User postSocialLoginInfo(String email);
+	User getUserByEmail(String email);
 }

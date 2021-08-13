@@ -47,13 +47,7 @@ import io.swagger.annotations.ApiResponses;
 
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.ppakgom.common.util.JwtTokenUtil;
-import com.ppakgom.api.response.LoginRes;
-import com.ppakgom.api.response.UserInfoRes;
-import com.ppakgom.api.request.EmailReq;
-import com.ppakgom.api.request.LoginReq;
 import com.ppakgom.api.request.UserModifyInfoReq;
-
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
 
@@ -361,4 +355,37 @@ public class UserController {
 		return ResponseEntity.ok(study);
 	}
 
+	
+	@PostMapping("/social")
+	@ApiOperation(value = "소셜 로그인", notes = "소셜 로그인")
+	public ResponseEntity<?> userSocialLogin(@RequestBody @ApiParam(value = "로그인 정보", required = true) String email) {
+		
+		User user;
+		BaseResponseBody loginRes;
+		
+		// loginInfo가 다 안왔을 때 400에러
+		loginRes = new BaseResponseBody(404, "아이디 또는 비밀번호를 확인해 주세요.");
+		
+		if(email == null) return ResponseEntity.status(404).body(loginRes); // 빈값
+		
+		try {
+//			존재하는 사용자이면 패쓰
+			user = userService.getUserByEmail(email);
+			
+			if(user != null) {
+				loginRes = new LoginRes(200, "로그인 완료", JwtTokenUtil.getToken(user.getUserId()), user.getId());
+			} else { // 아이디 없을 때 
+				user = userService.postSocialLoginInfo(email);
+				if(user != null) // 가입되면
+					loginRes = new LoginRes(200, "로그인 완료", JwtTokenUtil.getToken(user.getUserId()), user.getId());
+				else // 가입 실패
+					return ResponseEntity.status(404).body(loginRes);
+			}
+			return ResponseEntity.ok(loginRes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return ResponseEntity.status(404).body(loginRes);
+	}
 }
