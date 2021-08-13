@@ -1,14 +1,14 @@
 <template>
   <el-card :body-style="{ padding: '0px' }">
     <div class="image-wrapper">
-      <el-image style="width: 100%; height: 190px"
+      <el-image style="width: 100%; height: 200px"
         :src="'https://localhost:8443/' + studyData.study_thumbnail"
         :fit="fit"
         >
       </el-image>
     </div>
     <div style="text-align: left; padding: 14px;">
-      <span class="title">{{ studyData.name }}</span>
+      <span class="title">{{studyData.study_id}}번방 {{ studyData.name }}</span>
       <div class="bottom">
         <span>{{ studyData.content }}</span>
       </div>
@@ -16,7 +16,8 @@
     <div>
       <el-input-data class="btn-sort">
         <el-tag type=""> {{ studyData.joined_population }}/{{ studyData.population }}</el-tag>
-        <el-tag v-if="studyData.owner_id" type="success">입장</el-tag>
+        {{ studyData.enter }}
+        <el-tag v-if="studyData.enter" type="success" @click="enterStudy">입장</el-tag>
       </el-input-data>
     </div>
   </el-card>
@@ -24,16 +25,15 @@
 <style>
 .el-card {
   width: 300px;
-  height: 300px;
+  height: auto;
   margin: 0 8px;
   margin-bottom: 40px;
 }
 .el-card .image-wrapper {
   width: 100%;
-  height: 190px;
+  height: 200px;
 }
 .el-card .title {
-  width: 300px;
   display:-webkit-box;
   font-weight: bold;
   word-wrap:break-word;
@@ -43,7 +43,6 @@
   -webkit-line-clamp: 1;
 }
 .el-card .bottom {
-  width: 300px;
   margin-top: 5px;
   display:-webkit-box;
   word-wrap:break-word;
@@ -77,6 +76,8 @@
 </style>
 <script>
 import { onMounted, reactive } from 'vue'
+import { useRouter } from "vue-router"
+import { useStore } from "vuex"
 
 
 export default {
@@ -89,13 +90,21 @@ export default {
   },
 
   setup () {
+    const store = useStore()
+    const router = useRouter()
     const state = reactive({
 
   })
 
+  const enterStudy = (studyData) => {
+    store.commit("root/setStudypk", studyData.study_id);
+    store.commit("root/setSelectOption", "studyhome");
+    router.push({
+      name: 'studyhome'
+    });
+  }
 
-
-    return { state, }
+    return { state, enterStudy, }
   }
 }
 </script>

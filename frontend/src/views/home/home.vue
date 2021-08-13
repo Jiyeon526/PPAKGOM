@@ -27,14 +27,16 @@
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
   <el-carousel v-else :interval="4000" type="card" height="300px">
-    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
-      <el-image style="width: 300px; height: 300px"
-        :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
-        :fit="fit"
-        alt="PPAKGOM"
-      >
-      </el-image>
-    </el-carousel-item>
+    <div >
+      <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)" style="display:flex; justify-content:space-around">
+        <el-image style="width: 300px; height: 300px"
+          :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
+          :fit="fit"
+          alt="PPAKGOM"
+        >
+        </el-image>
+      </el-carousel-item>
+    </div>
   </el-carousel>
   <div v-if="state.studyList.length !== 0">
     <div
@@ -124,16 +126,16 @@ export default {
       recommendStudyList: [],
       searchValue: "",
       searchType: "",
-      addRecommendStudy: {
-        study_id: 0,
-        interest: ["프로그래밍","개발자"],
-        name: "관심분야를 더 등록해주세요",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: require('@/assets/images/ppakgom.png'),
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },
+      // addRecommendStudy: {
+      //   study_id: 0,
+      //   interest: ["프로그래밍","개발자"],
+      //   name: "관심분야를 더 등록해주세요",
+      //   content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+      //   population: 5,
+      //   study_thumbnail: require('@/assets/images/ppakgom.png'),
+      //   joined_population: 3,
+      //   deadline: "2021-08-23"
+      // },
       options: [
         {
           value: 1,

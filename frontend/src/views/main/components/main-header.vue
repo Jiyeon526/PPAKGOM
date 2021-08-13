@@ -11,7 +11,7 @@
           <div class="logo-ppakgom">PPAKGOM</div>
         </el-col>
         <el-col :span="16">
-          <el-select v-model="state.value" placeholder="STUDY">
+          <el-select v-if="state.value" v-model="state.value" placeholder="STUDY">
             <el-option
               v-for="item in state.options"
               :key="item.value"

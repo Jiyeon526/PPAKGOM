@@ -158,6 +158,27 @@ export function requestJoinStudyList({state}) {
 // 찜한 스터디 목록 가져오기
 export function requestLikeStudyList({state}) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/study/like/${state.userpk}`
+  const url = `/users/like/${state.userpk}`
   return $axios.get(url, { headers: headers })
+}
+
+// 스터디 가입하기
+export function requestJoinStudy({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/join/${state.userpk}?studyId=${payload.studyId}`
+  return $axios.post(url, { headers: headers })
+}
+
+// 스터디 찜하기
+export function requestLikeStudy({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/users/like/${state.userpk}?studyId=${payload.studyId}`
+  return $axios.post(url, { headers: headers })
+}
+
+// 스터디 찜하기 취소
+export function requestLikeCancleStudy({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/users/like/${state.userpk}?studyId=${payload.studyId}`
+  return $axios.delete(url, { headers: headers })
 }
