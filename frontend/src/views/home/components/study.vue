@@ -16,7 +16,6 @@
     <div>
       <el-input-data class="btn-sort">
         <el-tag type=""> {{ studyData.joined_population }}/{{ studyData.population }}</el-tag>
-        {{ studyData.enter }}
         <el-tag v-if="studyData.enter" type="success" @click="enterStudy">입장</el-tag>
       </el-input-data>
     </div>

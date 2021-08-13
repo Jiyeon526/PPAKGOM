@@ -104,8 +104,9 @@ export function requestCreateRoom({ state }, payload) {
 
 // 스터디 목록 가져오기
 export function requestStudyList({state}) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = '/study/'
-  return $axios.get(url)
+  return $axios.get(url, { headers: headers })
 }
 
 // 추천 스터디 목록 가져오기

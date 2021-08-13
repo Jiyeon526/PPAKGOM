@@ -1,16 +1,16 @@
 <template>
   <el-dialog
-    custom-class="studydetail-dialog"
+    width="30%"
     :title="selectStudy.name"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-  <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end">
-    <el-button v-if="state.likeStudy" style="border:0; outline:0" icon="el-icon-star-on" @click="clickLikeBtn"></el-button>
-    <el-button v-else style="border:0; outline:0" icon="el-icon-star-off" @click="clickLikeCancleBtn"></el-button>
+  <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
+    <el-button v-if="state.likeStudy" style="border:0; outline:0" icon="el-icon-star-off" @click="clickLikeBtn"></el-button>
+    <el-button v-else style="border:0; outline:0" icon="el-icon-star-on" @click="clickLikeCancleBtn"></el-button>
   </div>
   <el-divider style="margin: 5px"></el-divider>
-    <el-image style="width: 300px; height: 300px"
+    <el-image style="width: 80%; height: 80%; display:block; margin:0px auto;"
       :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
       :fit="fit"
       >
@@ -21,16 +21,13 @@
     </div>
     <el-divider style="margin: 5px"></el-divider>
     <div class="detail-dialog-footer">
-      <h4 style="display: inline-block">열정도 : {{ selectStudy.content }}</h4>
+      <h4 style="display: inline-block">열정도 : {{ selectStudy.temperature }}</h4>
       <el-button v-if="selectStudy.enter" type="success" plain style="height: 30px" @click="enterStudy">입장</el-button>
       <el-button v-else type="success" plain style="height: 30px" @click="requestJoinStudy">가입</el-button>
     </div>
   </el-dialog>
 </template>
-<style >
-.studydetail-dialog {
-  width: 50%;
-}
+<style>
 .el-dialog__header {
   padding: 20px !important
 }
@@ -100,6 +97,7 @@ export default {
     onMounted(() => {
       // console.log(loginForm.value)
     });
+
     const enterStudy = () => {
     store.commit("root/setStudypk", props.selectStudy.study_id);
     store.commit("root/setSelectOption", "studyhome");
