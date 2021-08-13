@@ -36,6 +36,7 @@ import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
+import com.ppakgom.db.entity.StudyAttend;
 import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
@@ -431,7 +432,7 @@ public class StudyController {
 	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId,
 			@RequestBody StudyScheduleReq req) {
 		// 값이 다 들어왔는지 확인
-		if(req.getTitle().length() == 0 || req.getDate().length() == 0)
+		if(req.getTitle().length() == 0 || req.getDate().length() == 0 || req.getColor().length() == 0)
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		// 저장하기
 		if (!studyService.postStudySchedule(studyId, req))
@@ -520,5 +521,19 @@ public class StudyController {
 		
 		return ResponseEntity.status(200).body(res);
 	}
-
+	
+	@PostMapping("/{studyId}/attend/{userId}")
+	@ApiOperation(value = "스터디 출석 버튼", notes = "스터디 출석 버튼")
+	public ResponseEntity<BaseResponseBody> studyAttendButton(@PathVariable(value = "studyId") Long studyId,
+			@PathVariable(value = "userId") Long userId) {
+		
+		// 해당 멤버의 스터디 출석현황 true로 바꾸기
+		String res = studyService.postStudyAttend(studyId, userId);
+		if(res.equals("date")) // 스터디 일정 없음
+			return ResponseEntity.status(201).body(new BaseResponseBody(201, "오늘 진행 중인 스터디 일정이 없습니다."));
+		else if(res.equals("ok")) // 출석 성공
+			return ResponseEntity.status(200).body(new BaseResponseBody(200, "출석 완료"));
+		
+		return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+	}
 }

@@ -18,9 +18,10 @@ public interface UserService {
 	User getUserByUserId(String userId);
 	User getUserById(Long userId);
 	List<String> getInterest(Long userid);
-	boolean modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file);
+	String modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file);
 	void likeStudy(User user, Study study);
 	void unlikeStudy(User user, Study study);
 	User postSocialLoginInfo(String email);
 	User getUserByEmail(String email);
+	User getUserByName(String name);
 }

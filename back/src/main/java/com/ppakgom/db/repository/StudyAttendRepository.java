@@ -10,4 +10,6 @@ public interface StudyAttendRepository extends JpaRepository<StudyAttend, Long> 
 
 	List<StudyAttend> findByStudyIdAndStudyPlanId(Long studyId, Long id);
 
+	StudyAttend findByStudyIdAndUserIdAndStudyPlanId(Long studyId, Long userId, Long id);
+
 }

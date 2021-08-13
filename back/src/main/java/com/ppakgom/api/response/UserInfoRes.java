@@ -28,6 +28,9 @@ public class UserInfoRes {
 	
 	@ApiModelProperty(name="profile_thumbnail")
 	String profile_thumbnail;
+	
+	@ApiModelProperty(name="temperature")
+	float temperature;
 
 	public static UserInfoRes of(User user, List<String> interest) {
 		UserInfoRes res = new UserInfoRes();
@@ -37,6 +40,7 @@ public class UserInfoRes {
 		res.setName(user.getName());
 		res.setProfile_thumbnail(user.getProfile_thumbnail());
 		res.setInterest(interest);
+		res.setTemperature(user.getTemperature());
 	
 		return res;
 	}
