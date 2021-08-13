@@ -23,4 +23,5 @@ public interface UserService {
 	void unlikeStudy(User user, Study study);
 	User postSocialLoginInfo(String email);
 	User getUserByEmail(String email);
+	User getUserByName(String name);
 }

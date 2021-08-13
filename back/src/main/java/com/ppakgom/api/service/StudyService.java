@@ -60,4 +60,6 @@ public interface StudyService {
 
 	List<StudyDetailInfo> getStudyDetailInfo(Long studyId);
 
+	String postStudyAttend(Long studyId, Long userId);
+
 }

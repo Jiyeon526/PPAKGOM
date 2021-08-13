@@ -252,11 +252,11 @@ public class UserController {
 		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 	}
 	
-	@GetMapping("/{user_id}/profile")
+	@GetMapping("/{name}/profile")
 	@ApiOperation(value = "다른 회원 정보 확인", notes = "다른 회원 정보를 확인한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
-	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "user_id", required = true) String user_id) {
+	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "name", required = true) String name) {
 		
-		User user = userService.getUserByUserId(user_id); // 사용자 정보
+		User user = userService.getUserByName(name); // 사용자 정보
 		
 		if(user == null) return new ResponseEntity<UserInfoRes>(HttpStatus.BAD_REQUEST); // 해당 사용자가 없을 때
 		

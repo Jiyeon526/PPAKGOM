@@ -19,6 +19,7 @@ public class StudyPlan extends BaseEntity {
 	
 	String title;
 	String detail;
+	String color;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	Date date;
@@ -27,11 +28,12 @@ public class StudyPlan extends BaseEntity {
 	@JoinColumn(name = "study_id")
 	Study study;
 
-	public StudyPlan(String title, Date date, Study study) {
+	public StudyPlan(String title, Date date, Study study, String color) {
 		super();
 		this.title = title;
 		this.date = date;
 		this.study = study;
+		this.color = color;
 	}
 
 	public StudyPlan() {
