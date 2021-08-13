@@ -431,7 +431,7 @@ public class StudyController {
 	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId,
 			@RequestBody StudyScheduleReq req) {
 		// 값이 다 들어왔는지 확인
-		if(req.getTitle().length() == 0 || req.getDate().length() == 0)
+		if(req.getTitle().length() == 0 || req.getDate().length() == 0 || req.getColor().length() == 0)
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		// 저장하기
 		if (!studyService.postStudySchedule(studyId, req))
