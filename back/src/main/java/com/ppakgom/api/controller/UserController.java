@@ -242,8 +242,11 @@ public class UserController {
 		if (user == null || authUserId != user.getId()) // 사용자가 없는 경우 or 로그인한 사용자와 현재 사용자가 다른 경우
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		
-		if(userService.modifyUserInfo(user, userReq, file)) {
+		String res = userService.modifyUserInfo(user, userReq, file);
+		if(res.equals("ok")) {
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원 정보 수정 완료"));
+		}else if(res.equals("name")) {
+			return ResponseEntity.status(401).body(BaseResponseBody.of(401, "닉네임을 다시 입력해주세요."));
 		}
 		
 		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
