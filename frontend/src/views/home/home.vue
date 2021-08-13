@@ -27,14 +27,14 @@
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
   <el-carousel v-else :interval="4000" type="card" height="300px">
-    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
-      <el-image style="width: 300px; height: 300px"
-        :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
-        :fit="fit"
-        alt="PPAKGOM"
-      >
-      </el-image>
-    </el-carousel-item>
+      <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
+        <el-image style="width: 300px; height: 300px"
+          :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
+          :fit="fit"
+          alt="PPAKGOM"
+        >
+        </el-image>
+      </el-carousel-item>
   </el-carousel>
   <div v-if="state.studyList.length !== 0">
     <div
@@ -71,7 +71,7 @@
 }
 
 /* carousel */
-.el-carousel {
+/* .el-carousel {
   margin: 50px 0px;
   display: flex;
   flex-direction: column;
@@ -79,12 +79,12 @@
 .el-carousel__container {
   display: flex;
   justify-content: center;
-}
+} */
 
-.el-carousel .el-carousel__item {
+/* .el-carousel .el-carousel__item {
   width: 300px;
   height: 300px;
-}
+} */
 
 .el-carousel__item h3 {
   color: #d3dce6;
@@ -95,11 +95,11 @@
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #d3dce6;
+  background-color: rgba( 255, 255, 255, 0 );
 }
 
 .el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
+  background-color: rgba( 255, 255, 255, 0 );
 }
 </style>
 <script>
@@ -124,16 +124,17 @@ export default {
       recommendStudyList: [],
       searchValue: "",
       searchType: "",
-      addRecommendStudy: {
-        study_id: 0,
-        interest: ["프로그래밍","개발자"],
-        name: "관심분야를 더 등록해주세요",
-        content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-        population: 5,
-        study_thumbnail: require('@/assets/images/ppakgom.png'),
-        joined_population: 3,
-        deadline: "2021-08-23"
-      },
+      isCardClick: true,
+      // addRecommendStudy: {
+      //   study_id: 0,
+      //   interest: ["프로그래밍","개발자"],
+      //   name: "관심분야를 더 등록해주세요",
+      //   content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
+      //   population: 5,
+      //   study_thumbnail: require('@/assets/images/ppakgom.png'),
+      //   joined_population: 3,
+      //   deadline: "2021-08-23"
+      // },
       options: [
         {
           value: 1,
@@ -156,8 +157,10 @@ export default {
     }
 
     const onClickStudyList = (id) => {
-      const selectStudy = state.studyList[id-1]
-      emit("openStudydetailDialog", selectStudy);
+      if (state.isCardClick) {
+        const selectStudy = state.studyList[id-1]
+        emit("openStudydetailDialog", selectStudy);
+      }
     }
 
     // 방 목록 리스트 가져오기
@@ -240,7 +243,7 @@ export default {
       }
     }
 
-    return { state, onClickStudyList, onClickRecommendStudyList, searchStudy }
+    return { state, onClickStudyList, onClickRecommendStudyList, searchStudy, }
   }
 }
 </script>

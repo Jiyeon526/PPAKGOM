@@ -192,6 +192,8 @@ public class StudyController {
 				}
 
 				List<Study> userJoinStudy = new ArrayList<Study>();
+				List<Study> userLikedStudy = null;
+				
 				if (authentication == null) {
 					System.out.println("로그인된 사용자 없음");
 				} else {
@@ -200,6 +202,8 @@ public class StudyController {
 					User curUser = userService.getUserByUserId(userId);
 					System.out.println("로그인한 사용자 " + curUser);
 					userJoinStudy = studyService.getUserJoinStudy(curUser);
+					userLikedStudy = studyService.getUserLikeStudy(curUser);
+
 				}
 
 //			오늘 날짜 받기
@@ -212,7 +216,7 @@ public class StudyController {
 					if (strDate.before(today)) {
 						continue;
 					}
-					StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userJoinStudy);
+					StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userJoinStudy, userLikedStudy);
 					res.getStudyResult().add(sr);
 				}
 			} catch (Exception e) {
@@ -274,9 +278,11 @@ public class StudyController {
 			}
 		}
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
+		List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
+		
 		/* 검색 결과 삽입 */
 		for (Study s : tmp) {
-			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy);
+			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy, userLikedStudy);
 			res.getStudyResult().add(sr);
 		}
 
@@ -301,10 +307,12 @@ public class StudyController {
 		User user = userService.getUserByUserId(userId);
 
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
+		List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
 
+		
 		if (study.isPresent()) {
 			res.getStudyResult()
-					.add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy));
+					.add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy,userLikedStudy));
 		}
 		return ResponseEntity.ok(res);
 

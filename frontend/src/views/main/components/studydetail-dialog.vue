@@ -1,12 +1,16 @@
 <template>
   <el-dialog
-    custom-class="studydetail-dialog"
+    width="30%"
     :title="selectStudy.name"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
+  <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
+    <el-button v-if="state.likeStudy" style="border:0; outline:0" icon="el-icon-star-off" @click="clickLikeBtn"></el-button>
+    <el-button v-else style="border:0; outline:0" icon="el-icon-star-on" @click="clickLikeCancleBtn"></el-button>
+  </div>
   <el-divider style="margin: 5px"></el-divider>
-    <el-image style="width: 100%; height: 300px"
+    <el-image style="width: 80%; height: 80%; display:block; margin:0px auto;"
       :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
       :fit="fit"
       >
@@ -17,15 +21,13 @@
     </div>
     <el-divider style="margin: 5px"></el-divider>
     <div class="detail-dialog-footer">
-      <h4 style="display: inline-block">열정도 : {{ selectStudy.content }}</h4>
-      <el-button type="success" plain style="height: 30px">입장</el-button>
+      <h4 style="display: inline-block">열정도 : {{ selectStudy.temperature }}</h4>
+      <el-button v-if="selectStudy.enter" type="success" plain style="height: 30px" @click="enterStudy">입장</el-button>
+      <el-button v-else type="success" plain style="height: 30px" @click="requestJoinStudy">가입</el-button>
     </div>
   </el-dialog>
 </template>
-<style >
-.studydetail-dialog {
-  width: 50%;
-}
+<style>
 .el-dialog__header {
   padding: 20px !important
 }
@@ -58,6 +60,7 @@
   justify-content: space-between;
   margin: 2px;
 }
+
 </style>
 <script>
 import { reactive, computed, onMounted } from "vue";
@@ -88,17 +91,80 @@ export default {
     */
     const state = reactive({
       dialogVisible: computed(() => props.open),
+      likeStudy: false,
     });
 
     onMounted(() => {
       // console.log(loginForm.value)
     });
 
+    const enterStudy = () => {
+    store.commit("root/setStudypk", props.selectStudy.study_id);
+    store.commit("root/setSelectOption", "studyhome");
+    handleClose()
+    router.push({
+      name: 'studyhome'
+    });
+  }
+
+    const requestJoinStudy = () => {
+      store
+        .dispatch('root/requestJoinStudy', {
+          studyId: props.selectStudy.study_id
+        })
+          .then(function(res) {
+            console.log("가입 요청 성공", res)
+            ElMessage({
+              type: "success",
+              message: "가입 요청을 보냈습니다."
+            })
+          })
+          .catch(function(err) {
+            console.log("가입 신청 오류 발생!!", err)
+          })
+    }
+
+    const clickLikeBtn = () => {
+      state.likeStudy = !state.likeStudy
+      store
+        .dispatch('root/requestLikeStudy', {
+          studyId: props.selectStudy.study_id
+        })
+          .then(function(res) {
+            ElMessage({
+              type: "success",
+              message: `${props.selectStudy.name} 스터디를 찜하였습니다.`
+            })
+          })
+          .catch(function(err) {
+            console.log("찜하기 에러", err)
+          })
+      console.log("찜하기", state.likeStudy)
+    }
+
+    const clickLikeCancleBtn = () => {
+      state.likeStudy = !state.likeStudy
+      store
+        .dispatch('root/requestLikeCancleStudy', {
+          studyId: props.selectStudy.study_id
+        })
+          .then(function(res) {
+            ElMessage({
+              type: "success",
+              message: `${props.selectStudy.name} 스터디를 찜하기를 취소하였습니다.`
+            })
+          })
+          .catch(function(err) {
+            console.log("찜하기 에러", err)
+          })
+      console.log("찜하기취소", state.likeStudy)
+    }
+
     const handleClose = function() {
       emit("closeStudydetailDialog");
     };
 
-    return { state, handleClose };
+    return { state, handleClose, enterStudy, requestJoinStudy, clickLikeBtn, clickLikeCancleBtn };
   }
 };
 </script>

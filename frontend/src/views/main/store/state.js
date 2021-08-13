@@ -43,5 +43,6 @@ export default {
   googlelogin: false,
   kakaologin: false,
   userpk: userPk,
-  studypk: 0
+  studypk: 0,
+  selectOption: ''
 }

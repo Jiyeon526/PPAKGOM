@@ -15,16 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.UserModifyInfoReq;
 import com.ppakgom.api.request.UserRegisterPostReq;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
-import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.repository.InterestRepository;
@@ -266,6 +263,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public Optional<User> getUserByUserNickname(String name) {
+		return userRepository.findByName(name);
+	}
 	public User postSocialLoginInfo(String email) {
 		
 		User user = new User();

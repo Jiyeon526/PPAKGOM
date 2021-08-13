@@ -26,7 +26,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="checkId">아이디 중복</el-button>
+          <el-button type="success" @click="checkId" plain
+            >아이디 중복</el-button
+          >
         </el-col>
       </el-row>
 
@@ -70,7 +72,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="checkEmail">이메일 인증</el-button>
+          <el-button type="success" @click="checkEmail" plain
+            >이메일 인증</el-button
+          >
         </el-col>
       </el-row>
       <el-row :gutter="20">
@@ -87,7 +91,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="checkCode">인증코드 확인</el-button>
+          <el-button type="success" @click="checkCode" plain
+            >인증코드 확인</el-button
+          >
         </el-col>
       </el-row>
 
@@ -103,7 +109,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="checkName">닉네임 중복</el-button>
+          <el-button type="success" @click="checkName" plain
+            >닉네임 중복</el-button
+          >
         </el-col>
       </el-row>
 
@@ -137,7 +145,12 @@
           @blur="handleInputConfirm"
         >
         </el-input>
-        <el-button v-else class="button-new-tag" size="small" @click="showInput"
+        <el-button
+          v-else
+          class="button-new-tag"
+          size="small"
+          @click="showInput"
+          plain
           >+ New Tag</el-button
         >
       </el-form-item>
@@ -164,7 +177,9 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button type="primary" @click="clickRegister">가입하기</el-button>
+        <el-button type="success" @click="clickRegister" plain
+          >가입하기</el-button
+        >
       </span>
     </template>
   </el-dialog>

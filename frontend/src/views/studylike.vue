@@ -43,7 +43,7 @@ export default {
         .dispatch('root/requestLikeStudyList')
           .then(function(res) {
             console.log("가입한 스터디 목록 가져오기", res)
-            state.joinStudyList = res.data.studyResult
+            state.likeStudyList = res.data.studyResult
           })
           .catch(function(err) {
             console.log("가입한 스터디 목록 가져오기 에러", err)

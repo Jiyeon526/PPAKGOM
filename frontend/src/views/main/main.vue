@@ -15,7 +15,6 @@
       @openInviteDialog="onOpenInviteDialog"
       @openMakeworkbookDialog="onOpenMakeworkbookDialog"
       @openOtherpeopleDialog="onOpenOtherpeopleDialog"
-      @openStudyscheduleDialog="onOpenStudyscheduleDialog"
     />
     <el-container class="main-container">
       <!-- <el-aside class="hide-on-small" > -->
@@ -24,6 +23,9 @@
       <el-main>
         <router-view
           @openStudydetailDialog="onOpenStudydetailDialog"
+          @openAnswerworkbookDialog="onOpenAnswerWorkbookDialog"
+          @openMakeworkbookDialog="onOpenMakeworkbookDialog"
+          @openOtherpeopleDialog="onOpenOtherpeopleDialog"
         ></router-view>
       </el-main>
     </el-container>
@@ -32,6 +34,7 @@
   <login-dialog
     :open="loginDialogOpen"
     @closeLoginDialog="onCloseLoginDialog"
+    @openRegisterDialog="onOpenRegisterDialog"
   />
   <register-dialog
     :open="registerDialogOpen"
@@ -52,7 +55,8 @@
   />
   <otherpeople-dialog
     :open="otherpeopleDialogOpen"
-    @closeOtherpeopleDialg="onCloseOtherpeopleDialog"
+    :userData="profileData"
+    @closeOtherpeopleDialog="onCloseOtherpeopleDialog"
   />
   <studydetail-dialog
     :open="studydetailDialogOpen"
@@ -115,12 +119,15 @@ export default {
       otherpeopleDialogOpen: false,
       studydetailDialogOpen: false,
       selectStudyDetail: [],
-      studyscheduleDialogOpen: false
+      studyscheduleDialogOpen: false,
+      profileData: []
+      // selectScheduleDate: null
     };
   },
   methods: {
-    onOpenStudyscheduleDialog() {
+    onOpenStudyscheduleDialog(selectDate) {
       this.studyscheduleDialogOpen = true;
+      // this.selectScheduleDate=selectDate
     },
     onCloseStudyscheduleDialog() {
       this.studyscheduleDialogOpen = false;
@@ -134,8 +141,9 @@ export default {
       this.studydetailDialogOpen = false;
     },
 
-    onOpenOtherpeopleDialog() {
+    onOpenOtherpeopleDialog(userProfile) {
       this.otherpeopleDialogOpen = true;
+      this.profileData = userProfile
     },
     onCloseOtherpeopleDialog() {
       this.otherpeopleDialogOpen = false;
