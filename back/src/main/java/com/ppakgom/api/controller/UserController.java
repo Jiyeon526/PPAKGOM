@@ -35,7 +35,6 @@ import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.UserInfoRes;
 import com.ppakgom.api.request.EmailReq;
 import com.ppakgom.api.request.LoginReq;
-import com.ppakgom.api.request.SocialLoginReq;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.db.repository.UserRepository;
