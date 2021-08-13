@@ -170,6 +170,8 @@ public class UserController {
 
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
+		
+		try {
 
 		User user = userService.getUserById(userId);
 		List<Study> resultSet = studyService.getUserLikeStudy(user);
@@ -180,6 +182,8 @@ public class UserController {
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
 			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository,userStudyList));
+		}}catch(Exception e) {
+			System.out.println("존재하지 않는 사용자이거나 이외의 에러");
 		}
 
 		return ResponseEntity.ok(res);
