@@ -281,7 +281,7 @@ public class StudyServiceImpl implements StudyService {
 			if(!today.equals(studySchedule)) continue; // 날짜 다르면 넘김
 			
 			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
-					studyPlan.getTitle(), studyPlan.getDate());
+					studyPlan.getTitle(), studyPlan.getDate(), studyPlan.getColor());
 			// 저장
 			res.add(s);
 		}
@@ -302,7 +302,7 @@ public class StudyServiceImpl implements StudyService {
 			Date date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
 			
 			// 스터디 일정 객체 생성
-			StudyPlan studyPlan = new StudyPlan(req.getTitle(), date, study.get());
+			StudyPlan studyPlan = new StudyPlan(req.getTitle(), date, study.get(), req.getColor());
 			// 객체 생성 안되면 false
 			if(studyPlan == null) return false;
 			
