@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +34,7 @@ import com.ppakgom.api.response.StudyTestListRes;
 import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.response.StudyTestScoreTotalRes;
 import com.ppakgom.api.response.StudyTests;
+import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyAttend;
@@ -495,4 +497,31 @@ public class StudyServiceImpl implements StudyService {
 		return res;
 	}
 
+	@Override
+	public String postStudyAttend(Long studyId, Long userId) {
+		
+		try {
+			// 현재 스터디 일정
+			DateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date nowDate = new Date();
+			String today = sdFormat.format(nowDate); // 오늘 날짜
+			Date to = sdFormat.parse(today);
+
+			StudyPlan studyPlan = studyPlanRepository.findByDate(to);
+			if(studyPlan == null) // 오늘 스터디 없을 경우
+				return "date";
+					
+			StudyAttend sa = studyAttendRepository.findByStudyIdAndUserIdAndStudyPlanId(studyId, userId, studyPlan.getId());
+			if(sa == null)
+				return "error";
+			
+			sa.setAttend(true);
+			studyAttendRepository.save(sa);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "ok";
+	}
 }
