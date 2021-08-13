@@ -15,7 +15,6 @@
       @openInviteDialog="onOpenInviteDialog"
       @openMakeworkbookDialog="onOpenMakeworkbookDialog"
       @openOtherpeopleDialog="onOpenOtherpeopleDialog"
-      @openStudyscheduleDialog="onOpenStudyscheduleDialog"
     />
     <el-container class="main-container">
       <!-- <el-aside class="hide-on-small" > -->
@@ -122,11 +121,13 @@ export default {
       selectStudyDetail: [],
       studyscheduleDialogOpen: false,
       profileData: []
+      // selectScheduleDate: null
     };
   },
   methods: {
-    onOpenStudyscheduleDialog() {
+    onOpenStudyscheduleDialog(selectDate) {
       this.studyscheduleDialogOpen = true;
+      // this.selectScheduleDate=selectDate
     },
     onCloseStudyscheduleDialog() {
       this.studyscheduleDialogOpen = false;
