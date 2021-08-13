@@ -195,6 +195,7 @@ export function requestinviteReceiveList({state}) {
 // 유저 프로필 확인
 export function requestOtherProfile({state}, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  console.log("여기",payload)
   const url = `/users/${payload}/profile`
   return $axios.get(url, { headers: headers })
 }
@@ -219,6 +220,7 @@ export function requestSendMemberRating({state}, payload) {
   const url = `/study/rating/${state.userpk}`
   let body = payload
   return $axios.post(url, body, { headers: headers})
+}
 // 스터디 가입하기
 export function requestJoinStudy({state}, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
