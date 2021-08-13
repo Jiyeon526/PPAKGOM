@@ -47,7 +47,6 @@ import io.swagger.annotations.ApiResponses;
 
 import springfox.documentation.annotations.ApiIgnore;
 
-
 import com.ppakgom.common.util.JwtTokenUtil;
 import com.ppakgom.api.response.LoginRes;
 import com.ppakgom.api.response.UserInfoRes;
@@ -57,7 +56,6 @@ import com.ppakgom.api.request.UserModifyInfoReq;
 
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
-
 
 /**
  * 회원 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -170,19 +168,20 @@ public class UserController {
 
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
-		
+
 		try {
 
-		User user = userService.getUserById(userId);
-		List<Study> resultSet = studyService.getUserLikeStudy(user);
-		
+			User user = userService.getUserById(userId);
+			List<Study> resultSet = studyService.getUserLikeStudy(user);
+
 //		사용자가 가입한 스터디.
-		List<Study> userStudyList = studyService.getUserJoinStudy(user);
-			
-		for (Study s : resultSet) {
-			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository,userStudyList));
-		}}catch(Exception e) {
+			List<Study> userStudyList = studyService.getUserJoinStudy(user);
+
+			for (Study s : resultSet) {
+				StudyRes studyRes = new StudyRes();
+				res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, userStudyList));
+			}
+		} catch (Exception e) {
 			System.out.println("존재하지 않는 사용자이거나 이외의 에러");
 		}
 
@@ -217,48 +216,50 @@ public class UserController {
 	public ResponseEntity<UserInfoRes> getUserInfo(@ApiIgnore Authentication authentication) {
 		// 로그인된 사용자 정보 받아오기
 
-		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
-		
+		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
+
 		User user = userService.getUserByUserId(userDetails.getUsername()); // 사용자 정보
 		List<String> interest = userService.getInterest(user.getId()); // 관심사 리스트
-		
+
 		UserInfoRes userInfoRes = UserInfoRes.of(user, interest);
 
 		return ResponseEntity.status(200).body(userInfoRes);
 	}
-	
+
 	@PutMapping("/{userId}")
 	@ApiOperation(value = "회원 본인 정보 수정", notes = "로그인한 회원 본인의 정보를 수정한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> modifyUserInfo(UserModifyInfoReq userReq,
 			@RequestPart("thumbnail") MultipartFile file,
 			@PathVariable @ApiParam(value = "User ID", required = true) Long userId,
 			@ApiIgnore Authentication authentication) {
-		
+
 		User user = userService.getUserById(userId);
-		
+
 		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
 		Long authUserId = userDetails.getUser().getId();
-		
+
 		if (user == null || authUserId != user.getId()) // 사용자가 없는 경우 or 로그인한 사용자와 현재 사용자가 다른 경우
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
-		
-		if(userService.modifyUserInfo(user, userReq, file)) {
+
+		if (userService.modifyUserInfo(user, userReq, file)) {
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원 정보 수정 완료"));
 		}
-		
+
 		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 	}
-	
+
 	@GetMapping("/{user_id}/profile")
 	@ApiOperation(value = "다른 회원 정보 확인", notes = "다른 회원 정보를 확인한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
-	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "user_id", required = true) String user_id) {
-		
+	public ResponseEntity<UserInfoRes> getUserInfoNotMe(
+			@PathVariable @ApiParam(value = "user_id", required = true) String user_id) {
+
 		User user = userService.getUserByUserId(user_id); // 사용자 정보
-		
-		if(user == null) return new ResponseEntity<UserInfoRes>(HttpStatus.BAD_REQUEST); // 해당 사용자가 없을 때
-		
+
+		if (user == null)
+			return new ResponseEntity<UserInfoRes>(HttpStatus.BAD_REQUEST); // 해당 사용자가 없을 때
+
 		List<String> interest = userService.getInterest(user.getId()); // 관심사 리스트
-		
+
 		for (String s : interest) {
 			System.out.println(s);
 		}
@@ -332,4 +333,30 @@ public class UserController {
 		}
 
 	}
+
+	/* 가입한 스터디 목록 -> 이름으로 ,이름만 */
+	@GetMapping("/join/name/{userName}")
+	@ApiOperation(value = "가입한 스터디 목록", notes = "가입했던 스터디 목록")
+	public ResponseEntity<?> getStudyByName(@PathVariable(value = "userName", required = true) String userName) {
+
+		User user = userService.getUserByUserNickname(userName).orElse(null);
+
+		if (user == null)
+			return ResponseEntity.status(404).body(new BaseResponseBody(404, "존재하지 않는 사용자"));
+
+		List<String> study = new ArrayList<String>();
+
+		List<Study> resultSet = studyService.getUserJoinStudy(user);
+
+		try {
+			for (Study s : resultSet) {
+				study.add(s.getName());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ResponseEntity.ok(study);
+	}
+
 }

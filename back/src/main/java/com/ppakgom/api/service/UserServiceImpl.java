@@ -231,4 +231,9 @@ public class UserServiceImpl implements UserService {
 		userLikeStudyRepository.deleteByUserIdAndStudyId(user.getId(), study.getId());
 	}
 
+	@Override
+	public Optional<User> getUserByUserNickname(String name) {
+		return userRepository.findByName(name);
+	}
+
 }
