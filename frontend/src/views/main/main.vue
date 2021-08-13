@@ -26,6 +26,7 @@
           @openStudydetailDialog="onOpenStudydetailDialog"
           @openAnswerworkbookDialog="onOpenAnswerWorkbookDialog"
           @openMakeworkbookDialog="onOpenMakeworkbookDialog"
+          @openOtherpeopleDialog="onOpenOtherpeopleDialog"
         ></router-view>
       </el-main>
     </el-container>
@@ -54,7 +55,8 @@
   />
   <otherpeople-dialog
     :open="otherpeopleDialogOpen"
-    @closeOtherpeopleDialg="onCloseOtherpeopleDialog"
+    :userData="profileData"
+    @closeOtherpeopleDialog="onCloseOtherpeopleDialog"
   />
   <studydetail-dialog
     :open="studydetailDialogOpen"
@@ -117,7 +119,8 @@ export default {
       otherpeopleDialogOpen: false,
       studydetailDialogOpen: false,
       selectStudyDetail: [],
-      studyscheduleDialogOpen: false
+      studyscheduleDialogOpen: false,
+      profileData: []
     };
   },
   methods: {
@@ -136,8 +139,9 @@ export default {
       this.studydetailDialogOpen = false;
     },
 
-    onOpenOtherpeopleDialog() {
+    onOpenOtherpeopleDialog(userProfile) {
       this.otherpeopleDialogOpen = true;
+      this.profileData = userProfile
     },
     onCloseOtherpeopleDialog() {
       this.otherpeopleDialogOpen = false;
