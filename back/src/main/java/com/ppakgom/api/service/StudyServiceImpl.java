@@ -7,6 +7,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.AttendGetRes;
+import com.ppakgom.api.response.AttendRes;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 
@@ -33,6 +37,7 @@ import com.ppakgom.api.response.StudyTestScoreTotalRes;
 import com.ppakgom.api.response.StudyTests;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
+import com.ppakgom.db.entity.StudyAttend;
 import com.ppakgom.db.entity.StudyInterest;
 import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.StudyPlan;
@@ -42,6 +47,7 @@ import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
+import com.ppakgom.db.repository.StudyAttendRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.StudyRateRepository;
 import com.ppakgom.db.repository.StudyPlanRepository;
@@ -75,6 +81,9 @@ public class StudyServiceImpl implements StudyService {
 
 	@Autowired
 	StudyTestRepository studyTestRepository;
+	
+	@Autowired
+	StudyAttendRepository studyAttendRepository; 
 
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\";
 
@@ -514,6 +523,48 @@ public class StudyServiceImpl implements StudyService {
 				studyInterestRepository.save(new StudyInterest(i, study));
 			}
 		}
+	}
+
+	@Override
+	public List<StudyPlan> getPlansByStudy(Long studyId) {
+		return studyPlanRepository.findByStudy_Id(studyId);
+	}
+
+	@Override
+	public List<AttendGetRes> getAttendList(List<StudyPlan> studyPlans, List<User> members) {
+
+		List<AttendGetRes> res = new ArrayList<>();
+		
+//		1. study_plan을 id 순으로 정렬
+		Collections.sort(studyPlans, new Comparator<StudyPlan>() {
+			@Override
+			public int compare(StudyPlan o1, StudyPlan o2) {
+				return Long.compare(o1.getId(), o2.getId());
+			}
+		});
+		
+//		2. 멤버 별로 객체에 담기 
+		for(User m : members) {
+			AttendGetRes attendGetRes = new AttendGetRes();
+			attendGetRes.setUser_id(m.getId());
+			attendGetRes.setUser_name(m.getName());
+			Long mId = m.getId();
+			//3.스터디 플랜 별로 출석 현황 질의
+			for(StudyPlan sp : studyPlans) {
+				AttendRes attendRes = new AttendRes();
+				Long spId = sp.getId();
+				StudyAttend at = studyAttendRepository.findByUserIdAndStudyPlanId(mId, spId);
+				attendRes.set_attend(at.isAttend());
+				attendRes.setStudy_plan_id(spId);
+				attendGetRes.getAttendList().add(attendRes);
+			}
+			
+			res.add(attendGetRes);
+			
+		}
+		
+		
+		return null;
 	}
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.AttendGetRes;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudyTestInfoRes;
@@ -22,6 +23,7 @@ import com.ppakgom.api.request.StudyScheduleReq;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 import com.ppakgom.api.response.StudyTestScoreTotalRes;
 import com.ppakgom.db.entity.Study;
+import com.ppakgom.db.entity.StudyPlan;
 import com.ppakgom.db.entity.User;
 
 public interface StudyService {
@@ -58,5 +60,9 @@ public interface StudyService {
 	StudyTestInfoRes getStudyTestInfo(Long studyId, Long testId);
 
 	void updateStudy(Study study, MultipartFile studyThumbnail, StudyCreatePostReq studyInfo) throws ParseException, IllegalStateException, IOException;
+
+	List<StudyPlan> getPlansByStudy(Long id);
+
+	List<AttendGetRes> getAttendList(List<StudyPlan> studyPlans, List<User> members);
 
 }
