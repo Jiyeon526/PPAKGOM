@@ -123,7 +123,7 @@ public class UserController {
 	@ApiOperation(value = "회원가입 생성", notes = "회원가입", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> register(
 			@ApiParam(value = "생성할 방 정보", required = true) UserRegisterPostReq registerInfo,
-			@RequestPart("file") MultipartFile thumbnail) {
+			@RequestPart(value = "file", required = false) MultipartFile thumbnail) {
 
 		/*
 		 * 임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음.
@@ -230,7 +230,7 @@ public class UserController {
 	@PutMapping("/{userId}")
 	@ApiOperation(value = "회원 본인 정보 수정", notes = "로그인한 회원 본인의 정보를 수정한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> modifyUserInfo(UserModifyInfoReq userReq,
-			@RequestPart("thumbnail") MultipartFile file,
+			@RequestPart(value = "thumbnail", required = false) MultipartFile file,
 			@PathVariable @ApiParam(value = "User ID", required = true) Long userId,
 			@ApiIgnore Authentication authentication) {
 		
@@ -252,11 +252,11 @@ public class UserController {
 		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 	}
 	
-	@GetMapping("/{user_id}/profile")
+	@GetMapping("/{name}/profile")
 	@ApiOperation(value = "다른 회원 정보 확인", notes = "다른 회원 정보를 확인한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
-	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "user_id", required = true) String user_id) {
+	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "name", required = true) String name) {
 		
-		User user = userService.getUserByUserId(user_id); // 사용자 정보
+		User user = userService.getUserByName(name); // 사용자 정보
 		
 		if(user == null) return new ResponseEntity<UserInfoRes>(HttpStatus.BAD_REQUEST); // 해당 사용자가 없을 때
 		

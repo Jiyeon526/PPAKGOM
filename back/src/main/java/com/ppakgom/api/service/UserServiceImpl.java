@@ -65,20 +65,29 @@ public class UserServiceImpl implements UserService {
 			user.setTemperature(36.5f);
 			user.setPlatform_type("none");
 			user.setAccess_token("none");
+			user.setPosition("user");
 			
 			/*
 			 * 프로필 이미지 저장 순번-파일명으로 저장
 			 */
-			String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + thumbnail.getOriginalFilename();
-			File dest = new File(filePath);
-			thumbnail.transferTo(dest);
-
-			if (!dest.exists()) { // 파일 존재 x, 이 부분이 현재 null 값이 들어갈 수 있음, 추후 다시 해야됨
-				System.out.println("파일 업로드 실패");
-			} else {
+			if(thumbnail == null) { // 프로필 사진 입력 안함
+				//프로필 이미지 저장 (기본 이미지) 
+				String filePath = BASE_PATH + "\\default.png";
 				user.setProfile_thumbnail(filePath);
-			}
+				
+			} else { // 프로필 사진 입력함 
+				
+				String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + thumbnail.getOriginalFilename();
+				File dest = new File(filePath);
+				thumbnail.transferTo(dest);
 
+				if (!dest.exists()) { // 파일 존재 x, 이 부분이 현재 null 값이 들어갈 수 있음, 추후 다시 해야됨
+					System.out.println("파일 업로드 실패");
+				} else {
+					user.setProfile_thumbnail(filePath);
+				}
+			}
+			
 			// user 정보 insert
 			userRepository.save(user);
 
@@ -148,7 +157,7 @@ public class UserServiceImpl implements UserService {
 	public String modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file) {
 
 		try {
-			if(!checkName(userReq.getName())) // 닉네임 중복
+			if(!checkName(userReq.getName()) && !user.getName().equals(userReq.getName())) // 닉네임 중복
 				return "name";
 			
 			// 닉네임 바꾸기
@@ -169,22 +178,43 @@ public class UserServiceImpl implements UserService {
 				deleteUserInterest(interestIds, user);
 			}
 			
-			// 이미지 바꾸기
 			// 원래 이미지 삭제
-			Path deleteFilePath = Paths.get(user.getProfile_thumbnail());
-			Files.deleteIfExists(deleteFilePath);
-			
-			// 이미지 삽입
-			String filePath = BASE_PATH + "\\user\\" + user.getName() + "-" + file.getOriginalFilename();
-			File dest = new File(filePath);
-			file.transferTo(dest);
-			
-			if(!dest.exists()) { // 파일 존재 x, 이 부분이 현재 null 값이 들어갈 수 있음, 추후 다시 해야됨
-	            System.out.println("파일 업로드 실패");
-	        }else {
-	        	user.setProfile_thumbnail(filePath);
-	        }
-			
+			// default 이미지면 삭제안하기
+			if(user.getProfile_thumbnail().equals(BASE_PATH + "\\default.png")) {
+				if(file != null) { // 입력 파일이 있을 경우 넣어주기
+					// 이미지 삽입
+					String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + file.getOriginalFilename();
+					File dest = new File(filePath);
+					file.transferTo(dest);
+					
+					if(!dest.exists()) { // 파일 존재 x, 이 부분이 현재 null 값이 들어갈 수 있음, 추후 다시 해야됨
+			            System.out.println("파일 업로드 실패");
+			        }else {
+			        	user.setProfile_thumbnail(filePath);
+			        }
+				}
+				// 입력 파일 없으면 그대로
+			} else { // 원래 파일이 있다면 지워주기
+				Path deleteFilePath = Paths.get(user.getProfile_thumbnail());
+				Files.deleteIfExists(deleteFilePath);
+				
+				if(file == null) { // 입력 파일이 없다면 기본 파일 넣어주기
+					String filePath = BASE_PATH + "\\default.png";
+					user.setProfile_thumbnail(filePath);
+				} else {
+					// 이미지 삽입
+					String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + file.getOriginalFilename();
+					File dest = new File(filePath);
+					file.transferTo(dest);
+					
+					if(!dest.exists()) { // 파일 존재 x, 이 부분이 현재 null 값이 들어갈 수 있음, 추후 다시 해야됨
+			            System.out.println("파일 업로드 실패");
+			        }else {
+			        	user.setProfile_thumbnail(filePath);
+			        }
+				}
+			}
+
 			userRepository.save(user);
 			return "ok";
 		} catch (Exception e) {
@@ -288,6 +318,15 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserByEmail(String email) { // 맨 위에 하나만 리턴하기
 		return userRepository.findTop1ByEmail(email);
+	}
+
+	@Override
+	public User getUserByName(String name) {
+		Optional<User> user = userRepository.findByName(name);
+		
+		if(!user.isPresent())
+			return null;
+		return user.get();
 	}
 
 }
