@@ -3,18 +3,16 @@
 </template>
 
 <script>
-import { onMounted } from 'vue'
-import { useStore } from 'vuex'
+import { onMounted } from "vue";
+import { useStore } from "vuex";
 
 export default {
-  name: 'studyschedule',
-  setup () {
-    const store = useStore()
+  name: "studyschedule",
+  setup() {
+    const store = useStore();
 
     // 페이지 진입시 불리는 훅
-    onMounted (() => {
-
-    })
+    onMounted(() => {});
   }
-}
+};
 </script>

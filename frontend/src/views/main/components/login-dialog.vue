@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     custom-class="login-dialog"
-    title="로그인"
+    title="LOGIN"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
@@ -16,7 +16,11 @@
         label="아이디"
         :label-width="state.formLabelWidth"
       >
-        <el-input v-model="state.form.id" autocomplete="off"></el-input>
+        <el-input
+          v-model="state.form.id"
+          autocomplete="off"
+          placeholder="아이디를 입력해주세요"
+        ></el-input>
       </el-form-item>
       <el-form-item
         prop="password"
@@ -31,26 +35,38 @@
       </el-form-item>
     </el-form>
     <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="clickLogin">로그인</el-button><br />
-        <el-button type="text" @click="clickRegister">회원가입</el-button>
+      <span>
+        <span class="dialog-footer">
+          <el-button type="success" @click="clickLogin" plain>로그인</el-button>
+        </span>
+        <br />
+        <div style="display: inline-block;">
+          <p>
+            아직 회원이 아니신가요? &nbsp; &nbsp;
+
+            <el-button
+              type="text"
+              @click="clickRegister"
+              style="display:inline-block; color:green; float: rigth;"
+              >회원가입</el-button
+            >
+          </p>
+        </div>
+
+        <div style="text-align: center;">
+          <h3>간편 로그인</h3>
+        </div>
+
+        <div class="google-logo-wrapper" id="google-signin-btn"></div>
+        &nbsp; &nbsp;
+        <div class="kakao-logo-wrapper" @click="kakaoLogin"></div>
+
+        <div
+          class="naver-logo-wrapper"
+          id="naverIdLogin"
+          @click="naverlogin"
+        ></div>
       </span>
-      <br />
-      <br />
-      <div style="text-align: center;">
-        <h3>간편 로그인</h3>
-      </div>
-
-      <div class="google-logo-wrapper" id="google-signin-btn"></div>
-      &nbsp; &nbsp;
-      <div class="kakao-logo-wrapper" @click="kakaoLogin"></div>
-
-      <div
-        class="naver-logo-wrapper"
-        id="naverIdLogin"
-        @click="naverlogin"
-      ></div>
-
       <!-- <NaverLogin
         client-id="2skX9k2csf4rw6XBSD_S"
         callback-url="http://localhost:8083/naverlogin"
@@ -319,7 +335,7 @@ export default {
     const loginsuccess = function() {
       store.commit("root/setAccessToken");
       router.push({
-        name: "home"
+        name: "main"
       });
     };
 
