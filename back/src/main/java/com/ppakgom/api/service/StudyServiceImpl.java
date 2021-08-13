@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.MemberAttend;
+import com.ppakgom.api.response.StudyDetailInfo;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 
@@ -33,6 +35,7 @@ import com.ppakgom.api.response.StudyTestScoreTotalRes;
 import com.ppakgom.api.response.StudyTests;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
+import com.ppakgom.db.entity.StudyAttend;
 import com.ppakgom.db.entity.StudyInterest;
 import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.StudyPlan;
@@ -42,6 +45,7 @@ import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserLikeStudy;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.InterestRepository;
+import com.ppakgom.db.repository.StudyAttendRepository;
 import com.ppakgom.db.repository.StudyInterestRepository;
 import com.ppakgom.db.repository.StudyRateRepository;
 import com.ppakgom.db.repository.StudyPlanRepository;
@@ -75,6 +79,9 @@ public class StudyServiceImpl implements StudyService {
 	
 	@Autowired
 	StudyTestRepository studyTestRepository;
+	
+	@Autowired
+	StudyAttendRepository studyAttendRepository;
 	
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\study\\";
 	
@@ -274,7 +281,7 @@ public class StudyServiceImpl implements StudyService {
 			if(!today.equals(studySchedule)) continue; // 날짜 다르면 넘김
 			
 			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
-					studyPlan.getTitle(), studyPlan.getDetail(), studyPlan.getDate());
+					studyPlan.getTitle(), studyPlan.getDate());
 			// 저장
 			res.add(s);
 		}
@@ -292,17 +299,23 @@ public class StudyServiceImpl implements StudyService {
 			if(!study.isPresent()) return false;
 			
 			// 날짜 변환
-			Date date;
-			date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
+			Date date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
 			
 			// 스터디 일정 객체 생성
-			StudyPlan studyPlan = new StudyPlan(req.getTitle(), 
-					req.getDetail(), date,study.get());
+			StudyPlan studyPlan = new StudyPlan(req.getTitle(), date, study.get());
 			// 객체 생성 안되면 false
 			if(studyPlan == null) return false;
 			
 			// DB에 저장
-			studyPlanRepository.save(studyPlan);
+			studyPlan = studyPlanRepository.save(studyPlan);
+			
+			// 스터디 출석현황 저장
+			// 스터디 유저들 가져오기
+			List<UserStudy> users = userStudyRepository.findByStudyId(studyId);
+			for(UserStudy user: users) { // 멤버들 마다 일정 생길 때 마다 스터디 출석 현황에 넣어주기
+				StudyAttend studyAttend = new StudyAttend(study.get(), user.getUser(), studyPlan, false);
+				studyAttendRepository.save(studyAttend);
+			}
 			
 		} catch (ParseException e) {
 			System.out.println("날짜 변환 에러");
@@ -445,6 +458,40 @@ public class StudyServiceImpl implements StudyService {
 		String[] answer = st.get().getAnswer().split(",");
 		res.setAnswer(answer);
 
+		return res;
+	}
+
+	@Override
+	public List<StudyDetailInfo> getStudyDetailInfo(Long studyId) {
+		List<StudyDetailInfo> res = new ArrayList<>();
+		
+		// 해당 스터디의 스터디 일정 가져오기
+		List<StudyPlan> studyPlan = studyPlanRepository.findByStudy_Id(studyId);
+		if(studyPlan == null) return null;
+		
+		for(StudyPlan sp: studyPlan) { // 일정에 따라 id, 제목, 날짜 넣기
+			StudyDetailInfo detail = new StudyDetailInfo();
+			
+			detail.setStudy_plan_id(sp.getId());
+			detail.setTitle(sp.getTitle());
+			detail.setDate(sp.getDate());
+			
+			// 스터디 일정별 멤버 출석 현황
+			// 스터디와 스터디 일정 번호로 출석 현황 가져오기
+			List<StudyAttend> studyAttend = studyAttendRepository.findByStudyIdAndStudyPlanId(studyId, sp.getId());
+			List<MemberAttend> member = new ArrayList<>(); // 멤버 출석 현황 저장
+			for(StudyAttend sa: studyAttend) {
+				MemberAttend ma = new MemberAttend();
+				ma.setAttend(sa.isAttend());
+				ma.setUser_id(sa.getUser().getId());
+				member.add(ma);
+			}
+			
+			detail.setStudyAttend(member);
+			
+			res.add(detail);
+		}
+		
 		return res;
 	}
 

@@ -48,6 +48,7 @@ import com.ppakgom.api.response.InviteResByStudy;
 import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
+import com.ppakgom.api.response.StudyDetailInfo;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
@@ -430,7 +431,7 @@ public class StudyController {
 	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId,
 			@RequestBody StudyScheduleReq req) {
 		// 값이 다 들어왔는지 확인
-		if (req.getTitle().length() == 0 || req.getDetail().length() == 0 || req.getDate().length() == 0)
+		if(req.getTitle().length() == 0 || req.getDate().length() == 0)
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		// 저장하기
 		if (!studyService.postStudySchedule(studyId, req))
@@ -484,6 +485,7 @@ public class StudyController {
 		StudyTestInfoRes res = studyService.getStudyTestInfo(studyId, testId);
 		return ResponseEntity.status(200).body(res);
 	}
+
 	/* 스터디 문제집 만들기 */
 	@PostMapping("/{studyId}")
 	@ApiOperation(value = "문제집 만들기", notes = "요청에 따라 문제집을 받고 저장한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
@@ -507,6 +509,16 @@ public class StudyController {
 		}
 		
 		return ResponseEntity.status(200).body(new BaseResponseBody(200, "문제집 생성 완료"));
+	}
+
+	
+	@GetMapping("/{studyId}/info")
+	@ApiOperation(value = "스터디 방 상세 정보 가져오기", notes = "스터디 방 상세 정보 가져오기")
+	public ResponseEntity<List<StudyDetailInfo>> getStudyDetailInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyDetailInfo> res = studyService.getStudyDetailInfo(studyId);
+		
+		return ResponseEntity.status(200).body(res);
 	}
 
 }
