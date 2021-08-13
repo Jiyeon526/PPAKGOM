@@ -145,9 +145,12 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public boolean modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file) {
+	public String modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file) {
 
 		try {
+			if(!checkName(userReq.getName())) // 닉네임 중복
+				return "name";
+			
 			// 닉네임 바꾸기
 			user.setName(userReq.getName());
 			
@@ -183,13 +186,13 @@ public class UserServiceImpl implements UserService {
 	        }
 			
 			userRepository.save(user);
-			return true;
+			return "ok";
 		} catch (Exception e) {
 		
 			e.printStackTrace();
 		}
 
-		return false;
+		return "none";
 	}
 	
 	public void insertUserInterest(User user, String[] interestReq) { // 회원 관심사 저장
