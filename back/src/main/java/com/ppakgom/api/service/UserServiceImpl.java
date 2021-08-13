@@ -65,6 +65,7 @@ public class UserServiceImpl implements UserService {
 			user.setTemperature(36.5f);
 			user.setPlatform_type("none");
 			user.setAccess_token("none");
+			user.setPosition("user");
 			
 			/*
 			 * 프로필 이미지 저장 순번-파일명으로 저장
