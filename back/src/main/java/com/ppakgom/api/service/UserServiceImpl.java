@@ -1,6 +1,7 @@
 package com.ppakgom.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
@@ -66,9 +67,9 @@ public class UserServiceImpl implements UserService {
 			user.setAccess_token("none");
 			
 			/*
-			 * 프로필 이미지 저장 닉네임-파일명으로 저장
+			 * 프로필 이미지 저장 순번-파일명으로 저장
 			 */
-			String filePath = BASE_PATH + "\\user\\" + user.getName() + "-" + thumbnail.getOriginalFilename();
+			String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + thumbnail.getOriginalFilename();
 			File dest = new File(filePath);
 			thumbnail.transferTo(dest);
 
@@ -229,6 +230,61 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void unlikeStudy(User user, Study study) {
 		userLikeStudyRepository.deleteByUserIdAndStudyId(user.getId(), study.getId());
+	}
+
+	@Override
+	public User postSocialLoginInfo(String email) {
+		
+		User user = new User();
+		user.setEmail(email);
+		
+		// @앞까지 자르기
+		String user_id = email.substring(0, email.indexOf("@"));
+		int user_idLen = user_id.length();
+
+		// 아이디 중복 체크
+		while(true) {
+			// 아이디 중복 체크
+			User exist = getUserByUserId(user_id);
+			
+			if(exist == null) { // 아이디 중복이 안되면
+				user.setUserId(user_id);
+				break;
+			}
+			
+			// 중복된다면 원래 문자(@앞까지) + 6자리 숫자
+			user_id = user_id.substring(0, user_idLen) + EmailService.createKey();
+		}
+
+		// 닉네임 중복 체크(true여야 사용가능)
+		while(true) {
+			if(checkName(user_id)) { // 닉네임 중복 안되면
+				user.setName(user_id);
+				break;
+			}
+			
+			// 중복된다면 원래 문자(@앞까지) + 6자리 숫자
+			user_id = user_id.substring(0, user_idLen) + EmailService.createKey();
+		}
+		
+		user.setPassword(user_id); // 비밀번호는 닉네임 값으로
+		user.setPlatform_type(email.substring(email.indexOf("@")+1, email.indexOf("."))); // 플랫폼 타입
+		user.setAccess_token("none"); // 어쎄스 토큰은 없음
+		user.setTemperature(36.5f); // 기본 온도
+		user.setPosition("user"); // 회원 등급?
+		
+		
+		//프로필 이미지 저장 (기본 이미지) 
+		String filePath = BASE_PATH + "\\default.png";
+		user.setProfile_thumbnail(filePath);
+		
+		userRepository.save(user); // DB 저장
+		return user;
+	}
+
+	@Override
+	public User getUserByEmail(String email) { // 맨 위에 하나만 리턴하기
+		return userRepository.findTop1ByEmail(email);
 	}
 
 }
