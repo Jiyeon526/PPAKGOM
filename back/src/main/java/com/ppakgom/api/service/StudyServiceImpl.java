@@ -78,6 +78,7 @@ public class StudyServiceImpl implements StudyService {
 	
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\study\\";
 	
+	@Autowired
 	UserLikeStudyRepository userLikeStudyRepository;
 
 	@Autowired
@@ -203,7 +204,6 @@ public class StudyServiceImpl implements StudyService {
 		
 		List<UserLikeStudy> tmp = new ArrayList<>();
 		List<Study> resultSet = new ArrayList<>();
-		
 		tmp = userLikeStudyRepository.findByUserId(user.getId());
 		for(UserLikeStudy uls : tmp) {
 			resultSet.add(uls.getStudy());
