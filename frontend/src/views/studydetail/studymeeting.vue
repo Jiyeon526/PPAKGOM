@@ -4,16 +4,16 @@
     <button @click="open = true">open</button>
     {{ open }}
   </div> -->
-  <el-container style="height:97%">
+  <el-container style="height:97%; flex-wrap: wrap;">
     <el-main>
-      <div id="join" v-if="!session">
+      <div id="join" v-if="!state.session">
         <div id="join-dialog" class="jumbotron vertical-center">
           <h1>Join a video session</h1>
           <div class="form-group">
             <p>
               <label>Participant</label>
               <input
-                v-model="myUserName"
+                v-model="state.myUserName"
                 class="form-control"
                 type="text"
                 required
@@ -22,7 +22,7 @@
             <p>
               <label>Session</label>
               <input
-                v-model="mySessionId"
+                v-model="state.mySessionId"
                 class="form-control"
                 type="text"
                 required
@@ -37,7 +37,7 @@
         </div>
       </div>
 
-      <div id="session" v-if="session">
+      <div id="session" v-if="state.session">
         <!-- <el-row>
           <div id="session-header">
             <h1 id="session-title">{{ mySessionId }}</h1>
@@ -45,44 +45,53 @@
         </el-row> -->
 
         <el-row :gutter="20">
-          <el-col :span="18">
-            <user-video v-if="mainmode" :stream-manager="mainStreamManager" />
+          <el-col :span="state.wide">
+            <el-container class="room">
+              <user-video
+                class="main-stream"
+                v-if="state.mainmode"
+                :stream-manager="state.mainStreamManager"
+              />
+            </el-container>
             <el-container class="room">
               <user-video
                 class="screen-res"
-                :stream-manager="publisher"
-                @click="updateMainVideoStreamManager(publisher)"
+                :stream-manager="state.publisher"
+                @click="updateMainVideoStreamManager(state.publisher)"
               />
               <user-video
                 class="screen-res"
-                v-for="sub in subscribers"
+                v-for="sub in state.subscribers"
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
               />
               <!-- <user-video
                 class="screen-res"
-                :stream-manager="screenPublisher"
-                @click="updateMainVideoStreamManager(screenPublisher)"
+                :stream-manager="state.screenPublisher"
+                @click="updateMainVideoStreamManager(state.screenPublisher)"
               />
               <user-video
                 class="screen-res"
-                v-for="sub in screenSubscribers"
+                v-for="sub in state.screenSubscribers"
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
               /> -->
             </el-container>
           </el-col>
-          <el-col :span="6">
-            <el-popover placement="left" :width="580" trigger="click">
+          <el-col :span="state.narrow">
+            <el-popover placement="bottom-start" :width="580" trigger="click">
+              <template #reference>
+                <el-button @click="widthreverse">채팅</el-button>
+              </template>
               <div style="height:550px;">
-                <el-collapse v-model="activeNames">
+                <el-collapse v-model="state.activeNames">
                   <el-collapse-item title="채팅" name="1">
                     <!-- <el-scrollbar height="500px" id="chat-area"> -->
 
                     <div id="chat-area" style=" height:520px; overflow:scroll;">
-                      <div v-for="(item, i) in messages" :key="i">
+                      <div v-for="(item, i) in state.messages" :key="i">
                         {{ item.from }}:{{ item.content }}
                       </div>
                     </div>
@@ -92,7 +101,7 @@
                 </el-collapse>
               </div>
               <el-input
-                v-model="message"
+                v-model="state.message"
                 type="textarea"
                 clearable
                 :rows="2"
@@ -107,11 +116,11 @@
       </div>
     </el-main>
   </el-container>
-  <el-container style="height:3%">
+  <el-container>
     <el-footer>
-      <el-button-group v-if="session">
+      <el-button-group v-if="state.session">
         <el-button
-          v-if="audioOn"
+          v-if="state.audioOn"
           type="success"
           @click="audioOnOOff"
           icon="el-icon-microphone"
@@ -119,7 +128,7 @@
         >
 
         <el-button
-          v-if="!audioOn"
+          v-if="!state.audioOn"
           type="danger"
           @click="audioOnOOff"
           icon="el-icon-turn-off-microphone"
@@ -127,7 +136,7 @@
         >
 
         <el-button
-          v-if="videoOn"
+          v-if="state.videoOn"
           type="success"
           @click="videoOnOOff"
           icon="el-icon-video-pause"
@@ -135,7 +144,7 @@
         >
 
         <el-button
-          v-if="!videoOn"
+          v-if="!state.videoOn"
           type="danger"
           @click="videoOnOOff"
           icon="el-icon-video-play"
@@ -145,31 +154,31 @@
         <el-button
           type="success"
           icon="el-icon-monitor"
-          v-if="!screenSession"
+          v-if="!state.screenSession"
           @click="toggleShareScreen"
           >화상공유</el-button
         >
 
         <el-button
-          v-if="!videoOn"
           type="danger"
-          @click="videoOnOOff"
-          icon="el-icon-video-play"
-          >화상 중지</el-button
+          icon="el-icon-s-platform"
+          v-if="state.screenSession"
+          @click="toggleShareScreen"
+          >공유중지</el-button
         >
 
         <el-button
           type="success"
-          icon="el-icon-monitor"
-          v-if="!mainmode"
+          icon="el-icon-full-screen"
+          v-if="!state.mainmode"
           @click="toggleMainmode"
           >메인모드</el-button
         >
 
         <el-button
           type="danger"
-          icon="el-icon-s-platform"
-          v-if="mainmode"
+          icon="el-icon-crop"
+          v-if="state.mainmode"
           @click="toggleMainmode"
           >분할모드</el-button
         >
@@ -188,35 +197,40 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./openviducomponents/UserVideo";
-import WindowPopup from "./WindowPopup";
 import Swal from "sweetalert2";
 import { ElNotification } from "element-plus";
+import { onMounted, onUnmounted, reactive } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 const OPENVIDU_SERVER_URL = "https://" + "i5b306.p.ssafy.io" + ":9000";
-const OPENVIDU_SERVER_SECRET = "MY_SECRET";
+const OPENVIDU_SERVER_SECRET = "GOM_SECRET";
 
 export default {
   name: "studymeeting",
 
   components: {
-    UserVideo,
-    WindowPopup
+    UserVideo
   },
+  setup() {
+    const store = useStore();
+    const route = useRoute();
 
-  data() {
-    return {
-      count: 3,
-      open: false,
+    const state = reactive({
+      //메인모드
+      mainmode: false,
+      // 화면 크기 변화
+      widthflag: false,
+      wide: 22,
+      narrow: 2,
 
       //채팅
       message: "",
       messages: [],
       activeNames: ["1"],
-      test: "",
-      //메인모드
-      mainmode: false,
+
       //화상회의
       OV: undefined,
       session: undefined,
@@ -230,7 +244,7 @@ export default {
       audioOn: true,
       videoOn: true,
 
-      // screen share
+      //화면공유
       screenOV: undefined,
       screenSession: undefined,
       screenMainStreamManager: undefined,
@@ -238,114 +252,42 @@ export default {
       screenSubscribers: [],
       screenOvToken: null,
       isSharingMode: false
+    });
+    // 페이지 진입시 불리는 훅
+    onMounted(() => {});
+    onUnmounted(() => {
+      leaveSession();
+      window.removeEventListener("beforeunload", leaveSession);
+      console.log("파괴");
+      console.log("session");
+    });
+
+    const toggleMainmode = function() {
+      state.mainmode = !state.mainmode;
     };
-  },
-  watch: {
-    messages() {}
-  },
-  mounted: function() {
-    console.log("들어가기전 훅");
-  },
-  beforeDestroy: function() {
-    if (this.session) this.session.disconnect();
-    window.removeEventListener("beforeunload", this.leaveSession);
-    console.log("파괴");
-  },
-  methods: {
-    stopShareScreen() {
-      if (this.screenSession) this.screenSession.disconnect();
-      this.screenOV = undefined;
-      this.screenMainStreamManager = undefined;
-      this.screenPublisher = undefined;
-      this.screenSession = undefined;
-      this.screenSubscribers = [];
-      this.screenOvToken = null;
-      // state.session.signal({
-      //   data: "F",
-      //   to: [],
-      //   type: "share"
-      // });
-    },
-    startShareScreen() {
-      const screenOV = new OpenVidu();
-
-      const screenSession = screenOV.initSession();
-
-      // const screenSubscribers = [];
-      // screenSession.on("streamCreated", ({ stream }) => {
-      //   const screenSubscriber = screenSession.subscribe(stream);
-      //   screenSubscribers.push(screenSubscriber);
-      // });
-      // // On every Stream destroyed...
-      // screenSession.on("streamDestroyed", ({ stream }) => {
-      //   const index2 = screenSubscribers.indexOf(stream.streamManager, 0);
-      //   if (index2 >= 0) {
-      //     screenSubscribers.splice(index2, 1);
-      //   }
-      // });
-
-      this.getToken(this.mySessionId).then(token2 => {
-        let screenPublisher = screenOV.initPublisher(undefined, {
-          audioSource: false, // The source of audio. If undefined default microphone
-          videoSource: "screen", // The source of video. If undefined default webcam
-          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-          publishVideo: true, // Whether you want to start publishing with your video enabled or not
-          resolution: "1440x1080", // The resolution of your video
-          frameRate: 30, // The frame rate of your video
-          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-          mirror: false // Whether to mirror your local video or not
-        });
-        screenSession
-          .connect(token2, { clientData: this.myUserName + "s" })
-          .then(() => {
-            screenPublisher.once("accessAllowed", () => {
-              screenPublisher.stream
-                .getMediaStream()
-                .getVideoTracks()[0]
-                .addEventListener("ended", () => {
-                  dispatch("stopShareScreen");
-                });
-              screenSession.publish(screenPublisher);
-              this.screenOV = screenOV;
-              this.screenMainStreamManager = screenPublisher;
-              this.screenPublisher = screenPublisher;
-              this.screenSession = screenSession;
-              this.screenSubscribers = screenSubscribers;
-              this.screenOvToken = token2;
-              // state.session.signal({
-              //   data: "T",
-              //   to: [],
-              //   type: "share"
-              // });
-            });
-            screenPublisher.once("accessDenied", () => {
-              console.warn("ScreenShare: Access Denied");
-            });
-            screenPublisher.once("accessDenied", () => {
-              console.warn("ScreenShare: Access Denied");
-            });
-          })
-          .catch(error => {
-            console.log(
-              "There was an error connecting to the session:",
-              error.code,
-              error.message
-            );
-          });
-      });
-    },
-    joinSession() {
+    const widthreverse = function() {
+      if (state.widthflag) {
+        state.wide = 22;
+        state.narrow = 2;
+        state.widthflag = !state.widthflag;
+      } else {
+        state.wide = 18;
+        state.narrow = 6;
+        state.widthflag = !state.widthflag;
+      }
+    };
+    const joinSession = function() {
       // --- Get an OpenVidu object ---
-      this.OV = new OpenVidu();
+      state.OV = new OpenVidu();
 
       // --- Init a session ---
-      this.session = this.OV.initSession();
+      state.session = state.OV.initSession();
 
       // --- Specify the actions when events take place in the session ---
 
       // On every new Stream received...
-      this.session.on("streamCreated", ({ stream }) => {
-        const subscriber = this.session.subscribe(stream);
+      state.session.on("streamCreated", ({ stream }) => {
+        const subscriber = state.session.subscribe(stream);
         let client = JSON.parse(subscriber.stream.connection.data);
 
         ElNotification({
@@ -353,15 +295,15 @@ export default {
           message: `${client.clientData} 님이 입장하셨습니다.`,
           type: "success"
         });
-        this.subscribers.push(subscriber);
+        state.subscribers.push(subscriber);
       });
 
       // On every Stream destroyed...
-      this.session.on("streamDestroyed", ({ stream }) => {
-        const index = this.subscribers.indexOf(stream.streamManager, 0);
+      state.session.on("streamDestroyed", ({ stream }) => {
+        const index = state.subscribers.indexOf(stream.streamManager, 0);
         if (index >= 0) {
           let client = JSON.parse(
-            this.subscribers[index].stream.connection.data
+            state.subscribers[index].stream.connection.data
           );
 
           ElNotification({
@@ -369,18 +311,18 @@ export default {
             message: `${client.clientData} 님이 퇴장하셨습니다.`,
             type: "warning"
           });
-          this.subscribers.splice(index, 1);
+          state.subscribers.splice(index, 1);
         }
       });
-      this.session.on("signal:share", event => {
+      state.session.on("signal:share", event => {
         if (event.data === "F") {
-          this.isSharingMode = false;
+          state.isSharingMode = false;
         } else {
-          this.isSharingMode = true;
+          state.isSharingMode = true;
         }
       });
       // On every asynchronous exception...
-      this.session.on("exception", ({ exception }) => {
+      state.session.on("exception", ({ exception }) => {
         console.warn(exception);
       });
 
@@ -388,29 +330,29 @@ export default {
 
       // 'getToken' method is simulating what your server-side should do.
       // 'token' parameter should be retrieved and returned by your own backend
-      this.getToken(this.mySessionId).then(token => {
-        this.session
-          .connect(token, { clientData: this.myUserName })
+      getToken(state.mySessionId).then(token => {
+        state.session
+          .connect(token, { clientData: state.myUserName })
           .then(() => {
             // --- Get your own camera stream with the desired properties ---
 
-            let publisher = this.OV.initPublisher(undefined, {
+            let publisher = state.OV.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
               videoSource: undefined, // The source of video. If undefined default webcam
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
               publishVideo: true, // Whether you want to start publishing with your video enabled or not
-              resolution: "640x480", // The resolution of your video
+              resolution: "640x360", // The resolution of your video
               frameRate: 30, // The frame rate of your video
               insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
               mirror: false // Whether to mirror your local video or not
             });
 
-            this.mainStreamManager = publisher;
-            this.publisher = publisher;
+            state.mainStreamManager = publisher;
+            state.publisher = publisher;
 
             // --- Publish your stream ---
 
-            this.session.publish(this.publisher);
+            state.session.publish(state.publisher);
           })
           .catch(error => {
             console.log(
@@ -421,9 +363,9 @@ export default {
           });
       });
       var num = 0;
-      this.session.on("signal:chat", event => {
+      state.session.on("signal:chat", event => {
         let eventData = JSON.parse(event.data);
-        this.messages.push(eventData);
+        state.messages.push(eventData);
         setTimeout(() => {
           var chatDiv = document.getElementById("chat-area");
 
@@ -438,60 +380,49 @@ export default {
           num += 20;
         }, 50);
       });
-      window.addEventListener("beforeunload", this.leaveSession);
-    },
+      window.addEventListener("beforeunload", leaveSession);
+    };
 
-    leaveSession() {
+    const leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      if (this.session) this.session.disconnect();
+      if (state.session) state.session.disconnect();
 
-      this.session = undefined;
-      this.mainStreamManager = undefined;
-      this.publisher = undefined;
-      this.subscribers = [];
-      this.OV = undefined;
-      this.audioOn = true;
-      this.videoOn = true;
-      this.messages = [];
-      window.removeEventListener("beforeunload", this.leaveSession);
-    },
+      state.session = undefined;
+      state.mainStreamManager = undefined;
+      state.publisher = undefined;
+      state.subscribers = [];
+      state.OV = undefined;
+      state.audioOn = true;
+      state.videoOn = true;
+      state.messages = [];
+      window.removeEventListener("beforeunload", leaveSession);
+    };
 
-    updateMainVideoStreamManager(stream) {
-      if (this.mainStreamManager === stream) return;
+    const updateMainVideoStreamManager = function(stream) {
+      if (state.mainStreamManager === stream) return;
       console.log(stream);
-      this.mainStreamManager = stream;
-    },
-    audioOnOOff() {
-      this.audioOn = !this.audioOn;
+      state.mainStreamManager = stream;
+    };
+    const audioOnOOff = function() {
+      state.audioOn = !state.audioOn;
 
-      this.publisher.publishAudio(this.audioOn);
-    },
+      state.publisher.publishAudio(state.audioOn);
+    };
 
-    videoOnOOff() {
-      this.videoOn = !this.videoOn;
+    const videoOnOOff = function() {
+      state.videoOn = !state.videoOn;
 
-      this.publisher.publishVideo(this.videoOn);
-    },
-    /**
-     * --------------------------
-     * SERVER-SIDE RESPONSIBILITY
-     * --------------------------
-     * These methods retrieve the mandatory user token from OpenVidu Server.
-     * This behavior MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
-     * the API REST, openvidu-java-client or openvidu-node-client):
-     *   1) Initialize a Session in OpenVidu Server	(POST /openvidu/api/sessions)
-     *   2) Create a Connection in OpenVidu Server (POST /openvidu/api/sessions/<SESSION_ID>/connection)
-     *   3) The Connection.token must be consumed in Session.connect() method
-     */
+      state.publisher.publishVideo(state.videoOn);
+    };
 
-    getToken(mySessionId) {
-      return this.createSession(mySessionId).then(sessionId =>
-        this.createToken(sessionId)
+    const getToken = function(mySessionId) {
+      return createSession(mySessionId).then(sessionId =>
+        createToken(sessionId)
       );
-    },
+    };
 
     // See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-openviduapisessions
-    createSession(sessionId) {
+    const createSession = function(sessionId) {
       return new Promise((resolve, reject) => {
         axios
           .post(
@@ -526,21 +457,21 @@ export default {
             }
           });
       });
-    },
-    sendMessage() {
+    };
+    const sendMessage = function() {
       var messageData = {
-        content: this.message,
-        from: this.myUserName
+        content: state.message,
+        from: state.myUserName
       };
-      this.message = "";
-      this.session.signal({
+      state.message = "";
+      state.session.signal({
         type: "chat",
         data: JSON.stringify(messageData),
         to: []
       });
-    },
+    };
     // See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-openviduapisessionsltsession_idgtconnection
-    createToken(sessionId) {
+    const createToken = function(sessionId) {
       return new Promise((resolve, reject) => {
         axios
           .post(
@@ -557,9 +488,9 @@ export default {
           .then(data => resolve(data.token))
           .catch(error => reject(error.response));
       });
-    },
-    toggleShareScreen() {
-      if (this.screenPublisher) {
+    };
+    const toggleShareScreen = function() {
+      if (state.screenPublisher) {
         Swal.fire({
           html: "화면공유를 중단 하시겠습니까?",
           showCancelButton: true,
@@ -568,7 +499,7 @@ export default {
           icon: "warning"
         }).then(result => {
           if (result.value) {
-            this.stopShareScreen();
+            stopShareScreen();
             console.log("공유 정지", result.value);
           }
         });
@@ -581,19 +512,113 @@ export default {
           icon: "warning"
         }).then(result => {
           if (result.value) {
-            this.startShareScreen();
+            startShareScreen();
             console.log("공유 시작", result.value);
           }
         });
       }
-    },
-    toggleMainmode() {
-      this.mainmode = !this.mainmode;
-    }
+    };
+
+    const stopShareScreen = function() {
+      if (state.screenSession) state.screenSession.disconnect();
+      state.screenOV = undefined;
+      state.screenMainStreamManager = undefined;
+      state.screenPublisher = undefined;
+      state.screenSession = undefined;
+      state.screenSubscribers = [];
+      state.screenOvToken = null;
+      state.session.signal({
+        data: "F",
+        to: [],
+        type: "share"
+      });
+    };
+    const startShareScreen = function() {
+      const screenOV = new OpenVidu();
+
+      const screenSession = screenOV.initSession();
+
+      getToken(state.mySessionId).then(token2 => {
+        let screenPublisher = screenOV.initPublisher(undefined, {
+          audioSource: false, // The source of audio. If undefined default microphone
+          videoSource: "screen", // The source of video. If undefined default webcam
+          publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+          publishVideo: true, // Whether you want to start publishing with your video enabled or not
+          resolution: "1440x1080", // The resolution of your video
+          frameRate: 30, // The frame rate of your video
+          insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+          mirror: false // Whether to mirror your local video or not
+        });
+        screenSession
+          .connect(token2, { clientData: state.myUserName + "s" })
+          .then(() => {
+            screenPublisher.once("accessAllowed", () => {
+              screenPublisher.stream
+                .getMediaStream()
+                .getVideoTracks()[0]
+                .addEventListener("ended", () => {
+                  dispatch("stopShareScreen");
+                });
+              screenSession.publish(screenPublisher);
+              state.screenOV = screenOV;
+              state.screenMainStreamManager = screenPublisher;
+              state.screenPublisher = screenPublisher;
+              state.screenSession = screenSession;
+              state.screenSubscribers = screenSubscribers;
+              state.screenOvToken = token2;
+              state.session.signal({
+                data: "T",
+                to: [],
+                type: "share"
+              });
+            });
+            screenPublisher.once("accessDenied", () => {
+              console.warn("ScreenShare: Access Denied");
+            });
+            screenPublisher.once("accessDenied", () => {
+              console.warn("ScreenShare: Access Denied");
+            });
+          })
+          .catch(error => {
+            console.log(
+              "There was an error connecting to the session:",
+              error.code,
+              error.message
+            );
+          });
+      });
+    };
+    return {
+      state,
+      toggleMainmode,
+      widthreverse,
+      joinSession,
+      leaveSession,
+      updateMainVideoStreamManager,
+      audioOnOOff,
+      videoOnOOff,
+      getToken,
+      createSession,
+      sendMessage,
+      createToken,
+      toggleShareScreen,
+      startShareScreen,
+      stopShareScreen
+    };
   }
+  // beforeDestroy: function() {
+  //   //if (this.session) this.session.disconnect();
+  //   leaveSession();
+  //   window.removeEventListener("beforeunload", this.leaveSession);
+  //   console.log("파괴");
+  // },
 };
 </script>
 <style>
+.main-stream {
+  max-width: 60%;
+  height: 3%;
+}
 .message-wrap {
   padding: 0 15px;
   height: calc(100% - 80px);
