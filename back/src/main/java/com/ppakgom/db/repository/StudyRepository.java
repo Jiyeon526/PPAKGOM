@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.ppakgom.db.entity.Study;
+import com.ppakgom.db.entity.StudyAttend;
 import com.ppakgom.db.entity.User;
 
 @Repository
