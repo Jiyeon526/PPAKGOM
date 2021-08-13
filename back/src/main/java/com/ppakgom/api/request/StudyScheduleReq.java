@@ -17,4 +17,7 @@ public class StudyScheduleReq {
 	
 	@ApiModelProperty(name="date", example="2021-09-23")
 	String date;
+	
+	@ApiModelProperty(name="color", example="red")
+	String color;
 }
