@@ -8,10 +8,10 @@
           </div>
         </el-col>
         <el-col :span="3">
-          <div class="logo-ppakgom">PPAKGOM</div>
+          <div class="logo-ppakgom" @click="clickLogo">PPAKGOM</div>
         </el-col>
         <el-col :span="16">
-          <el-select v-model="state.value" placeholder="STUDY">
+          <el-select v-if="state.value" v-model="state.value" placeholder="STUDY">
             <el-option
               v-for="item in state.options"
               :key="item.value"
@@ -237,6 +237,7 @@ export default {
     };
 
     const clickLogo = () => {
+      store.commit("root/setSelectOption", '');
       store.commit("root/setMenuActive", 0);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
@@ -424,6 +425,7 @@ export default {
   font-size: 32px;
   font-weight: bold;
   color: #005005;
+  cursor: pointer;
 }
 .main-header .hide-on-small .logo-wrapper {
   cursor: pointer;
