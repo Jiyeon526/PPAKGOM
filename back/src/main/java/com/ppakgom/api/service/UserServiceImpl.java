@@ -320,4 +320,13 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findTop1ByEmail(email);
 	}
 
+	@Override
+	public User getUserByName(String name) {
+		Optional<User> user = userRepository.findByName(name);
+		
+		if(!user.isPresent())
+			return null;
+		return user.get();
+	}
+
 }
