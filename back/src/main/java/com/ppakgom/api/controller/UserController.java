@@ -176,10 +176,11 @@ public class UserController {
 
 //		사용자가 가입한 스터디.
 			List<Study> userStudyList = studyService.getUserJoinStudy(user);
+			List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
 
 			for (Study s : resultSet) {
 				StudyRes studyRes = new StudyRes();
-				res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, userStudyList));
+				res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, userStudyList, userLikedStudy));
 			}
 		} catch (Exception e) {
 			System.out.println("존재하지 않는 사용자이거나 이외의 에러");
@@ -283,10 +284,11 @@ public class UserController {
 		if (user == null)
 			return ResponseEntity.ok(res);
 		List<Study> resultSet = studyService.getUserJoinStudy(user);
-
+		List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
+		
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, resultSet));
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, resultSet, userLikedStudy));
 		}
 
 		return ResponseEntity.ok(res);
