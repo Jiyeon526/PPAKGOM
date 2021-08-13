@@ -53,7 +53,7 @@
                 :stream-manager="state.mainStreamManager"
               />
             </el-container>
-            <el-container class="room">
+            <el-container class="room" v-if="!state.mainmode">
               <user-video
                 class="screen-res"
                 :stream-manager="state.publisher"
@@ -61,6 +61,32 @@
               />
               <user-video
                 class="screen-res"
+                v-for="sub in state.subscribers"
+                :key="sub.stream.connection.connectionId"
+                :stream-manager="sub"
+                @click="updateMainVideoStreamManager(sub)"
+              />
+              <!-- <user-video
+                class="screen-res"
+                :stream-manager="state.screenPublisher"
+                @click="updateMainVideoStreamManager(state.screenPublisher)"
+              />
+              <user-video
+                class="screen-res"
+                v-for="sub in state.screenSubscribers"
+                :key="sub.stream.connection.connectionId"
+                :stream-manager="sub"
+                @click="updateMainVideoStreamManager(sub)"
+              /> -->
+            </el-container>
+            <el-container class="room" v-if="state.mainmode">
+              <user-video
+                class="screen-res-small"
+                :stream-manager="state.publisher"
+                @click="updateMainVideoStreamManager(state.publisher)"
+              />
+              <user-video
+                class="screen-res-small"
                 v-for="sub in state.subscribers"
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
@@ -92,6 +118,9 @@
 
                     <div id="chat-area" style=" height:520px; overflow:scroll;">
                       <div v-for="(item, i) in state.messages" :key="i">
+                        <el-avatar
+                          src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+                        ></el-avatar>
                         {{ item.from }}:{{ item.content }}
                       </div>
                     </div>
@@ -198,7 +227,7 @@ import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./openviducomponents/UserVideo";
 import Swal from "sweetalert2";
-import { ElNotification } from "element-plus";
+import { ElNotification, ElMessageBox, ElMessage } from "element-plus";
 import { onMounted, onUnmounted, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
@@ -256,8 +285,9 @@ export default {
     // 페이지 진입시 불리는 훅
     onMounted(() => {});
     onUnmounted(() => {
-      leaveSession();
-      window.removeEventListener("beforeunload", leaveSession);
+      if (state.screenSubscribers) stopShareScreen();
+      if (state.session) leaveSession();
+      //window.removeEventListener("beforeunload", leaveSession);
       console.log("파괴");
       console.log("session");
     });
@@ -491,31 +521,45 @@ export default {
     };
     const toggleShareScreen = function() {
       if (state.screenPublisher) {
-        Swal.fire({
-          html: "화면공유를 중단 하시겠습니까?",
-          showCancelButton: true,
-          confirmButtonText: "네",
-          cancelButtonText: "아니요",
-          icon: "warning"
-        }).then(result => {
-          if (result.value) {
+        ElMessageBox.confirm("화면 공유를 중지하겠습니까?", "Warning", {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "warning",
+          center: true
+        })
+          .then(() => {
             stopShareScreen();
-            console.log("공유 정지", result.value);
-          }
-        });
+            ElMessage({
+              message: "공유를 중지합니다",
+              type: "success"
+            });
+          })
+          .catch(() => {
+            ElMessage({
+              type: "info",
+              message: "공유~!"
+            });
+          });
       } else {
-        Swal.fire({
-          html: "화면공유를 시작 하시겠습니까?",
-          showCancelButton: true,
-          confirmButtonText: "네",
-          cancelButtonText: "아니요",
-          icon: "warning"
-        }).then(result => {
-          if (result.value) {
+        ElMessageBox.confirm("화면 공유를 시작하겠습니까?", "Warning", {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "warning",
+          center: true
+        })
+          .then(() => {
             startShareScreen();
-            console.log("공유 시작", result.value);
-          }
-        });
+            ElMessage({
+              message: "공유를 시작합니다",
+              type: "success"
+            });
+          })
+          .catch(() => {
+            ElMessage({
+              type: "info",
+              message: "응 공유 안해"
+            });
+          });
       }
     };
 
@@ -616,8 +660,7 @@ export default {
 </script>
 <style>
 .main-stream {
-  max-width: 60%;
-  height: 3%;
+  max-width: 70%;
 }
 .message-wrap {
   padding: 0 15px;
@@ -631,6 +674,14 @@ export default {
   width: inherit;
   /* min-width: 33%; */
   max-width: 33%;
+}
+
+.screen-res-small {
+  position: block;
+  height: auto;
+  width: inherit;
+  /* min-width: 33%; */
+  max-width: 16%;
 }
 .room {
   flex-wrap: wrap;

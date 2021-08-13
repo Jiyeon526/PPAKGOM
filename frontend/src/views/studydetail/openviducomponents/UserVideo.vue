@@ -10,6 +10,7 @@
 .font-shadow {
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: rgb(0, 0, 0);
+  font-size: 80%;
 }
 </style>
 <script>
