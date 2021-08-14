@@ -58,8 +58,9 @@
       >
         <el-image
           style="width: 100px; height: 100px"
-          :src="'https://localhost:8443/' + state.form.thumbnail"
-          :fit="fit"></el-image>
+          :src="'https://i5b306.p.ssafy.io/image/study/default.png'"
+          :fit="fit"
+        ></el-image>
       </el-form-item>
     </el-form>
   </el-container>
@@ -106,7 +107,7 @@ export default {
         align: "left"
       },
       rules: {
-        name: [{ validator: validateName, trigger: "blur" }],
+        name: [{ validator: validateName, trigger: "blur" }]
         // department: [{ validator: validateDepartment, trigger: "blur" }],
         // position: [{ validator: validatePosition, trigger: "blur" }]
       },
@@ -150,27 +151,27 @@ export default {
           state.form.name = result.data.name;
           state.form.interest = result.data.interest;
           // 필요한 url부분만 잘라내기
-          const origin_url = result.data.profile_thumbnail
-          const need_from = origin_url.indexOf('image')
-          const url_length = origin_url.length
-          state.form.thumbnail = origin_url.substring(need_from,url_length)
+          const origin_url = result.data.profile_thumbnail;
+          const need_from = origin_url.indexOf("image");
+          const url_length = origin_url.length;
+          state.form.thumbnail = origin_url.substring(need_from, url_length);
         })
         .catch(function(err) {
-          ElMessage.error(err)
-        })
-    }
+          ElMessage.error(err);
+        });
+    };
 
     const clickUpdate = function() {
-      console.log(state.form.thumbnail)
+      console.log(state.form.thumbnail);
       console.log(editForm);
       editForm.value.validate(valid => {
         if (valid) {
-          console.log("submit")
+          console.log("submit");
           store
             .dispatch("root/requestUpdateMyInfo", {
               name: state.form.name,
               interest: state.form.interest,
-              thumbnail: state.form.thumbnail,
+              thumbnail: state.form.thumbnail
             })
             .then(function(result) {
               ElMessage({
@@ -227,7 +228,7 @@ export default {
       getUserInfo();
     });
 
-    return { editForm, state, clickUpdate, clickDelete, prevUpload }
+    return { editForm, state, clickUpdate, clickDelete, prevUpload };
   }
 };
 </script>
