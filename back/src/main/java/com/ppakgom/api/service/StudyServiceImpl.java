@@ -3,6 +3,9 @@ package com.ppakgom.api.service;
 import java.io.File;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -486,9 +489,17 @@ public class StudyServiceImpl implements StudyService {
 		study.setTemperature(studyInfo.getTemperature());
 		study = studyRepository.save(study);
 //		썸네일 저장하기
-
-//		 사진 관련 처리 -> image/study/방번호-파일명
-		String path = BASE_PATH;
+		String path;
+//		만약 원래 썸네일이 존재하는 상태였다면, 그 사진부터 삭제해야 한다. 원래 디폴트 일 경우 제외..
+		if(!isDefault(study.getStudy_thumbnail())) {
+//			삭제해야 하는 파일(풀경로)
+			Path filePath =  Paths.get(System.getProperty("user.dir") + "\\src\\main\\resources\\"+study.getStudy_thumbnail());
+			Files.deleteIfExists(filePath);
+		}
+		
+		
+//		새로운 사진 관련 처리 -> image/study/방번호-파일명
+		path = BASE_PATH;
 		if(studyThumbnail == null) {
 //			디폴트 사진 처리
 			path += "default.png";
@@ -560,12 +571,8 @@ public class StudyServiceImpl implements StudyService {
 				attendRes.setStudy_plan_date(parseDate(sp.getDate()));
 				attendGetRes.getAttendList().add(attendRes);
 			}
-			
 			res.add(attendGetRes);
-			
 		}
-		
-		
 		return res;
 	}
 	
@@ -577,5 +584,11 @@ public class StudyServiceImpl implements StudyService {
 		
 		return str;
 	}
-
+	
+//	사진이 디폴트 이미지 인지 아닌지 판단
+	private boolean isDefault(String filePath) {
+//		image/이후부터 끝까지 == default.png면 디폴트 이미지임 (디폴트가 아닌 경우 폴더명 study가 중간에 추가됨)
+		boolean isDefault = filePath.substring(6,filePath.length()).equals("default.png") ? true : false;
+		return isDefault;
+	}
 }
