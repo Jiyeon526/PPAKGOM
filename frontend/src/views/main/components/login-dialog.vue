@@ -314,6 +314,7 @@ export default {
               localStorage.setItem("userId", state.form.id);
               localStorage.setItem("userPk", result.data.id);
               store.commit("root/setUserpk", result.data.id);
+              console.log("로그인정보", result.data);
               console.log("기본키", store.getters["root/getUserpk"]);
               ElMessage({
                 message: "로그인 성공",

@@ -8,9 +8,10 @@
     <el-main>
       <div id="join" v-if="!state.session">
         <div id="join-dialog" class="jumbotron vertical-center">
-          <h1>Join a video session</h1>
+          <h1>입장 전 거울 화면</h1>
+          <video id="test-video" autoplay loop muted></video>
           <div class="form-group">
-            <p>
+            <!-- <p>
               <label>Participant</label>
               <input
                 v-model="state.myUserName"
@@ -27,12 +28,11 @@
                 type="text"
                 required
               />
-            </p>
-            <p class="text-center">
-              <button class="btn btn-lg btn-success" @click="joinSession()">
-                Join!
-              </button>
-            </p>
+            </p> -->
+
+            <el-button @click="joinSession()" type="success" round
+              >화상 미팅 입장</el-button
+            >
           </div>
         </div>
       </div>
@@ -245,9 +245,11 @@ export default {
   },
   setup() {
     const store = useStore();
-    const route = useRoute();
+    const router = useRoute();
 
     const state = reactive({
+      userpk: 0,
+
       //메인모드
       mainmode: false,
       // 화면 크기 변화
@@ -267,8 +269,8 @@ export default {
       publisher: undefined,
       subscribers: [],
       mySessionId: "SessionA",
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
-
+      //myUserName: "Participant" + Math.floor(Math.random() * 100),
+      myUserName: "default" + Math.floor(Math.random() * 100),
       //마이크 ONOFF 카메라 ONOFF
       audioOn: true,
       videoOn: true,
@@ -280,21 +282,56 @@ export default {
       screenPublisher: undefined,
       screenSubscribers: [],
       screenOvToken: null,
-      isSharingMode: false
+      isSharingMode: false,
+
+      //확인 스피크
+      isSpeackList: [],
+
+      //입장 전 화면
+      stream: ""
     });
     // 페이지 진입시 불리는 훅
-    onMounted(() => {});
+    onMounted(() => {
+      state.userpk = store.getters["root/getStudypk"];
+      console.log("방번호", state.userpk);
+      state.mySessionId = "room" + state.userpk;
+      console.log("방이름", state.mySessionId);
+      store
+        .dispatch("root/requestReadMyInfo")
+        .then(function(result) {
+          state.myUserName = result.data.name + Math.floor(Math.random() * 100);
+
+          navigator.getUserMedia =
+            navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia;
+          var video = document.getElementById("test-video");
+          navigator.getUserMedia(
+            { video: true, audio: false },
+            function(stream) {
+              state.stream = stream;
+              video.srcObject = stream;
+              video.play();
+            },
+            function(error) {}
+          );
+        })
+        .catch(function(err) {
+          ElMessage.error(err);
+          state.myUserName = "error" + Math.floor(Math.random() * 100);
+        });
+    });
     onUnmounted(() => {
       if (state.screenSubscribers) stopShareScreen();
       if (state.session) leaveSession();
-      //window.removeEventListener("beforeunload", leaveSession);
-      console.log("파괴");
-      console.log("session");
+      window.removeEventListener("beforeunload", leaveSession);
     });
 
     const toggleMainmode = function() {
       state.mainmode = !state.mainmode;
     };
+
     const widthreverse = function() {
       if (state.widthflag) {
         state.wide = 22;
@@ -306,16 +343,43 @@ export default {
         state.widthflag = !state.widthflag;
       }
     };
+
     const joinSession = function() {
       // --- Get an OpenVidu object ---
+      state.stream.getTracks().forEach(track => track.stop());
       state.OV = new OpenVidu();
 
-      // --- Init a session ---
+      state.OV.setAdvancedConfiguration({
+        publisherSpeakingEventsOptions: {
+          interval: 100, // Frequency of the polling of audio streams in ms (default 100)
+          threshold: -50 // Threshold volume in dB (default -50)
+        }
+      });
+
       state.session = state.OV.initSession();
+
+      // --- Init a session ---
 
       // --- Specify the actions when events take place in the session ---
 
       // On every new Stream received...
+      state.session.on("publisherStartSpeaking", event => {
+        // console.log(
+        //   "User " + event.connection.connectionId + " start speaking"
+        // );
+        state.isSpeackList.push(event.connection.connectionId);
+      });
+
+      state.session.on("publisherStopSpeaking", event => {
+        // console.log("User " + event.connection.connectionId + " stop speaking");
+        let temp = state.isSpeackList;
+        let index = temp.indexOf(event.connection.connectionId, 0);
+        if (index >= 0) {
+          temp.splice(index, 1);
+          state.isSpeackList = temp;
+        }
+      });
+
       state.session.on("streamCreated", ({ stream }) => {
         const subscriber = state.session.subscribe(stream);
         let client = JSON.parse(subscriber.stream.connection.data);
@@ -371,7 +435,7 @@ export default {
               videoSource: undefined, // The source of video. If undefined default webcam
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
               publishVideo: true, // Whether you want to start publishing with your video enabled or not
-              resolution: "640x360", // The resolution of your video
+              resolution: "960x540", // The resolution of your video
               frameRate: 30, // The frame rate of your video
               insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
               mirror: false // Whether to mirror your local video or not
@@ -426,6 +490,24 @@ export default {
       state.videoOn = true;
       state.messages = [];
       window.removeEventListener("beforeunload", leaveSession);
+      setTimeout(() => {
+        navigator.getUserMedia =
+          navigator.getUserMedia ||
+          navigator.webkitGetUserMedia ||
+          navigator.mozGetUserMedia ||
+          navigator.msGetUserMedia;
+        var video = document.getElementById("test-video");
+        navigator.getUserMedia(
+          { video: true, audio: false },
+          function(stream) {
+            video.srcObject = stream;
+            video.play();
+          },
+          function(error) {}
+        );
+      }, 500);
+      // store.commit("root/setSelectOption", "studyhome");
+      // router.push({ name: "studyhome" });
     };
 
     const updateMainVideoStreamManager = function(stream) {
@@ -571,11 +653,11 @@ export default {
       state.screenSession = undefined;
       state.screenSubscribers = [];
       state.screenOvToken = null;
-      state.session.signal({
-        data: "F",
-        to: [],
-        type: "share"
-      });
+      // state.session.signal({
+      //   data: "F",
+      //   to: [],
+      //   type: "share"
+      // });
     };
     const startShareScreen = function() {
       const screenOV = new OpenVidu();
@@ -594,7 +676,7 @@ export default {
           mirror: false // Whether to mirror your local video or not
         });
         screenSession
-          .connect(token2, { clientData: state.myUserName + "s" })
+          .connect(token2, { clientData: state.myUserName + " 화면" })
           .then(() => {
             screenPublisher.once("accessAllowed", () => {
               screenPublisher.stream
@@ -659,6 +741,10 @@ export default {
 };
 </script>
 <style>
+#test-video {
+  max-width: 60%;
+}
+
 .main-stream {
   max-width: 70%;
 }
@@ -840,8 +926,8 @@ video {
   position: relative;
   display: inline-block;
   background: #f8f8f8;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
   font-size: 22px;
   color: #777777;
   font-weight: bold;
