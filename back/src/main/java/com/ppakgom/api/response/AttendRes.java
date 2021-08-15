@@ -7,7 +7,8 @@ import lombok.Setter;
 @Setter
 public class AttendRes {
 
-	boolean is_attend;
+	boolean isAttend;
 	Long study_plan_id;
+	String study_plan_date;
 	
 }

@@ -555,8 +555,9 @@ public class StudyServiceImpl implements StudyService {
 				AttendRes attendRes = new AttendRes();
 				Long spId = sp.getId();
 				StudyAttend at = studyAttendRepository.findByUserIdAndStudyPlanId(mId, spId);
-				attendRes.set_attend(at.isAttend());
+				attendRes.setAttend(at.isAttend());
 				attendRes.setStudy_plan_id(spId);
+				attendRes.setStudy_plan_date(parseDate(sp.getDate()));
 				attendGetRes.getAttendList().add(attendRes);
 			}
 			
@@ -566,6 +567,15 @@ public class StudyServiceImpl implements StudyService {
 		
 		
 		return res;
+	}
+	
+//	날짜형 (시간 포함)을 문자열로
+	private String parseDate(Date deadline) {
+		
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+		String str = dateFormat.format(deadline);
+		
+		return str;
 	}
 
 }

@@ -252,7 +252,7 @@ public class StudyController {
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
 		// 사용자의 관심사들에 매칭된 스터디가 겹칠 경우.
-		// 예: 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
+		// 예: 사용자 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
 		HashSet<Study> tmp = new HashSet<>();
 
 //		1. 사용자 관심사 불러오기.
@@ -546,19 +546,26 @@ public class StudyController {
 		Study study = studyService.getStudyById(studyId).orElse(null);
 		if (study == null)
 			return ResponseEntity.status(404).body(new BaseResponseBody(404, "존재하지 않는 스터디"));
+
+		List<AttendGetRes> res = new ArrayList<>();
+		
 		try {
 //		2. 스터디 플랜 찾기
 			List<StudyPlan> studyPlans = studyService.getPlansByStudy(studyId);
-//		3. 멤버 찾기
-			List<UserStudy> userStudy = userStudyService.getCurrentMember(studyId);
-			List<User> members = new ArrayList<User>();
-			for (UserStudy us : userStudy) {
-				members.add(us.getUser());
-			}
-//		4. 응답 객체 
-			List<AttendGetRes> res = studyService.getAttendList(studyPlans, members);
-			return ResponseEntity.ok(res);
 			
+//		3. 멤버 찾기
+			if (studyPlans.size() != 0) {
+
+				List<UserStudy> userStudy = userStudyService.getCurrentMember(studyId);
+				List<User> members = new ArrayList<User>();
+				for (UserStudy us : userStudy) {
+					members.add(us.getUser());
+				}
+				res = studyService.getAttendList(studyPlans, members);
+			}
+
+			return ResponseEntity.ok(res);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(500).body(new BaseResponseBody(500, "서버 에러"));
