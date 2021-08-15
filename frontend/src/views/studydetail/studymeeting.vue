@@ -33,6 +33,9 @@
             <el-button @click="joinSession()" type="success" round
               >화상 미팅 입장</el-button
             >
+            <el-button @click="videoclose()" type="warning" round
+              >거울 끄기</el-button
+            >
           </div>
         </div>
       </div>
@@ -65,6 +68,9 @@
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
+                :is-speak="
+                  state.isSpeakList.includes(sub.stream.connection.connectionId)
+                "
               />
               <!-- <user-video
                 class="screen-res"
@@ -91,6 +97,9 @@
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
+                :is-speak="
+                  state.isSpeakList.includes(sub.stream.connection.connectionId)
+                "
               />
               <!-- <user-video
                 class="screen-res"
@@ -107,21 +116,37 @@
             </el-container>
           </el-col>
           <el-col :span="state.narrow">
-            <el-popover placement="bottom-start" :width="580" trigger="click">
+            <el-popover placement="bottom-end" :width="580" trigger="click">
               <template #reference>
-                <el-button @click="widthreverse">채팅</el-button>
+                <el-badge
+                  :value="state.messages.length - state.readmessages"
+                  :max="99"
+                  class="item"
+                >
+                  <el-button @click="widthreverse">채팅</el-button>
+                </el-badge>
               </template>
               <div style="height:550px;">
                 <el-collapse v-model="state.activeNames">
-                  <el-collapse-item title="채팅" name="1">
+                  <el-collapse-item title="채팅내역" name="1">
                     <!-- <el-scrollbar height="500px" id="chat-area"> -->
 
                     <div id="chat-area" style=" height:520px; overflow:scroll;">
                       <div v-for="(item, i) in state.messages" :key="i">
-                        <el-avatar
+                        <!-- <el-avatar
                           src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-                        ></el-avatar>
-                        {{ item.from }}:{{ item.content }}
+                        ></el-avatar> -->
+                        <div
+                          class="chatbox"
+                          v-if="item.from == state.myUserName"
+                        >
+                          {{ item.content }}
+                          <el-avatar>{{ item.from }}</el-avatar>
+                        </div>
+                        <div class="otherchatbox" v-else>
+                          <el-avatar>{{ item.from }}</el-avatar
+                          >{{ item.content }}
+                        </div>
                       </div>
                     </div>
 
@@ -135,7 +160,7 @@
                 clearable
                 :rows="2"
                 placeholder="채팅 내용을 입력하세요"
-                maxlength="100"
+                maxlength="40"
                 @keyup.enter="sendMessage"
                 show-word-limit
               />
@@ -211,6 +236,11 @@
           @click="toggleMainmode"
           >분할모드</el-button
         >
+
+        <el-button type="success" icon="el-icon-bell" @click="attendance"
+          >출석</el-button
+        >
+
         <el-button
           type="success"
           icon="el-icon-switch-button"
@@ -224,6 +254,7 @@
 
 <script>
 import axios from "axios";
+
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./openviducomponents/UserVideo";
 import Swal from "sweetalert2";
@@ -249,14 +280,14 @@ export default {
 
     const state = reactive({
       userpk: 0,
-
+      studypk: 0,
       //메인모드
       mainmode: false,
       // 화면 크기 변화
       widthflag: false,
       wide: 22,
       narrow: 2,
-
+      readmessages: 0,
       //채팅
       message: "",
       messages: [],
@@ -285,16 +316,18 @@ export default {
       isSharingMode: false,
 
       //확인 스피크
-      isSpeackList: [],
+      isSpeakList: [],
 
       //입장 전 화면
-      stream: ""
+      stream: "",
+      video: ""
     });
     // 페이지 진입시 불리는 훅
     onMounted(() => {
-      state.userpk = store.getters["root/getStudypk"];
-      console.log("방번호", state.userpk);
-      state.mySessionId = "room" + state.userpk;
+      state.studypk = store.getters["root/getStudypk"];
+      state.userpk = store.getters["root/getUserpk"];
+      console.log("방번호", state.studypk);
+      state.mySessionId = "room" + state.studypk;
       console.log("방이름", state.mySessionId);
       store
         .dispatch("root/requestReadMyInfo")
@@ -313,6 +346,7 @@ export default {
               state.stream = stream;
               video.srcObject = stream;
               video.play();
+              state.video = video;
             },
             function(error) {}
           );
@@ -323,29 +357,57 @@ export default {
         });
     });
     onUnmounted(() => {
+      if (state.stream) {
+        state.video.pause();
+        state.video.srcObjec = "";
+        state.stream.getTracks().forEach(track => track.stop());
+        state.video.remove();
+        //state.stream.getTracks()[0].stop();
+      }
       if (state.screenSubscribers) stopShareScreen();
       if (state.session) leaveSession();
       window.removeEventListener("beforeunload", leaveSession);
     });
 
+    const attendance = function() {
+      store
+        .dispatch("root/requestAttendence", {
+          userpk: state.userpk,
+          studyId: state.studypk
+        })
+        .then(res => {
+          //console.log(res.data);
+          if (res.data.statusCode === 201) {
+            ElMessage({
+              message: res.data.message
+            });
+          } else if (res.data.statusCode === 200) {
+            ElMessage({ message: res.data.message, type: "success" });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+    const videoclose = function() {
+      state.video.pause();
+      state.video.srcObjec = "";
+      state.stream.stop();
+      state.video.remove();
+    };
     const toggleMainmode = function() {
       state.mainmode = !state.mainmode;
     };
 
     const widthreverse = function() {
-      if (state.widthflag) {
-        state.wide = 22;
-        state.narrow = 2;
-        state.widthflag = !state.widthflag;
-      } else {
-        state.wide = 18;
-        state.narrow = 6;
-        state.widthflag = !state.widthflag;
-      }
+      state.readmessages = state.messages.length;
+      state.widthflag = !state.widthflag;
     };
 
     const joinSession = function() {
       // --- Get an OpenVidu object ---
+      state.video.pause();
+      state.video.srcObjec = "";
       state.stream.getTracks().forEach(track => track.stop());
       state.OV = new OpenVidu();
 
@@ -364,19 +426,19 @@ export default {
 
       // On every new Stream received...
       state.session.on("publisherStartSpeaking", event => {
-        // console.log(
-        //   "User " + event.connection.connectionId + " start speaking"
-        // );
-        state.isSpeackList.push(event.connection.connectionId);
+        console.log(
+          "User " + event.connection.connectionId + " start speaking"
+        );
+        state.isSpeakList.push(event.connection.connectionId);
       });
 
       state.session.on("publisherStopSpeaking", event => {
-        // console.log("User " + event.connection.connectionId + " stop speaking");
-        let temp = state.isSpeackList;
+        console.log("User " + event.connection.connectionId + " stop speaking");
+        let temp = state.isSpeakList;
         let index = temp.indexOf(event.connection.connectionId, 0);
         if (index >= 0) {
           temp.splice(index, 1);
-          state.isSpeackList = temp;
+          state.isSpeakList = temp;
         }
       });
 
@@ -502,6 +564,7 @@ export default {
           function(stream) {
             video.srcObject = stream;
             video.play();
+            state.video = video;
           },
           function(error) {}
         );
@@ -581,6 +644,7 @@ export default {
         data: JSON.stringify(messageData),
         to: []
       });
+      state.readmessages = state.messages.length;
     };
     // See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-openviduapisessionsltsession_idgtconnection
     const createToken = function(sessionId) {
@@ -729,7 +793,9 @@ export default {
       createToken,
       toggleShareScreen,
       startShareScreen,
-      stopShareScreen
+      stopShareScreen,
+      videoclose,
+      attendance
     };
   }
   // beforeDestroy: function() {
@@ -743,8 +809,29 @@ export default {
 <style>
 #test-video {
   max-width: 60%;
+  border: 4px solid #000000;
+  border-radius: 15px;
+  margin: 0px;
+  padding: 0;
 }
-
+.otherchatbox {
+  border: 1px solid #ffffff;
+  width: 550px;
+  height: 46px;
+  padding: 6px;
+  margin: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+}
+.chatbox {
+  border: 1px solid #ffffff;
+  width: 550px;
+  height: 46px;
+  padding: 6px;
+  margin: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+  align-content: right;
+  text-align: right;
+}
 .main-stream {
   max-width: 70%;
 }
@@ -759,7 +846,8 @@ export default {
   height: auto;
   width: inherit;
   /* min-width: 33%; */
-  max-width: 33%;
+  max-width: 32%;
+  padding: 4px;
 }
 
 .screen-res-small {

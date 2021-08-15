@@ -241,3 +241,10 @@ export function requestLikeCancleStudy({state}, payload) {
   const url = `/users/like/${state.userpk}?studyId=${payload.studyId}`
   return $axios.delete(url, { headers: headers })
 }
+
+// 스터디 출석하기
+export function requestAttendence({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${payload.studyId}/attend/${payload.userpk}`
+  return $axios.post(url, {}, { headers: headers })
+}
