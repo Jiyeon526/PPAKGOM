@@ -532,7 +532,8 @@ public class StudyServiceImpl implements StudyService {
 
 	@Override
 	public List<AttendGetRes> getAttendList(List<StudyPlan> studyPlans, List<User> members) {
-
+//	사실상 members 배열은 컨트롤러에서 넘겨줄 필요가 없을 수도 ..?
+	
 		List<AttendGetRes> res = new ArrayList<>();
 		
 //		1. study_plan을 id 순으로 정렬
@@ -564,7 +565,7 @@ public class StudyServiceImpl implements StudyService {
 		}
 		
 		
-		return null;
+		return res;
 	}
 
 }

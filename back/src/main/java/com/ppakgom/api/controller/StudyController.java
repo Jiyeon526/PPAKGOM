@@ -555,12 +555,13 @@ public class StudyController {
 			for (UserStudy us : userStudy) {
 				members.add(us.getUser());
 			}
-//		2. 응답 객체 
-//			AttendGetRes res = studyService.getAttendList(studyPlans, members);
-			return null;
+//		4. 응답 객체 
+			List<AttendGetRes> res = studyService.getAttendList(studyPlans, members);
+			return ResponseEntity.ok(res);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(404).body(new BaseResponseBody(500, "서버 에러"));
+			return ResponseEntity.status(500).body(new BaseResponseBody(500, "서버 에러"));
 
 		}
 
