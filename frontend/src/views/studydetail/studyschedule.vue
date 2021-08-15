@@ -1,11 +1,15 @@
 <template>
   <h2>스터디 일정</h2>
+  <div style="float:right; margin:5px">
+    <el-button type="success" circle class="el-icon-plus" @click="onClickCalendar"></el-button>
+  </div>
   <v-calendar
       class="custom-calendar max-w-full"
       :masks="state.masks"
       :attributes="state.attributes"
       disable-page-swipe
       is-expanded
+      timezone=""
     >
       <template v-slot:day-content="{ day, attributes }">
         <div class="flex flex-col h-full z-10 overflow-hidden">
@@ -13,22 +17,22 @@
           <div class="flex-grow overflow-y-auto overflow-x-auto">
             <p
               v-for="attr in attributes"
-              :key="attr.key"
-              class="text-xs leading-tight rounded-sm p-1 mt-0 mb-1"
+              :key="attr.id"
+              class="text-xs leading-tight rounded-sm p-1 mt-0 mb-1 text-color"
               :class="attr.customData.class"
             >
-              {{ attr.customData.class }}
               {{ attr.customData.title }}
             </p>
           </div>
         </div>
       </template>
     </v-calendar>
+    {{ state.attributes }}
 </template>
 
 <script>
 // import { Calendar, DatePicker, VCalendar } from 'v-calendar';
-import { onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -41,92 +45,122 @@ export default {
     const month = new Date().getMonth();
     const year = new Date().getFullYear();
     const state = reactive({
+      studyPk: computed(() => store.getters["root/getStudypk"]),
       masks: {
         weekdays: 'WWW',
       },
-      attributes: [
-        {
-          key: 1,
-          customData: {
-            title: 'Lunch with mom.',
-            class: 'bg-red-600 text-white',
-          },
-          dates: new Date(year, month, 1),
-        },
-        {
-          key: 2,
-          customData: {
-            title: 'Take Noah to basketball practice',
-            class: 'bg-blue-500 text-white',
-          },
-          dates: new Date(year, month, 2),
-        },
-        {
-          key: 3,
-          customData: {
-            title: "Noah's basketball game.",
-            class: 'bg-blue-500 text-white',
-          },
-          dates: new Date(year, month, 5),
-        },
-        {
-          key: 4,
-          customData: {
-            title: 'Take car to the shop',
-            class: 'bg-indigo-500 text-white',
-          },
-          dates: new Date(year, month, 5),
-        },
-        {
-          key: 4,
-          customData: {
-            title: 'Meeting with new client.',
-            class: 'bg-teal-500 text-white',
-          },
-          dates: new Date(year, month, 7),
-        },
-        {
-          key: 5,
-          customData: {
-            title: "Mia's gymnastics practice.",
-            class: 'bg-pink-500 text-white',
-          },
-          dates: new Date(year, month, 11),
-        },
-        {
-          key: 6,
-          customData: {
-            title: 'Cookout with friends.',
-            class: 'bg-orange-500 text-white',
-          },
-          dates: { months: 5, ordinalWeekdays: { 2: 1 } },
-        },
-        {
-          key: 7,
-          customData: {
-            title: "Mia's gymnastics recital.",
-            class: 'bg-pink-500 text-white',
-          },
-          dates: new Date(year, month, 22),
-        },
-        {
-          key: 8,
-          customData: {
-            title: 'Visit great grandma.',
-            class: 'bg-red-600 text-white',
-          },
-          dates: new Date(year, month, 25),
-        },
-      ],
+      attributes: [],
+      // attributes: [
+      //   {
+      //     key: 1,
+      //     customData: {
+      //       title: 'Lunch with mom.',
+      //       class: 'red',
+      //     },
+      //     dates: new Date(year, month, 1),
+      //   },
+      //   {
+      //     key: 2,
+      //     customData: {
+      //       title: 'Take Noah to basketball practice',
+      //       class: 'orange',
+      //     },
+      //     dates: new Date(year, month, 2),
+      //   },
+      //   {
+      //     key: 3,
+      //     customData: {
+      //       title: "Noah's basketball game.",
+      //       class: 'green',
+      //     },
+      //     dates: new Date(year, month, 5),
+      //   },
+      //   {
+      //     key: 4,
+      //     customData: {
+      //       title: 'Take car to the shop',
+      //       class: 'indigo',
+      //     },
+      //     dates: new Date(year, month, 5),
+      //   },
+      //   {
+      //     key: 4,
+      //     customData: {
+      //       title: 'Meeting with new client.',
+      //       class: 'purple',
+      //     },
+      //     dates: new Date(year, month, 7),
+      //   },
+      //   {
+      //     key: 5,
+      //     customData: {
+      //       title: "Mia's gymnastics practice.",
+      //       class: 'red',
+      //     },
+      //     dates: new Date(year, month, 11),
+      //   },
+      //   {
+      //     key: 6,
+      //     customData: {
+      //       title: 'Cookout with friends.',
+      //       class: 'orange',
+      //     },
+      //     dates: { months: 5, ordinalWeekdays: { 2: 1 } },
+      //   },
+      //   {
+      //     key: 7,
+      //     customData: {
+      //       title: "Mia's gymnastics recital.",
+      //       class: 'green',
+      //     },
+      //     dates: new Date(year, month, 22),
+      //   },
+      //   {
+      //     key: 8,
+      //     customData: {
+      //       title: 'Visit great grandma.',
+      //       class: 'indigo',
+      //     },
+      //     dates: new Date(year, month, 25),
+      //   },
+      // ],
     })
 
     const onClickCalendar = () => {
-      emit("openStudyscheduleDialog")
+      emit("openStudyscheduleDialog", state.studyPk)
     }
+
+    watch(
+      () => state.date,
+      () => {
+       console.log('바뀐값 나와라')
+       console.log('바뀐값',state.date)
+      }
+    );
 
     // 페이지 진입시 불리는 훅
     onMounted (() => {
-
+      console.log(month)
+      console.log(year)
+      store
+        .dispatch('root/requestScheduleInfo', {
+          month: month + 1
+        })
+          .then(function(res) {
+            console.log("스케줄 정보 가져오기", res)
+            state.attributes = res.data
+            state.attributes.forEach((attr) => {
+              attr.dates = attr.date
+              attr.key = attr.id
+              attr.customData = {
+                title : attr.title,
+                class : attr.color
+              }
+            })
+          })
+          .catch(function(err) {
+            console.log("스케줄 정보 가져오기 에러!!", err)
+          })
     })
     return { state, month, year, onClickCalendar }
   }
@@ -134,12 +168,34 @@ export default {
 </script>
 
 <style>
+/* 글자 배경색 class */
+.red {
+  background-color: #e53e3e;
+}
+.orange {
+  background-color: #ed8936;
+}
+.green {
+  background-color: #48bb78;
+}
+.indigo {
+  background-color: #667eea;
+}
+.purple {
+  background-color: #9f7aea;
+}
+
+.text-color {
+  color: white;
+}
+
 ::-webkit-scrollbar {
   width: 0px;
 }
 ::-webkit-scrollbar-track {
   display: none;
 }
+
 .custom-calendar.vc-container {
   --day-border: 1px solid #b8c2cc;
   --day-border-highlight: 1px solid #b8c2cc;
@@ -170,6 +226,14 @@ export default {
   min-width: var(--day-width);
   background-color: white;
 }
+
+.ps {
+  scrollbar-width: 30px;
+}
+.ps::-webkit-scrollbar-track {
+  background: #270d75;
+}
+
 .custom-calendar.vc-container .vc-day .weekday-1, .vc-day .weekday-7 {
   background-color: #eff8ff;
 }

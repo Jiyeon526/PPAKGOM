@@ -241,3 +241,18 @@ export function requestLikeCancleStudy({state}, payload) {
   const url = `/users/like/${state.userpk}?studyId=${payload.studyId}`
   return $axios.delete(url, { headers: headers })
 }
+
+
+// 스케줄 생성
+export function requestCreateSchedule({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${state.studypk}/schedule`
+  const body = payload
+  return $axios.post(url, body, { headers: headers })
+}
+
+// 스케줄 정보 가져오기
+export function requestScheduleInfo({state}, payload) {
+  const url = `/study/${state.studypk}/schedule?month=${payload.month}`
+  return $axios.get(url)
+}
