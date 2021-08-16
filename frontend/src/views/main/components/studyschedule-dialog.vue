@@ -6,7 +6,7 @@
     @close="handleClose"
   >
     <div>
-      <v-date-picker v-model="state.date" style="width:90%" :color="state.pickerColor" timezone="" />
+      <v-date-picker v-model="state.date" style="width:90%" :color="state.pickerColor" :model-config="state.modelConfig" />
       <el-form ref="scheduleForm" :model="state.form" :rules="state.rules" label-width="120px" style="margin-top:25px; width:90%;">
         <el-form-item>
           <el-radio-group v-model="state.radio">
@@ -20,14 +20,14 @@
         <el-form-item prop="date" label="스터디 날짜" >
           <el-input v-model="state.selectDate" placeholder="달력에서 날짜를 선택해주세요."></el-input>
         </el-form-item>
-        <el-form-item prop="date" label="스터디 날짜 !!" >
+        <el-form-item label="스터디 날짜 확인" >
           <el-input v-model="state.date" placeholder="달력에서 날짜를 선택해주세요."></el-input>
         </el-form-item>
         <el-form-item prop="title" label="스터디 내용">
           <el-input v-model="state.form.title"></el-input>
         </el-form-item>
         <el-form-item style="float:right;">
-          <el-button type="success" @click="onClickCreateSchedule">추가</el-button>
+          <el-button type="success" @click.once="onClickCreateSchedule">추가</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -58,6 +58,9 @@ export default {
     const scheduleForm = ref(null);
     const state = reactive({
       dialogVisible: computed(() => props.open),
+      modelConfig: {
+        timeAdjust: '12:00:00',
+      },
       radio: 1,
       form: {
         date: '',
@@ -122,8 +125,6 @@ export default {
     watch(
       () => state.date,
       () => {
-        // state.selectDate = moment().format('YYYY-MM-DD')
-        // console.log(state.selectDate)
         let stringDate = ''
         let selectMonth = ''
         // 선택한 날짜 slice
@@ -188,7 +189,7 @@ export default {
           console.log("submit");
           store
             .dispatch("root/requestCreateSchedule", {
-              date: state.selectDate,
+              date: state.date,
               color: state.pickerColor,
               title: state.form.title,
             })
@@ -198,6 +199,9 @@ export default {
                 type: "success"
                 });
                 handleClose();
+                router.push({
+                  name: 'studyschedule'
+                })
               })
               .catch(function(err) {
                 console.log('스케줄 생성 실패ㅠㅠㅠ', err)

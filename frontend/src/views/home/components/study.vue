@@ -1,7 +1,7 @@
 <template>
   <el-card :body-style="{ padding: '0px' }">
     <div class="image-wrapper">
-      <el-image style="width: 250px; height: 250px"
+      <el-image style="width: 100%; height: 250px"
         :src="'https://localhost:8443/' + studyData.study_thumbnail"
         :fit="fit"
         >
@@ -37,7 +37,7 @@
 .el-card .image-wrapper {
   width: 300px;
   height: auto;
-  margin: 5px;
+  margin: 0px;
   text-align: center;
 }
 .el-card .title {

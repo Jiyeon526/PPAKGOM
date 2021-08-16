@@ -253,6 +253,9 @@ export function requestCreateSchedule({state}, payload) {
 
 // 스케줄 정보 가져오기
 export function requestScheduleInfo({state}, payload) {
-  const url = `/study/${state.studypk}/schedule?month=${payload.month}`
+  const url = `/study/${payload.studyId}/schedule?month=${payload.month}`
   return $axios.get(url)
 }
+
+// 스터디 상세보기 팝업창 정보 가져오기
+

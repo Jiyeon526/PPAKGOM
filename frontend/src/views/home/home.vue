@@ -71,15 +71,9 @@
 }
 
 /* carousel */
-/* .el-carousel {
+.el-carousel {
   margin: 50px 0px;
-  display: flex;
-  flex-direction: column;
 }
-.el-carousel__container {
-  display: flex;
-  justify-content: center;
-} */
 
 /* .el-carousel .el-carousel__item {
   width: 300px;
