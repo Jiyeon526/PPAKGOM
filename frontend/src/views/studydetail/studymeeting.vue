@@ -33,9 +33,6 @@
             <el-button @click="joinSession()" type="success" round
               >화상 미팅 입장</el-button
             >
-            <el-button @click="videoclose()" type="warning" round
-              >거울 끄기</el-button
-            >
           </div>
         </div>
       </div>
@@ -118,11 +115,7 @@
           <el-col :span="state.narrow">
             <el-popover placement="bottom-end" :width="580" trigger="click">
               <template #reference>
-                <el-badge
-                  :value="state.messages.length - state.readmessages"
-                  :max="99"
-                  class="item"
-                >
+                <el-badge :value="state.messagelength" :max="99" class="item">
                   <el-button @click="widthreverse">채팅</el-button>
                 </el-badge>
               </template>
@@ -240,7 +233,6 @@
         <el-button type="success" icon="el-icon-bell" @click="attendance"
           >출석</el-button
         >
-
         <el-button
           type="success"
           icon="el-icon-switch-button"
@@ -257,11 +249,10 @@ import axios from "axios";
 
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./openviducomponents/UserVideo";
-import Swal from "sweetalert2";
 import { ElNotification, ElMessageBox, ElMessage } from "element-plus";
 import { onMounted, onUnmounted, reactive } from "vue";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -276,7 +267,7 @@ export default {
   },
   setup() {
     const store = useStore();
-    const router = useRoute();
+    const router = useRouter();
 
     const state = reactive({
       userpk: 0,
@@ -320,7 +311,9 @@ export default {
 
       //입장 전 화면
       stream: "",
-      video: ""
+      video: "",
+
+      messagelength: 0
     });
     // 페이지 진입시 불리는 훅
     onMounted(() => {
@@ -356,6 +349,7 @@ export default {
           state.myUserName = "error" + Math.floor(Math.random() * 100);
         });
     });
+
     onUnmounted(() => {
       if (state.stream) {
         state.video.pause();
@@ -365,7 +359,16 @@ export default {
         //state.stream.getTracks()[0].stop();
       }
       if (state.screenSubscribers) stopShareScreen();
-      if (state.session) leaveSession();
+      if (state.session) {
+        state.session = undefined;
+        state.mainStreamManager = undefined;
+        state.publisher = undefined;
+        state.subscribers = [];
+        state.OV = undefined;
+        state.audioOn = true;
+        state.videoOn = true;
+        state.messages = [];
+      }
       window.removeEventListener("beforeunload", leaveSession);
     });
 
@@ -389,19 +392,14 @@ export default {
           console.log(err);
         });
     };
-    const videoclose = function() {
-      state.video.pause();
-      state.video.srcObjec = "";
-      state.stream.stop();
-      state.video.remove();
-    };
+
     const toggleMainmode = function() {
       state.mainmode = !state.mainmode;
     };
 
     const widthreverse = function() {
-      state.readmessages = state.messages.length;
       state.widthflag = !state.widthflag;
+      if (state.widthflag) state.messagelength = 0;
     };
 
     const joinSession = function() {
@@ -518,22 +516,19 @@ export default {
             );
           });
       });
-      var num = 0;
+
       state.session.on("signal:chat", event => {
         let eventData = JSON.parse(event.data);
         state.messages.push(eventData);
+        if (eventData.from != state.myUserName && !state.widthflag)
+          state.messagelength++;
         setTimeout(() => {
           var chatDiv = document.getElementById("chat-area");
 
-          console.log(chatDiv);
-          console.log(chatDiv.scrollHeight);
-          console.log(chatDiv.clientHeight);
-          console.log(num);
           chatDiv.scrollTo({
             top: chatDiv.scrollHeight,
             behavior: "smooth"
           });
-          num += 20;
         }, 50);
       });
       window.addEventListener("beforeunload", leaveSession);
@@ -541,6 +536,24 @@ export default {
 
     const leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
+
+      // setTimeout(() => {
+      //   navigator.getUserMedia =
+      //     navigator.getUserMedia ||
+      //     navigator.webkitGetUserMedia ||
+      //     navigator.mozGetUserMedia ||
+      //     navigator.msGetUserMedia;
+      //   var video = document.getElementById("test-video");
+      //   navigator.getUserMedia(
+      //     { video: true, audio: false },
+      //     function(stream) {
+      //       video.srcObject = stream;
+      //       video.play();
+      //       state.video = video;
+      //     },
+      //     function(error) {}
+      //   );
+      // }, 100);
       if (state.session) state.session.disconnect();
 
       state.session = undefined;
@@ -551,26 +564,10 @@ export default {
       state.audioOn = true;
       state.videoOn = true;
       state.messages = [];
-      window.removeEventListener("beforeunload", leaveSession);
-      setTimeout(() => {
-        navigator.getUserMedia =
-          navigator.getUserMedia ||
-          navigator.webkitGetUserMedia ||
-          navigator.mozGetUserMedia ||
-          navigator.msGetUserMedia;
-        var video = document.getElementById("test-video");
-        navigator.getUserMedia(
-          { video: true, audio: false },
-          function(stream) {
-            video.srcObject = stream;
-            video.play();
-            state.video = video;
-          },
-          function(error) {}
-        );
-      }, 500);
-      // store.commit("root/setSelectOption", "studyhome");
-      // router.push({ name: "studyhome" });
+      router.push({ name: "studyhome" }).then(() => {
+        store.commit("root/setSelectOption", "studyhome");
+        window.removeEventListener("beforeunload", leaveSession);
+      });
     };
 
     const updateMainVideoStreamManager = function(stream) {
@@ -794,7 +791,6 @@ export default {
       toggleShareScreen,
       startShareScreen,
       stopShareScreen,
-      videoclose,
       attendance
     };
   }
@@ -847,7 +843,8 @@ export default {
   width: inherit;
   /* min-width: 33%; */
   max-width: 32%;
-  padding: 4px;
+  margin-right: 8px;
+  margin-bottom: 4px;
 }
 
 .screen-res-small {
@@ -955,31 +952,6 @@ a:hover .demo-logo {
 	top: 20%;
 	left: 50%;
 	transform: translate(-50%, -50%);*/
-}
-
-#img-div img {
-  height: 15%;
-}
-
-#join-dialog label {
-  color: #0088aa;
-}
-
-#join-dialog input.btn {
-  margin-top: 15px;
-}
-
-#session-header {
-  margin-bottom: 20px;
-}
-
-#session-title {
-  display: inline-block;
-}
-
-#buttonLeaveSession {
-  float: right;
-  margin-top: 20px;
 }
 
 #video-container video {

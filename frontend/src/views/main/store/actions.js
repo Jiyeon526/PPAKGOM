@@ -12,10 +12,8 @@ export function requestLogin({ state }, payload) {
 
 // 소셜로그인
 export function requestSocialLogin({ state }, payload) {
-  console.log('requestLogin', state, payload)
-  const url = 'users/sociallogin'
-  let body = payload
-  return $axios.post(url, body)
+    const url = `/users/social`
+    return $axios.post(url, payload)
 }
 
 //회원가입
