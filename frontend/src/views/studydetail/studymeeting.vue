@@ -8,7 +8,7 @@
     <el-main>
       <div id="join" v-if="!state.session">
         <div id="join-dialog" class="jumbotron vertical-center">
-          <h1>입장 전 거울 화면</h1>
+          <p style="font-size:35px; margin:5px">대기 화면</p>
           <video id="test-video" autoplay loop muted></video>
           <div class="form-group">
             <!-- <p>
@@ -30,9 +30,14 @@
               />
             </p> -->
 
-            <el-button @click="joinSession()" type="success" round
-              >화상 미팅 입장</el-button
+            <button
+              class="introbutton"
+              @click="joinSession()"
+              type="success"
+              round
             >
+              화상 미팅 입장
+            </button>
           </div>
         </div>
       </div>
@@ -113,7 +118,12 @@
             </el-container>
           </el-col>
           <el-col :span="state.narrow">
-            <el-popover placement="bottom-end" :width="580" trigger="click">
+            <el-popover
+              placement="bottom"
+              :width="300"
+              trigger="click"
+              :visible="state.visible"
+            >
               <template #reference>
                 <el-badge :value="state.messagelength" :max="99" class="item">
                   <el-button @click="widthreverse">채팅</el-button>
@@ -129,17 +139,31 @@
                         <!-- <el-avatar
                           src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
                         ></el-avatar> -->
+                        <span
+                          class="myavatar"
+                          v-if="item.from == state.myUserName"
+                          >{{ item.from }}
+                          <el-avatar>
+                            {{ item.from }}
+                          </el-avatar>
+                        </span>
                         <div
                           class="chatbox"
                           v-if="item.from == state.myUserName"
                         >
                           {{ item.content }}
-                          <el-avatar>{{ item.from }}</el-avatar>
                         </div>
-                        <div class="otherchatbox" v-else>
+
+                        <span v-if="item.from != state.myUserName">
                           <el-avatar>{{ item.from }}</el-avatar
-                          >{{ item.content }}
-                        </div>
+                          >{{ item.from }}</span
+                        >
+                        <span
+                          class="otherchatbox"
+                          v-if="item.from != state.myUserName"
+                        >
+                          {{ item.content }}
+                        </span>
                       </div>
                     </div>
 
@@ -153,7 +177,7 @@
                 clearable
                 :rows="2"
                 placeholder="채팅 내용을 입력하세요"
-                maxlength="40"
+                maxlength="50"
                 @keyup.enter="sendMessage"
                 show-word-limit
               />
@@ -313,7 +337,8 @@ export default {
       stream: "",
       video: "",
 
-      messagelength: 0
+      messagelength: 0,
+      visible: false
     });
     // 페이지 진입시 불리는 훅
     onMounted(() => {
@@ -334,7 +359,7 @@ export default {
             navigator.msGetUserMedia;
           var video = document.getElementById("test-video");
           navigator.getUserMedia(
-            { video: true, audio: false },
+            { video: { width: 1280, height: 720 }, audio: false },
             function(stream) {
               state.stream = stream;
               video.srcObject = stream;
@@ -360,6 +385,7 @@ export default {
       }
       if (state.screenSubscribers) stopShareScreen();
       if (state.session) {
+        state.session.disconnect();
         state.session = undefined;
         state.mainStreamManager = undefined;
         state.publisher = undefined;
@@ -368,8 +394,8 @@ export default {
         state.audioOn = true;
         state.videoOn = true;
         state.messages = [];
+        window.removeEventListener("beforeunload", leaveSession);
       }
-      window.removeEventListener("beforeunload", leaveSession);
     });
 
     const attendance = function() {
@@ -398,8 +424,16 @@ export default {
     };
 
     const widthreverse = function() {
-      state.widthflag = !state.widthflag;
-      if (state.widthflag) state.messagelength = 0;
+      console.log(state.visible);
+      state.visible = !state.visible;
+      if (state.visible) {
+        state.messagelength = 0;
+        state.wide = 18;
+        state.narrow = 6;
+      } else {
+        state.wide = 22;
+        state.narrow = 2;
+      }
     };
 
     const joinSession = function() {
@@ -520,7 +554,7 @@ export default {
       state.session.on("signal:chat", event => {
         let eventData = JSON.parse(event.data);
         state.messages.push(eventData);
-        if (eventData.from != state.myUserName && !state.widthflag)
+        if (eventData.from != state.myUserName && !state.visible)
           state.messagelength++;
         setTimeout(() => {
           var chatDiv = document.getElementById("chat-area");
@@ -535,25 +569,6 @@ export default {
     };
 
     const leaveSession = function() {
-      // --- Leave the session by calling 'disconnect' method over the Session object ---
-
-      // setTimeout(() => {
-      //   navigator.getUserMedia =
-      //     navigator.getUserMedia ||
-      //     navigator.webkitGetUserMedia ||
-      //     navigator.mozGetUserMedia ||
-      //     navigator.msGetUserMedia;
-      //   var video = document.getElementById("test-video");
-      //   navigator.getUserMedia(
-      //     { video: true, audio: false },
-      //     function(stream) {
-      //       video.srcObject = stream;
-      //       video.play();
-      //       state.video = video;
-      //     },
-      //     function(error) {}
-      //   );
-      // }, 100);
       if (state.session) state.session.disconnect();
 
       state.session = undefined;
@@ -803,30 +818,63 @@ export default {
 };
 </script>
 <style>
+.introbutton {
+  width: 88%;
+  height: 5%;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  background-color: #4caf50;
+  display: inline-block;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+  font-weight: bolder;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
 #test-video {
-  max-width: 60%;
+  max-width: 88%;
   border: 4px solid #000000;
   border-radius: 15px;
   margin: 0px;
   padding: 0;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .otherchatbox {
-  border: 1px solid #ffffff;
-  width: 550px;
-  height: 46px;
+  border: 1px solid #111111;
+  border-radius: 10px;
   padding: 6px;
   margin: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+  word-break: break-all;
+  align-content: left;
+  text-align: left;
+  display: block;
+  flex: left;
 }
-.chatbox {
-  border: 1px solid #ffffff;
-  width: 550px;
-  height: 46px;
-  padding: 6px;
-  margin: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+.chatright {
   align-content: right;
   text-align: right;
+  flex: right;
+}
+.chatbox {
+  border: 1px solid #111111;
+  border-radius: 10px;
+  padding: 6px;
+  margin: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+  word-break: break-all;
+  align-content: right;
+  text-align: right;
+  display: block;
+  flex: right;
+}
+.myavatar {
+  align-content: right;
+  text-align: right;
+  align-items: right;
+  flex: right;
+  display: block;
 }
 .main-stream {
   max-width: 70%;
