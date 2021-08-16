@@ -567,23 +567,29 @@ public class StudyServiceImpl implements StudyService {
 				return Long.compare(o1.getId(), o2.getId());
 			}
 		});
-		
+//		전체 스터디 일정 개수
+		int wholeDays = studyPlans.size();
 //		2. 멤버 별로 객체에 담기 
 		for(User m : members) {
 			AttendGetRes attendGetRes = new AttendGetRes();
+			attendGetRes.setAll(wholeDays);
 			attendGetRes.setUser_id(m.getId());
 			attendGetRes.setUser_name(m.getName());
 			Long mId = m.getId();
 			//3.스터디 플랜 별로 출석 현황 질의
+			int attended = 0;
 			for(StudyPlan sp : studyPlans) {
 				AttendRes attendRes = new AttendRes();
 				Long spId = sp.getId();
 				StudyAttend at = studyAttendRepository.findByUserIdAndStudyPlanId(mId, spId);
 				attendRes.setAttend(at.isAttend());
+//				출석하면 +1
+				attended += at.isAttend() ? 1 : 0;
 				attendRes.setStudy_plan_id(spId);
 				attendRes.setStudy_plan_date(parseDate(sp.getDate()));
 				attendGetRes.getAttendList().add(attendRes);
 			}
+			attendGetRes.setAttended(attended);
 			res.add(attendGetRes);
 		}
 		return res;
