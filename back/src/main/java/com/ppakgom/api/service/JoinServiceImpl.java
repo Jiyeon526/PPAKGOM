@@ -104,7 +104,8 @@ public class JoinServiceImpl implements JoinService {
 			if(!s.isPresent()) continue; // 해당 스터디가 존재하지 않으면 넘기기
 			list.setStudy_id(s.get().getId()); // 스터디 순번 저장
 			list.setStudy_name(s.get().getName()); // 스터디 이름 저장
-			list.setOwner_user_name(s.get().getUser().getName()); // 스터디 신청 유저 닉네임 저장
+			list.setOwner_user_name(s.get().getUser().getName()); // 스터디 방장 이름
+			list.setUser_id(study.getSender().getId());
 			list.setState(study.getState()); // 상태 저장
 			res.add(list);
 		}
