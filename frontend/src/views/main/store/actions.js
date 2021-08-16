@@ -12,10 +12,8 @@ export function requestLogin({ state }, payload) {
 
 // 소셜로그인
 export function requestSocialLogin({ state }, payload) {
-  console.log('requestLogin', state, payload)
-  const url = 'users/sociallogin'
-  let body = payload
-  return $axios.post(url, body)
+    const url = `/users/social`
+    return $axios.post(url, payload)
 }
 
 //회원가입
@@ -334,7 +332,14 @@ export function requestCreateSchedule({state}, payload) {
 }
 
 // 스케줄 정보 가져오기
-export function requestScheduleInfo({state}, payload) {
+export function requestScheduleInfo({ state }, payload) {
   const url = `/study/${payload.studyId}/schedule?month=${payload.month}`
   return $axios.get(url)
+}
+
+// 스터디 출석하기
+export function requestAttendence({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${payload.studyId}/attend/${payload.userpk}`
+  return $axios.post(url, {}, { headers: headers })
 }

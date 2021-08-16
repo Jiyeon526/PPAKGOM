@@ -1,6 +1,6 @@
 <template>
   <span v-if="streamManager">
-    <ov-video :stream-manager="streamManager" />
+    <ov-video :stream-manager="streamManager" :is-speak="isSpeak" />
     <div class="font-shadow">
       <p>{{ clientData }}</p>
     </div>
@@ -24,7 +24,8 @@ export default {
   },
 
   props: {
-    streamManager: Object
+    streamManager: Object,
+    isSpeak: Boolean
   },
 
   computed: {

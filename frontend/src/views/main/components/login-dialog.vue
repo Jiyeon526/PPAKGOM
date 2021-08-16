@@ -267,6 +267,26 @@ export default {
           "naveraccessToken",
           naverLogin.accessToken.accessToken
         );
+        let naverid = naverLogin.user.getEmail().split("@");
+        store
+          .dispatch("root/requestSocialLogin", naverLogin.user.getEmail())
+          .then(function(result) {
+            alert("accessToken: " + result.data.accessToken);
+            localStorage.setItem("accessToken", result.data.accessToken);
+            localStorage.setItem("userId", naverid[0]);
+            localStorage.setItem("userPk", result.data.id);
+            store.commit("root/setUserpk", result.data.id);
+            ElMessage({
+              message: "로그인 성공",
+              type: "success"
+            });
+            handleClose();
+            //     //console.log(store.getters['root/isLoggedIn'])
+            loginsuccess();
+          })
+          .catch(function(err) {
+            alert(err.message);
+          });
       }
       //console.log("accessToken", naverLogin.accessToken.accessToken);
 
@@ -296,7 +316,26 @@ export default {
         login: true
       });
       console.log("후", store.getters["root/getGoogleIsLoggedIn"]);
-      handleClose();
+
+      store
+        .dispatch("root/requestSocialLogin", profile.getEmail())
+        .then(function(result) {
+          alert("accessToken: " + result.data.accessToken);
+          localStorage.setItem("accessToken", result.data.accessToken);
+          localStorage.setItem("userId", profile.getId());
+          localStorage.setItem("userPk", result.data.id);
+          store.commit("root/setUserpk", result.data.id);
+          ElMessage({
+            message: "로그인 성공",
+            type: "success"
+          });
+          handleClose();
+          //     //console.log(store.getters['root/isLoggedIn'])
+          loginsuccess();
+        })
+        .catch(function(err) {
+          alert(err.message);
+        });
     };
     const clickLogin = function() {
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
@@ -314,6 +353,7 @@ export default {
               localStorage.setItem("userId", state.form.id);
               localStorage.setItem("userPk", result.data.id);
               store.commit("root/setUserpk", result.data.id);
+              console.log("로그인정보", result.data);
               console.log("기본키", store.getters["root/getUserpk"]);
               ElMessage({
                 message: "로그인 성공",
@@ -372,28 +412,26 @@ export default {
             login: true
           });
           console.log("후", store.getters["root/getKakaoIsLoggedIn"]);
-          // store
-          //   .dispatch("root/requestSocialLogin", {
-          //     id: kakaoid[0],
-          //     email: email
-          //   })
-          //   .then(function(result) {
-          //     //alert("accessToken: " + result.data.accessToken);
-          //     localStorage.setItem("accessToken", result.data.accessToken);
-          //     localStorage.setItem("userId", kakaoid[0]);
-          //     ElMessage({
-          //       message: "로그인 성공",
-          //       type: "success"
-          //     });
-          //     handleClose();
-          //     //console.log(store.getters['root/isLoggedIn'])
-          //     loginsuccess();
-          //   })
-          //   .catch(function(err) {
-          //     alert(err.message);
-          //   });
+          store
+            .dispatch("root/requestSocialLogin", email)
+            .then(function(result) {
+              alert("accessToken: " + result.data.accessToken);
+              localStorage.setItem("accessToken", result.data.accessToken);
+              localStorage.setItem("userId", kakaoid[0]);
+              localStorage.setItem("userPk", result.data.id);
+              store.commit("root/setUserpk", result.data.id);
+              ElMessage({
+                message: "로그인 성공",
+                type: "success"
+              });
+              handleClose();
+              //     //console.log(store.getters['root/isLoggedIn'])
+              loginsuccess();
+            })
+            .catch(function(err) {
+              alert(err.message);
+            });
           //this.$store.commit("user", kakao_account);
-          alert("로그인 성공!");
         },
         fail: error => {
           // this.$router.push("/errorPage");

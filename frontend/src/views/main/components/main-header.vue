@@ -11,15 +11,21 @@
           <div class="logo-ppakgom" @click="clickLogo">PPAKGOM</div>
         </el-col>
         <el-col :span="16">
-          <el-select v-if="state.studyPk" v-model="state.value" placeholder="STUDY">
-            <el-option
-              v-for="item in state.options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
+          <el-dropdown trigger="click" v-if="state.value">
+            <span class="el-dropdown-link">
+              STUDY<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item
+                  v-for="item in state.options"
+                  :key="item.value"
+                  @click="gotodetail(item.value)"
+                  >{{ item.label }}</el-dropdown-item
+                >
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </el-col>
         <el-col :span="4">
           <div class="button-wrapper">
@@ -196,8 +202,8 @@ export default {
           label: "맴버관리"
         }
       ],
-      value: "",  // computed는 readonly이기 때문에 이후에 option에서 value값을 바꿔도 바뀌지 않음 -> 변수를 나누어 2개로 설정
-      value2: computed(() => store.getters["root/getSelectOption"]),
+      value: "", // computed는 readonly이기 때문에 이후에 option에서 value값을 바꿔도 바뀌지 않음 -> 변수를 나누어 2개로 설정
+      value2: computed(() => store.getters["root/getSelectOption"])
     });
     watch(
       () => state.value,
@@ -213,12 +219,9 @@ export default {
     watch(
       () => state.value2,
       () => {
-        state.value = state.value2
+        state.value = state.value2;
         router.push({
           name: state.value2
-          // params: {
-          //   studypk: state.studyPk
-          // }
         });
       }
     );
@@ -231,7 +234,7 @@ export default {
       store.commit("root/setMenuActive", param);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
-      console.log('여기역이경',keys, param)
+      console.log("여기역이경", keys, param);
       router.push({
         name: keys[param]
       });
@@ -243,7 +246,7 @@ export default {
           name: "main"
         })
         .then(() => {
-          localStorage.removeItem('studypk')
+          localStorage.removeItem("studypk");
           store.commit("root/setMenuActive", 0);
           store.commit("root/setSelectOption", "");
           store.commit("root/setStudypk", 0);
@@ -324,7 +327,14 @@ export default {
     const changeCollapse = () => {
       state.isCollapse = !state.isCollapse;
     };
-
+    const gotodetail = filename => {
+      router.push({
+        name: filename
+        // params: {
+        //   studypk: state.studyPk
+        // }
+      });
+    };
     return {
       state,
       menuSelect,
@@ -336,7 +346,8 @@ export default {
       changeCollapse,
       clickRoomCreation,
       clicktestanswer,
-      clickOtherpeoplepage
+      clickOtherpeoplepage,
+      gotodetail
     };
   }
 };
