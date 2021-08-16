@@ -429,8 +429,8 @@ public class StudyController {
 
 //		3. 회원이 가입한 스터디를 회원 - 스터디 테이블에서 가져오고, 그에 맞게 응답 객체를 생성하고 삽입한다.
 			for (User u : interestedUsers) {
-				List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
-				res.add(new SearchMember(u, studyList));
+//				List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
+				res.add(new SearchMember(u, null));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
