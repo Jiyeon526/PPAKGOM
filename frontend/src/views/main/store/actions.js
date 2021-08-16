@@ -343,3 +343,10 @@ export function requestAttendence({state}, payload) {
   const url = `/study/${payload.studyId}/attend/${payload.userpk}`
   return $axios.post(url, {}, { headers: headers })
 }
+
+//문제 푼 점수 결과 가져오기
+export function requestScore({ state }, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${payload}/score`
+  return $axios.get(url,  { headers: headers })
+}

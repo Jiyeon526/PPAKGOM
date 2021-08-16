@@ -48,8 +48,45 @@
             <el-menu-item index="6"
               ><i class="el-icon-s-promotion"></i>스터디원 평가</el-menu-item
             >
+            <el-menu-item>
+              <el-badge class="item" :value="state.length" :max="99"
+                ><i class="el-icon-s-promotion"></i> </el-badge
+              >테스트 중</el-menu-item
+            >
           </el-menu-item-group>
         </el-submenu>
+        <el-menu-item>
+          <el-badge class="item" :value="state.length" :max="99"
+            ><i class="el-icon-s-promotion"></i>
+          </el-badge>
+          <span>테스트 중</span>
+        </el-menu-item>
+        <el-container style="height:270px;">
+          <el-main></el-main>
+          <el-footer>
+            <el-popover
+              placement="top"
+              :width="300"
+              trigger="click"
+              :visible="state.visible"
+            >
+              <template #reference>
+                <div style="margin:5px; padding:5px;">
+                  <el-badge class="item" :value="state.length" :max="99">
+                    <el-button
+                      icon="el-icon-chat-round"
+                      type="success"
+                      round
+                      @click="reversea"
+                    >
+                    </el-button>
+                  </el-badge>
+                </div>
+              </template>
+              <div style="height:550px;">보여?</div>
+            </el-popover>
+          </el-footer>
+        </el-container>
       </el-menu>
     </div>
   </el-row>
@@ -120,7 +157,9 @@ export default {
       }),
       activeIndex: computed(() => store.getters["root/getActiveMenuIndex"]),
       isCollapse: false,
-      width: "200px"
+      width: "200px",
+      length: 0,
+      visible: false
     });
 
     if (state.activeIndex === -1) {
@@ -155,8 +194,10 @@ export default {
         state.width = "200px";
       }
     };
-
-    return { state, menuSelect, clickLogout, onCollapse };
+    const reversea = function() {
+      state.visible = !state.visible;
+    };
+    return { state, menuSelect, clickLogout, onCollapse, reversea };
   }
 };
 </script>
