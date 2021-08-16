@@ -178,7 +178,7 @@ public class StudyServiceImpl implements StudyService {
 	@Override
 	public List<Study> getStudyByInterest(String interest) {
 
-		System.out.println("사용자의 관심사 "+interest);
+//		System.out.println("사용자의 관심사 "+interest);
 		List<Study> resultSet = new LinkedList<>();
 
 //		하나의 스터디가 여러개 일 경우 대비 
@@ -192,7 +192,7 @@ public class StudyServiceImpl implements StudyService {
 
 		for (Interest i : interests) {
 //			스터디 아이디 가져오고
-			System.out.println("가져온 관심사 "+i);
+//			System.out.println("가져온 관심사 "+i);
 			List<Long> studyIdWithInterest = studyInterestRepository.findByInterestId(i.getId());
 
 //			스터디 테이블에서 스터디 아이디로 스터디 자체를 가져오기.

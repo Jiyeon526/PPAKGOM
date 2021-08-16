@@ -278,6 +278,9 @@ public class StudyController {
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
 		/* 검색 결과 삽입 */
 		for (Study s : tmp) {
+//			내가 가입한 스터디 제외시키기
+			if(userStudy.contains(s))
+				continue;
 			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy);
 			res.getStudyResult().add(sr);
 		}
