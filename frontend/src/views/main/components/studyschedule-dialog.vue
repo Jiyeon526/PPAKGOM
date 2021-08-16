@@ -100,6 +100,7 @@ export default {
       },
     });
 
+    // radio에 따라서 color값 넣어주기
     watch(
       () => state.radio,
       () => {
@@ -122,6 +123,7 @@ export default {
       }
     );
 
+    // 영어로 들어오는 데이터 숫자로 바꿔서 보여주기
     watch(
       () => state.date,
       () => {
@@ -183,6 +185,7 @@ export default {
 
     });
 
+    // 스케줄 생성하기
     const onClickCreateSchedule = function() {
       scheduleForm.value.validate(valid => {
         if (valid) {
@@ -213,33 +216,11 @@ export default {
       })
     }
 
-    const getScheduleList = () => {
-      store
-        .dispatch('root/requestScheduleInfo', {
-          month: state.monthInfo + 1
-        })
-          .then(function(res) {
-            console.log("스케줄 정보 가져오기", res)
-            state.attributes = res.data
-            state.attributes.forEach((attr) => {
-              attr.dates = attr.date
-              // attr.key = attr.id
-              attr.customData = {
-                title : attr.title,
-                class : attr.color
-              }
-            })
-          })
-          .catch(function(err) {
-            console.log("스케줄 정보 가져오기 에러!!", err)
-          })
-    }
-
     const handleClose = function() {
       emit("closeStudyscheduleDialog");
     };
 
-    return { state, scheduleForm, onClickCreateSchedule, getScheduleList, handleClose };
+    return { state, scheduleForm, onClickCreateSchedule, handleClose };
   }
 };
 </script>
