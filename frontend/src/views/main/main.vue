@@ -51,11 +51,14 @@
   />
   <makeworkbook-dialog
     :open="makeworkbookDialogOpen"
+    :workbookInfo="workbookInfo"
+    :problemCnt="problemCnt"
     @closeMakeworkbookDialog="onCloseMakeworkbookDialog"
   />
   <otherpeople-dialog
     :open="otherpeopleDialogOpen"
     :userData="profileData"
+    :studyData="studyData"
     @closeOtherpeopleDialog="onCloseOtherpeopleDialog"
   />
   <studydetail-dialog
@@ -120,7 +123,10 @@ export default {
       studydetailDialogOpen: false,
       selectStudyDetail: [],
       studyscheduleDialogOpen: false,
-      profileData: []
+      profileData: [],
+      studyData: [],
+      workbookInfo: [],
+      problemCnt: 0,
       // selectScheduleDate: null
     };
   },
@@ -141,16 +147,19 @@ export default {
       this.studydetailDialogOpen = false;
     },
 
-    onOpenOtherpeopleDialog(userProfile) {
+    onOpenOtherpeopleDialog(userProfile,studyData) {
       this.otherpeopleDialogOpen = true;
       this.profileData = userProfile
+      this.studyData = studyData
     },
     onCloseOtherpeopleDialog() {
       this.otherpeopleDialogOpen = false;
     },
 
-    onOpenMakeworkbookDialog() {
+    onOpenMakeworkbookDialog(workbookInfo,problemCnt) {
       this.makeworkbookDialogOpen = true;
+      this.workbookInfo = workbookInfo
+      this.problemCnt = problemCnt
     },
     onCloseMakeworkbookDialog() {
       this.makeworkbookDialogOpen = false;

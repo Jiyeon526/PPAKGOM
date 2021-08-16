@@ -8,8 +8,8 @@
     <el-row :gutter="24">
       <el-col :span="16">
         <p>{{userData.name}}</p>
-        <p>{{state.passion}}</p>
-        <el-progress :stroke-width="20" :percentage="state.passion" :show-text='false'>
+        <p>{{userData.temperature}}</p>
+        <el-progress :stroke-width="20" :percentage="userData.temperature" :show-text='false'>
         </el-progress>
       </el-col>
       <el-col :span="8">
@@ -24,7 +24,7 @@
     <el-row>
       <el-col>
         <p>가입된 스터디</p>
-        <li v-for="std in userData.joined_study">
+        <li v-for="std in studyData">
           {{ std }}
         </li>
       </el-col>
@@ -70,6 +70,9 @@ export default {
     },
     userData: {
       type: Object,
+    },
+    studyData: {
+      type: Object,
     }
   },
 
@@ -86,7 +89,6 @@ export default {
     });
 
     onMounted(() => {
-      console.log("1235",props.userData)
       // console.log(otherpeopleForm.value)
     });
 
