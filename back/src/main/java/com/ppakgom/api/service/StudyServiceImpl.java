@@ -508,7 +508,7 @@ public class StudyServiceImpl implements StudyService {
 			String today = sdFormat.format(nowDate); // 오늘 날짜
 			Date to = sdFormat.parse(today);
 
-			StudyPlan studyPlan = studyPlanRepository.findByDate(to);
+			StudyPlan studyPlan = studyPlanRepository.findByDateAndStudyId(to, studyId);
 			if(studyPlan == null) // 오늘 스터디 없을 경우
 				return "date";
 					
