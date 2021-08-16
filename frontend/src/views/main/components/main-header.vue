@@ -11,7 +11,7 @@
           <div class="logo-ppakgom" @click="clickLogo">PPAKGOM</div>
         </el-col>
         <el-col :span="16">
-          <el-select v-if="state.value" v-model="state.value" placeholder="STUDY">
+          <el-select v-if="state.studyPk" v-model="state.value" placeholder="STUDY">
             <el-option
               v-for="item in state.options"
               :key="item.value"
@@ -231,19 +231,23 @@ export default {
       store.commit("root/setMenuActive", param);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
+      console.log('여기역이경',keys, param)
       router.push({
         name: keys[param]
       });
     };
 
     const clickLogo = () => {
-      store.commit("root/setSelectOption", '');
-      store.commit("root/setMenuActive", 0);
-      const MenuItems = store.getters["root/getMenus"];
-      let keys = Object.keys(MenuItems);
-      router.push({
-        name: keys[0]
-      });
+      router
+        .push({
+          name: "main"
+        })
+        .then(() => {
+          localStorage.removeItem('studypk')
+          store.commit("root/setMenuActive", 0);
+          store.commit("root/setSelectOption", "");
+          store.commit("root/setStudypk", 0);
+        });
     };
 
     const clickLogin = () => {

@@ -22,6 +22,7 @@
       <!-- </el-aside> -->
       <el-main>
         <router-view
+          @openStudyscheduleDialog="onOpenStudyscheduleDialog"
           @openStudydetailDialog="onOpenStudydetailDialog"
           @openAnswerworkbookDialog="onOpenAnswerWorkbookDialog"
           @openMakeworkbookDialog="onOpenMakeworkbookDialog"

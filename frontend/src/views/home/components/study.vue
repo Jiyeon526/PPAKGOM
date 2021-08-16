@@ -1,7 +1,7 @@
 <template>
   <el-card :body-style="{ padding: '0px' }">
     <div class="image-wrapper">
-      <el-image style="width: 100%; height: 200px"
+      <el-image style="width: 100%; height: 250px"
         :src="'https://localhost:8443/' + studyData.study_thumbnail"
         :fit="fit"
         >
@@ -16,7 +16,7 @@
     <div>
       <el-input-data class="btn-sort">
         <el-tag type=""> {{ studyData.joined_population }}/{{ studyData.population }}</el-tag>
-        <el-tag v-if="studyData.enter" type="success" @click="enterStudy">입장</el-tag>
+        <el-tag v-if="studyData.enter" type="success" @click="enterStudy(studyData.study_id)">입장</el-tag>
       </el-input-data>
     </div>
   </el-card>
@@ -27,10 +27,18 @@
   height: auto;
   margin: 0 8px;
   margin-bottom: 40px;
+  border-radius: 10px;
+}
+.el-card:hover {
+  transform: scale(1.05, 1.05);
+  box-shadow: 5px 5px 30px 15px rgba(175, 175, 175, 0.25),
+    -5px -5px 30px 15px rgba(175, 175, 175, 0.25);
 }
 .el-card .image-wrapper {
-  width: 100%;
-  height: 200px;
+  width: 300px;
+  height: auto;
+  margin: 0px;
+  text-align: center;
 }
 .el-card .title {
   display:-webkit-box;
@@ -69,7 +77,7 @@
 .btn-sort {
   display: flex;
   justify-content: space-between;
-  margin: 2px;
+  margin: 4px;
 }
 
 </style>
@@ -92,11 +100,12 @@ export default {
     const store = useStore()
     const router = useRouter()
     const state = reactive({
-
   })
 
-  const enterStudy = (studyData) => {
-    store.commit("root/setStudypk", studyData.study_id);
+  const enterStudy = (studyPk) => {
+    console.log('스터디 데이터',studyPk)
+    localStorage.setItem("studypk", studyPk);
+    store.commit("root/setStudypk", studyPk);
     store.commit("root/setSelectOption", "studyhome");
     router.push({
       name: 'studyhome'

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    width="30%"
+    width="40%"
     :title="selectStudy.name"
     v-model="state.dialogVisible"
     @close="handleClose"
@@ -18,6 +18,20 @@
     <div>
       <h4>내용</h4>
       <p>{{ selectStudy.content }}</p>
+    </div>
+    <el-divider style="margin: 5px"></el-divider>
+    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center">
+      <div>
+        <Studyschedulecomponent :studyId="state.studyId" />
+      </div>
+      <div style="width: 100%; display:flex; flex-direction:row; justify-content:center; align-items:center">
+        <div style="width: 50%">
+          <h4>출석현황</h4>
+        </div>
+        <div>
+          <h4>가입멤버</h4>
+        </div>
+      </div>
     </div>
     <el-divider style="margin: 5px"></el-divider>
     <div class="detail-dialog-footer">
@@ -63,12 +77,16 @@
 
 </style>
 <script>
+import Studyschedulecomponent from "@/views/studydetail/studyschedulecomponent"
 import { reactive, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 export default {
   name: "studydetail-dialog",
+  components: {
+    Studyschedulecomponent,
+  },
 
   props: {
     open: {
@@ -92,6 +110,7 @@ export default {
     const state = reactive({
       dialogVisible: computed(() => props.open),
       likeStudy: false,
+      studyId: computed(() => props.selectStudy.study_id)
     });
 
     onMounted(() => {
