@@ -38,8 +38,9 @@ public class StudyRes {
 	Long owner_id;
 	float temperature; 
 	boolean enter;
-
-	public StudyRes of(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository, List<Study> studyList) {
+	boolean liked;
+	
+	public StudyRes of(Study study, StudyInterestRepository studyInterestRepository, UserStudyRepository userStudyRepository, List<Study> studyList, List<Study> likedStudyList) {
 
 		StudyRes res = new StudyRes();
 		
@@ -79,7 +80,15 @@ public class StudyRes {
 				break;
 			}
 		}
-		
+//		찜한 스터디인지 아닌지.
+		if(likedStudyList != null) {
+			for(Study s : likedStudyList) {
+				if(res.getStudy_id().equals(s.getId())) {
+					res.setLiked(true);
+					break;
+				}
+			}
+		}
 		return res;
 	}
 

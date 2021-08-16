@@ -60,3 +60,7 @@ export function setUserpk(state, payload) {
 export function setStudypk(state, payload) {
   state.studypk = payload
 }
+
+export function setSelectOption(state, payload) {
+  state.selectOption = payload
+}

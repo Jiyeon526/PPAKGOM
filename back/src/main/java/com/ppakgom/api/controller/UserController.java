@@ -47,17 +47,9 @@ import io.swagger.annotations.ApiResponses;
 
 import springfox.documentation.annotations.ApiIgnore;
 
-
-import com.ppakgom.common.util.JwtTokenUtil;
-import com.ppakgom.api.response.LoginRes;
-import com.ppakgom.api.response.UserInfoRes;
-import com.ppakgom.api.request.EmailReq;
-import com.ppakgom.api.request.LoginReq;
 import com.ppakgom.api.request.UserModifyInfoReq;
-
 import com.ppakgom.api.response.StudyRes;
 import com.ppakgom.api.response.StudySearchGetRes;
-
 
 /**
  * 회원 CRUD 관련 API 요청을 처리하는 컨트롤러
@@ -123,7 +115,7 @@ public class UserController {
 	@ApiOperation(value = "회원가입 생성", notes = "회원가입", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> register(
 			@ApiParam(value = "생성할 방 정보", required = true) UserRegisterPostReq registerInfo,
-			@RequestPart("file") MultipartFile thumbnail) {
+			@RequestPart(value = "file", required = false) MultipartFile thumbnail) {
 
 		/*
 		 * 임의로 리턴된 User 인스턴스. 현재 코드는 회원 가입 성공 여부만 판단하기 때문에 굳이 Insert 된 유저 정보를 응답하지 않음.
@@ -171,15 +163,21 @@ public class UserController {
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
 
-		User user = userService.getUserById(userId);
-		List<Study> resultSet = studyService.getUserLikeStudy(user);
-		
+		try {
+
+			User user = userService.getUserById(userId);
+			List<Study> resultSet = studyService.getUserLikeStudy(user);
+
 //		사용자가 가입한 스터디.
-		List<Study> userStudyList = studyService.getUserJoinStudy(user);
-			
-		for (Study s : resultSet) {
-			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository,userStudyList));
+			List<Study> userStudyList = studyService.getUserJoinStudy(user);
+			List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
+
+			for (Study s : resultSet) {
+				StudyRes studyRes = new StudyRes();
+				res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, userStudyList, userLikedStudy));
+			}
+		} catch (Exception e) {
+			System.out.println("존재하지 않는 사용자이거나 이외의 에러");
 		}
 
 		return ResponseEntity.ok(res);
@@ -213,48 +211,52 @@ public class UserController {
 	public ResponseEntity<UserInfoRes> getUserInfo(@ApiIgnore Authentication authentication) {
 		// 로그인된 사용자 정보 받아오기
 
-		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
-		
+		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
+
 		User user = userService.getUserByUserId(userDetails.getUsername()); // 사용자 정보
 		List<String> interest = userService.getInterest(user.getId()); // 관심사 리스트
-		
+
 		UserInfoRes userInfoRes = UserInfoRes.of(user, interest);
 
 		return ResponseEntity.status(200).body(userInfoRes);
 	}
-	
+
 	@PutMapping("/{userId}")
 	@ApiOperation(value = "회원 본인 정보 수정", notes = "로그인한 회원 본인의 정보를 수정한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
 	public ResponseEntity<? extends BaseResponseBody> modifyUserInfo(UserModifyInfoReq userReq,
-			@RequestPart("thumbnail") MultipartFile file,
+			@RequestPart(value = "thumbnail", required = false) MultipartFile file,
 			@PathVariable @ApiParam(value = "User ID", required = true) Long userId,
 			@ApiIgnore Authentication authentication) {
-		
+
 		User user = userService.getUserById(userId);
-		
+
 		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
 		Long authUserId = userDetails.getUser().getId();
-		
+
 		if (user == null || authUserId != user.getId()) // 사용자가 없는 경우 or 로그인한 사용자와 현재 사용자가 다른 경우
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
-		
-		if(userService.modifyUserInfo(user, userReq, file)) {
+
+		String res = userService.modifyUserInfo(user, userReq, file);
+		if(res.equals("ok")) {
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원 정보 수정 완료"));
+		}else if(res.equals("name")) {
+			return ResponseEntity.status(401).body(BaseResponseBody.of(401, "닉네임을 다시 입력해주세요."));
 		}
-		
+
 		return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 	}
+
 	
-	@GetMapping("/{user_id}/profile")
+	@GetMapping("/{name}/profile")
 	@ApiOperation(value = "다른 회원 정보 확인", notes = "다른 회원 정보를 확인한다.", consumes = "multipart/form-data", produces = "multipart/form-data")
-	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "user_id", required = true) String user_id) {
+	public ResponseEntity<UserInfoRes> getUserInfoNotMe(@PathVariable @ApiParam(value = "name", required = true) String name) {
 		
-		User user = userService.getUserByUserId(user_id); // 사용자 정보
+		User user = userService.getUserByName(name); // 사용자 정보
 		
 		if(user == null) return new ResponseEntity<UserInfoRes>(HttpStatus.BAD_REQUEST); // 해당 사용자가 없을 때
 		
 		List<String> interest = userService.getInterest(user.getId()); // 관심사 리스트
-		
+
 		for (String s : interest) {
 			System.out.println(s);
 		}
@@ -278,10 +280,11 @@ public class UserController {
 		if (user == null)
 			return ResponseEntity.ok(res);
 		List<Study> resultSet = studyService.getUserJoinStudy(user);
-
+		List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
+		
 		for (Study s : resultSet) {
 			StudyRes studyRes = new StudyRes();
-			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, resultSet));
+			res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, resultSet, userLikedStudy));
 		}
 
 		return ResponseEntity.ok(res);
@@ -327,5 +330,64 @@ public class UserController {
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
 		}
 
+	}
+
+	/* 가입한 스터디 목록 -> 이름으로 ,이름만 */
+	@GetMapping("/join/name/{userName}")
+	@ApiOperation(value = "가입한 스터디 목록", notes = "가입했던 스터디 목록")
+	public ResponseEntity<?> getStudyByName(@PathVariable(value = "userName", required = true) String userName) {
+
+		User user = userService.getUserByUserNickname(userName).orElse(null);
+
+		if (user == null)
+			return ResponseEntity.status(404).body(new BaseResponseBody(404, "존재하지 않는 사용자"));
+
+		List<String> study = new ArrayList<String>();
+
+		List<Study> resultSet = studyService.getUserJoinStudy(user);
+
+		try {
+			for (Study s : resultSet) {
+				study.add(s.getName());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ResponseEntity.ok(study);
+	}
+
+	
+	@PostMapping("/social")
+	@ApiOperation(value = "소셜 로그인", notes = "소셜 로그인")
+	public ResponseEntity<?> userSocialLogin(@RequestBody @ApiParam(value = "로그인 정보", required = true) String email) {
+		
+		User user;
+		BaseResponseBody loginRes;
+		
+		// loginInfo가 다 안왔을 때 400에러
+		loginRes = new BaseResponseBody(404, "아이디 또는 비밀번호를 확인해 주세요.");
+		
+		if(email == null) return ResponseEntity.status(404).body(loginRes); // 빈값
+		
+		try {
+//			존재하는 사용자이면 패쓰
+			user = userService.getUserByEmail(email);
+			
+			if(user != null) {
+				loginRes = new LoginRes(200, "로그인 완료", JwtTokenUtil.getToken(user.getUserId()), user.getId());
+			} else { // 아이디 없을 때 
+				user = userService.postSocialLoginInfo(email);
+				if(user != null) // 가입되면
+					loginRes = new LoginRes(200, "로그인 완료", JwtTokenUtil.getToken(user.getUserId()), user.getId());
+				else // 가입 실패
+					return ResponseEntity.status(404).body(loginRes);
+			}
+			return ResponseEntity.ok(loginRes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return ResponseEntity.status(404).body(loginRes);
 	}
 }

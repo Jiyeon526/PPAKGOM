@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,8 @@ import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
 import com.ppakgom.api.response.AttendGetRes;
 import com.ppakgom.api.response.AttendRes;
+import com.ppakgom.api.response.MemberAttend;
+import com.ppakgom.api.response.StudyDetailInfo;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyScheduleMonthRes;
 
@@ -38,6 +41,7 @@ import com.ppakgom.api.response.StudyTestListRes;
 import com.ppakgom.api.response.StudyTestScoreRes;
 import com.ppakgom.api.response.StudyTestScoreTotalRes;
 import com.ppakgom.api.response.StudyTests;
+import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyAttend;
@@ -90,6 +94,7 @@ public class StudyServiceImpl implements StudyService {
 
 	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\";
 
+	@Autowired
 	UserLikeStudyRepository userLikeStudyRepository;
 
 	@Autowired
@@ -223,7 +228,6 @@ public class StudyServiceImpl implements StudyService {
 
 		List<UserLikeStudy> tmp = new ArrayList<>();
 		List<Study> resultSet = new ArrayList<>();
-
 		tmp = userLikeStudyRepository.findByUserId(user.getId());
 		for (UserLikeStudy uls : tmp) {
 			resultSet.add(uls.getStudy());
@@ -295,8 +299,8 @@ public class StudyServiceImpl implements StudyService {
 			if (!today.equals(studySchedule))
 				continue; // 날짜 다르면 넘김
 
-			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), studyPlan.getTitle(),
-					studyPlan.getDetail(), studyPlan.getDate());
+			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
+					studyPlan.getTitle(), studyPlan.getDate(), studyPlan.getColor());
 			// 저장
 			res.add(s);
 		}
@@ -315,18 +319,25 @@ public class StudyServiceImpl implements StudyService {
 				return false;
 
 			// 날짜 변환
-			Date date;
-			date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
-
+			Date date = new SimpleDateFormat("yyyy-MM-dd").parse(req.getDate());
+			
 			// 스터디 일정 객체 생성
-			StudyPlan studyPlan = new StudyPlan(req.getTitle(), req.getDetail(), date, study.get());
+			StudyPlan studyPlan = new StudyPlan(req.getTitle(), date, study.get(), req.getColor());
 			// 객체 생성 안되면 false
 			if (studyPlan == null)
 				return false;
 
 			// DB에 저장
-			studyPlanRepository.save(studyPlan);
-
+			studyPlan = studyPlanRepository.save(studyPlan);
+			
+			// 스터디 출석현황 저장
+			// 스터디 유저들 가져오기
+			List<UserStudy> users = userStudyRepository.findByStudyId(studyId);
+			for(UserStudy user: users) { // 멤버들 마다 일정 생길 때 마다 스터디 출석 현황에 넣어주기
+				StudyAttend studyAttend = new StudyAttend(study.get(), user.getUser(), studyPlan, false);
+				studyAttendRepository.save(studyAttend);
+			}
+			
 		} catch (ParseException e) {
 			System.out.println("날짜 변환 에러");
 			e.printStackTrace();
@@ -592,5 +603,66 @@ public class StudyServiceImpl implements StudyService {
 //		image/이후부터 끝까지 == default.png면 디폴트 이미지임 (디폴트가 아닌 경우 폴더명 study가 중간에 추가됨)
 		boolean isDefault = filePath.substring(6,filePath.length()).equals("default.png") ? true : false;
 		return isDefault;
+	}
+	
+	public List<StudyDetailInfo> getStudyDetailInfo(Long studyId) {
+		List<StudyDetailInfo> res = new ArrayList<>();
+		
+		// 해당 스터디의 스터디 일정 가져오기
+		List<StudyPlan> studyPlan = studyPlanRepository.findByStudy_Id(studyId);
+		if(studyPlan == null) return null;
+		
+		for(StudyPlan sp: studyPlan) { // 일정에 따라 id, 제목, 날짜 넣기
+			StudyDetailInfo detail = new StudyDetailInfo();
+			
+			detail.setStudy_plan_id(sp.getId());
+			detail.setTitle(sp.getTitle());
+			detail.setDate(sp.getDate());
+			
+			// 스터디 일정별 멤버 출석 현황
+			// 스터디와 스터디 일정 번호로 출석 현황 가져오기
+			List<StudyAttend> studyAttend = studyAttendRepository.findByStudyIdAndStudyPlanId(studyId, sp.getId());
+			List<MemberAttend> member = new ArrayList<>(); // 멤버 출석 현황 저장
+			for(StudyAttend sa: studyAttend) {
+				MemberAttend ma = new MemberAttend();
+				ma.setAttend(sa.isAttend());
+				ma.setUser_id(sa.getUser().getId());
+				member.add(ma);
+			}
+			
+			detail.setStudyAttend(member);
+			
+			res.add(detail);
+		}
+		
+		return res;
+	}
+
+	@Override
+	public String postStudyAttend(Long studyId, Long userId) {
+		
+		try {
+			// 현재 스터디 일정
+			DateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date nowDate = new Date();
+			String today = sdFormat.format(nowDate); // 오늘 날짜
+			Date to = sdFormat.parse(today);
+
+			StudyPlan studyPlan = studyPlanRepository.findByDate(to);
+			if(studyPlan == null) // 오늘 스터디 없을 경우
+				return "date";
+					
+			StudyAttend sa = studyAttendRepository.findByStudyIdAndUserIdAndStudyPlanId(studyId, userId, studyPlan.getId());
+			if(sa == null)
+				return "error";
+			
+			sa.setAttend(true);
+			studyAttendRepository.save(sa);
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "ok";
 	}
 }

@@ -43,7 +43,6 @@ import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyInterestRepository;
-import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
 import com.ppakgom.api.response.AttendGetRes;
 import com.ppakgom.api.response.InviteGetResByStudy;
@@ -51,6 +50,7 @@ import com.ppakgom.api.response.InviteResByStudy;
 import com.ppakgom.api.response.SearchMember;
 import com.ppakgom.api.response.RateRes;
 import com.ppakgom.api.response.StudyCreatePostRes;
+import com.ppakgom.api.response.StudyDetailInfo;
 import com.ppakgom.api.response.StudyJoinApplyListRes;
 import com.ppakgom.api.response.StudyMemberInfoRes;
 import com.ppakgom.api.response.StudyRes;
@@ -193,6 +193,8 @@ public class StudyController {
 				}
 
 				List<Study> userJoinStudy = new ArrayList<Study>();
+				List<Study> userLikedStudy = null;
+				
 				if (authentication == null) {
 					System.out.println("로그인된 사용자 없음");
 				} else {
@@ -201,6 +203,8 @@ public class StudyController {
 					User curUser = userService.getUserByUserId(userId);
 					System.out.println("로그인한 사용자 " + curUser);
 					userJoinStudy = studyService.getUserJoinStudy(curUser);
+					userLikedStudy = studyService.getUserLikeStudy(curUser);
+
 				}
 
 //			오늘 날짜 받기
@@ -213,7 +217,7 @@ public class StudyController {
 					if (strDate.before(today)) {
 						continue;
 					}
-					StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userJoinStudy);
+					StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userJoinStudy, userLikedStudy);
 					res.getStudyResult().add(sr);
 				}
 			} catch (Exception e) {
@@ -276,12 +280,14 @@ public class StudyController {
 			}
 		}
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
+		List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
+		
 		/* 검색 결과 삽입 */
 		for (Study s : tmp) {
 //			내가 가입한 스터디 제외시키기
 			if(userStudy.contains(s))
 				continue;
-			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy);
+			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy, userLikedStudy);
 			res.getStudyResult().add(sr);
 		}
 
@@ -306,10 +312,12 @@ public class StudyController {
 		User user = userService.getUserByUserId(userId);
 
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
+		List<Study> userLikedStudy = studyService.getUserLikeStudy(user);
 
+		
 		if (study.isPresent()) {
 			res.getStudyResult()
-					.add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy));
+					.add(new StudyRes().of(study.get(), studyInterestRepository, userStudyRepository, userStudy,userLikedStudy));
 		}
 		return ResponseEntity.ok(res);
 
@@ -437,7 +445,7 @@ public class StudyController {
 	public ResponseEntity<? extends BaseResponseBody> postStudySchedule(@PathVariable(value = "studyId") Long studyId,
 			@RequestBody StudyScheduleReq req) {
 		// 값이 다 들어왔는지 확인
-		if (req.getTitle().length() == 0 || req.getDetail().length() == 0 || req.getDate().length() == 0)
+		if(req.getTitle().length() == 0 || req.getDate().length() == 0 || req.getColor().length() == 0)
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		// 저장하기
 		if (!studyService.postStudySchedule(studyId, req))
@@ -578,4 +586,28 @@ public class StudyController {
 
 	}
 
+	
+	@GetMapping("/{studyId}/info")
+	@ApiOperation(value = "스터디 방 상세 정보 가져오기", notes = "스터디 방 상세 정보 가져오기")
+	public ResponseEntity<List<StudyDetailInfo>> getStudyDetailInfo(@PathVariable(value = "studyId") Long studyId) {
+		
+		List<StudyDetailInfo> res = studyService.getStudyDetailInfo(studyId);
+		
+		return ResponseEntity.status(200).body(res);
+	}
+	
+	@PostMapping("/{studyId}/attend/{userId}")
+	@ApiOperation(value = "스터디 출석 버튼", notes = "스터디 출석 버튼")
+	public ResponseEntity<BaseResponseBody> studyAttendButton(@PathVariable(value = "studyId") Long studyId,
+			@PathVariable(value = "userId") Long userId) {
+		
+		// 해당 멤버의 스터디 출석현황 true로 바꾸기
+		String res = studyService.postStudyAttend(studyId, userId);
+		if(res.equals("date")) // 스터디 일정 없음
+			return ResponseEntity.status(201).body(new BaseResponseBody(201, "오늘 진행 중인 스터디 일정이 없습니다."));
+		else if(res.equals("ok")) // 출석 성공
+			return ResponseEntity.status(200).body(new BaseResponseBody(200, "출석 완료"));
+		
+		return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+	}
 }

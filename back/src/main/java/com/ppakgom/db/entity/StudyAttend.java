@@ -1,5 +1,7 @@
 package com.ppakgom.db.entity;
 
+import java.util.Optional;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -13,17 +15,31 @@ import lombok.Setter;
 @Setter
 public class StudyAttend extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_id")
-    Study study;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "study_id")
+	Study study;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	User user;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "study_plan_id")
+	StudyPlan studyPlan;
+	
+	boolean isAttend;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    User user;
+	public StudyAttend(Study study, User user, StudyPlan studyPlan, boolean isAttend) {
+		super();
+		this.study = study;
+		this.user = user;
+		this.studyPlan = studyPlan;
+		this.isAttend = isAttend;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_plan_id")
-    StudyPlan studyPlan;
+	public StudyAttend() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    boolean isAttend;
 }

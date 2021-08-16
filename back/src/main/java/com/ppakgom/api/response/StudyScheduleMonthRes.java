@@ -18,19 +18,19 @@ public class StudyScheduleMonthRes {
 	
 	@ApiModelProperty(name="title", example="일정")
 	String title;
-	
-	@ApiModelProperty(name="detail", example="일정 설명")
-	String detail;
-	
+
 	@ApiModelProperty(name="date", example="2021-09-23 00:00:00.000000")
 	Date date;
+	
+	@ApiModelProperty(name="color", example="red")
+	String color;
 
-	public StudyScheduleMonthRes(Long id, String title, String detail, Date date) {
+	public StudyScheduleMonthRes(Long id, String title, Date date, String color) {
 		super();
 		this.id = id;
 		this.title = title;
-		this.detail = detail;
 		this.date = date;
+		this.color = color;
 	}
 
 	public StudyScheduleMonthRes() {

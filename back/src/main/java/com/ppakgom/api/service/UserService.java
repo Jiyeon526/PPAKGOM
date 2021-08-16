@@ -1,6 +1,8 @@
 package com.ppakgom.api.service;
 
 import java.util.List;
+import java.util.Optional;
+
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +19,11 @@ public interface UserService {
 	User getUserByUserId(String userId);
 	User getUserById(Long userId);
 	List<String> getInterest(Long userid);
-	boolean modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file);
+	String modifyUserInfo(User user, UserModifyInfoReq userReq, MultipartFile file);
 	void likeStudy(User user, Study study);
 	void unlikeStudy(User user, Study study);
+	Optional<User> getUserByUserNickname(String userName);
+	User postSocialLoginInfo(String email);
+	User getUserByEmail(String email);
+	User getUserByName(String name);
 }
