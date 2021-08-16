@@ -264,14 +264,15 @@ public class StudyController {
 		if (userInterest != null) {
 			for (UserInterest ui : userInterest) {
 //				최대 3개만 저장스
+//				System.out.println("사용자 "+ui.getUser()+" "+"관심사: "+ui.getInterest());
 				resultSet = studyService.getStudyByInterest(ui.getInterest().getName());
 				for (Study s : resultSet) {
 					tmp.add(s);
-					if (tmp.size() == 3)
-						break;
+//					if (tmp.size() == 3)
+//						break;
 				}
-				if (tmp.size() == 3)
-					break;
+//				if (tmp.size() == 3)
+//					break;
 			}
 		}
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
