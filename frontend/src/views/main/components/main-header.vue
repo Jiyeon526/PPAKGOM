@@ -13,14 +13,14 @@
         <el-col :span="16">
           <el-dropdown trigger="click" v-if="state.value">
             <span class="el-dropdown-link">
-              STUDY<i class="el-icon-arrow-down el-icon--right"></i>
+              {{ state.label }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item
                   v-for="item in state.options"
                   :key="item.value"
-                  @click="gotodetail(item.value)"
+                  @click="gotodetail(item)"
                   >{{ item.label }}</el-dropdown-item
                 >
               </el-dropdown-menu>
@@ -203,7 +203,8 @@ export default {
         }
       ],
       value: "", // computed는 readonly이기 때문에 이후에 option에서 value값을 바꿔도 바뀌지 않음 -> 변수를 나누어 2개로 설정
-      value2: computed(() => store.getters["root/getSelectOption"])
+      value2: computed(() => store.getters["root/getSelectOption"]),
+      label: "STUDY"
     });
     watch(
       () => state.value,
@@ -327,9 +328,10 @@ export default {
     const changeCollapse = () => {
       state.isCollapse = !state.isCollapse;
     };
-    const gotodetail = filename => {
+    const gotodetail = file => {
+      state.label = file.label;
       router.push({
-        name: filename
+        name: file.value
         // params: {
         //   studypk: state.studyPk
         // }
