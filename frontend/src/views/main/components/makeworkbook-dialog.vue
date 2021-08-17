@@ -98,7 +98,7 @@ export default {
 
       console.log(name);
       axios({
-        url: `https://localhost:8443/api/v1/study/${name[1]}/download`,
+        url: `https://localhost:8443/api/v1/study/test/${name[1]}/download`,
         method: "GET",
         responseType: "blob"
       }).then(res => {

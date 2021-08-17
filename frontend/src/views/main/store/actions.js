@@ -287,8 +287,9 @@ export function requestinviteSendList({state}) {
 // 초대 취소하기
 export function requestCancelInvite({state}, payload ) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/invitation/response/cancel/${state.userpk}`
-  const params = payload
+  const url = `/invitation/response/calcel/${state.userpk}`
+  const params = {receiverId: payload, studyId: state.studypk }
+  console.log(params)
   return $axios.delete(url, { headers: headers, params:params })
 }
 
@@ -296,7 +297,8 @@ export function requestCancelInvite({state}, payload ) {
 export function requestCheckInviteReject({state}, payload ) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/invitation/response/reject/${state.userpk}`
-  const params = payload
+  const params = {receiverId: payload, studyId: state.studypk }
+  console.log(params)
   return $axios.delete(url, { headers: headers, params:params })
 }
 
@@ -312,16 +314,17 @@ export function requestShowApplyList({state}) {
 // 가입 요청 거절
 export function requestapplyReject({state}, payload ) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/join/request/reject/${payload.userid}`
-  const body = payload
+  const url = `/join/request/reject/${state.userpk}`
+  const body = {user_id: payload, study_id: state.studypk }
   return $axios.put(url, body, { headers: headers })
 }
 
 // 가입 요청 승인
 export function requestapplyOkay({state}, payload ) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/join/request/ok/${payload.userid}`
-  const params = payload
+  const url = `/join/request/ok/${state.userpk}`
+  const body = payload
+  console.log(payload)
   return $axios.post(url, body, { headers: headers })
 }
 
@@ -368,4 +371,12 @@ export function requestSearchInterest({state}, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/study/${state.studypk}/member/${payload}`
   return $axios.get(url, { headers: headers })
+}
+
+// 해당 회원 초대
+export function requestInviteMember({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${state.studypk}/member`
+  let body = payload
+  return $axios.post(url, body, { headers: headers })
 }

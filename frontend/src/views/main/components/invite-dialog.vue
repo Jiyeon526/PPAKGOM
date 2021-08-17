@@ -21,7 +21,7 @@
         v-for="i in state.memberList.length"
         :key="i"
       >
-        <studymember :memberData="state.memberList[i-1]" :condition="1" />
+        <membercard :memberData="state.memberList[i-1]" :condition="1" />
       </div>
     </div>
     <el-alert
@@ -38,9 +38,9 @@ import { reactive, computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import studymember from '../../studydetail/studymember.vue';
+import membercard from '../../studydetail/membercard.vue';
 export default {
-  components: { studymember },
+  components: { membercard },
   name: "invite-dialog",
 
   props: {
@@ -77,8 +77,15 @@ export default {
         store
           .dispatch("root/requestSearchInterest", cleanValue)
           .then(function(res) {
-            state.memberList = res
-            console.log("검색", res)
+            for ( const val in res.data) {
+            const profileData = res.data[val]
+            const origin_url = profileData["thumbnail"]
+            const need_from = origin_url.indexOf('image')
+            const url_length = origin_url.length
+            const process_thumbnail = origin_url.substring(need_from,url_length)
+            res.data[val]["thumbnail"] = process_thumbnail
+            }
+            state.memberList = res.data
           })
           .catch(function(err) {
             console.log("검색 에러", err)

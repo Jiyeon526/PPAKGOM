@@ -7,10 +7,12 @@
       </el-image>
     </div>
     <div style="text-align: left; padding: 14px;">
-      <span>{{memberData.name}}님</span>
-    </div>
-    <div v-if="condition == 1">
-      <el-button>초대하기</el-button>
+      <p>{{memberData}}</p>
+      <span v-if="condition == 1">
+        {{memberData.user_name}}님
+        <el-button @click="inviteMember" >초대</el-button>
+      </span>
+      <span v-else>{{memberData.name}}님</span>
     </div>
   </el-card>
 </template>
@@ -55,9 +57,21 @@ export default {
     onMounted (() => {
     })
 
+  const inviteMember = function() {
+    const body = new FormData()
+    body.append("receiver_id",props.memberData["id"])
+    body.append("is_join",false)
+    store.dispatch('root/requestInviteMember', body)
+    .then(function(res) {
+      console.log(res)
+    })
+    .catch(function(err) {
+      console.log(err)
+    })
+  }
 
 
-  return { state }
+  return { state, inviteMember }
   }
 }
 </script>

@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, computed } from 'vue'
 import { useStore } from 'vuex'
 import membercard from './membercard.vue'
 
@@ -96,6 +96,7 @@ export default {
       sendList : [],
       applyList : [],
       inStudyList : [],
+      studypk: computed(() => store.getters["root/getStudypk"]),
    })
 
     // 페이지 진입시 불리는 훅
@@ -161,15 +162,12 @@ export default {
 
     const handleCancelInvite = function(index, row) {
       console.log(row)
-      store.dispatch("root/requestCancelInvite", {
-        study_id: row["studyId"],
-        receiver_id: row["userName"]
-      })
+      store.dispatch("root/requestCancelInvite", row["userId"])
       .then(function(res) {
-        // console.log("!!!!")
-        state.joinList.splice(index, 1)
+        console.log(res)
+        state.sendList.splice(index, 1)
         console.log('123',row)
-        console.log(index, state.joinList)
+        console.log(index, state.sendList)
       })
       .catch(function(err) {
         console.log("error",err)
@@ -178,15 +176,12 @@ export default {
 
     const handleCheckReject = function(index, row) {
       console.log(row)
-      store.dispatch("root/requestCheckInviteReject", {
-        study_id: row["studyId"],
-        receiver_id: row["userName"]
-      })
+      store.dispatch("root/requestCheckInviteReject", row["userId"])
       .then(function(res) {
-        // console.log("!!!!")
-        state.joinList.splice(index, 1)
+        console.log(res)
+        state.sendList.splice(index, 1)
         console.log('123',row)
-        console.log(index, state.joinList)
+        console.log(index, state.sendList)
       })
       .catch(function(err) {
         console.log("error",err)
@@ -197,8 +192,37 @@ export default {
       emit("openInviteDialog")
     }
 
+    const joinAccept = function(index, row) {
+      console.log(row)
+      store.dispatch("root/requestapplyOkay", {
+        user_id: row["user_id"],
+        study_id: state.studypk,
+        })
+      .then(function(res) {
+        // console.log("!!!!")
+        state.applyList.splice(index, 1)
+        console.log('123',row)
+        console.log(index, state.applyList)
+      })
+      .catch(function(err) {
+        console.log("error",err)
+      })
+    }
+    const joinReject = function(index, row) {
+      console.log(row)
+      store.dispatch("root/requestapplyReject", row["user_id"])
+      .then(function(res) {
+        // console.log("!!!!")
+        state.applyList.splice(index, 1)
+        console.log('123',row)
+        console.log(index, state.applyList)
+      })
+      .catch(function(err) {
+        console.log("error",err)
+      })
+    }
 
-  return { state, studyMemberList, inviteSendList, handleClick, handleCancelInvite, handleCheckReject, applyUserList, findMember }
+  return { state, studyMemberList, inviteSendList, handleClick, handleCancelInvite, handleCheckReject, applyUserList, findMember, joinAccept, joinReject }
   }
 }
 </script>
