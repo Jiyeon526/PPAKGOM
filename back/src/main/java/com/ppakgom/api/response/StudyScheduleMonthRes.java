@@ -16,21 +16,17 @@ public class StudyScheduleMonthRes {
 	@ApiModelProperty(name="id", example="36")
 	Long id;
 	
-	@ApiModelProperty(name="title", example="일정")
-	String title;
+	@ApiModelProperty(name="customData", example="")
+	CustomData customData;
 
 	@ApiModelProperty(name="date", example="2021-09-23 00:00:00.000000")
-	Date date;
-	
-	@ApiModelProperty(name="color", example="red")
-	String color;
+	Date dates;
 
-	public StudyScheduleMonthRes(Long id, String title, Date date, String color) {
+	public StudyScheduleMonthRes(Long id, CustomData customData, Date date) {
 		super();
 		this.id = id;
-		this.title = title;
-		this.date = date;
-		this.color = color;
+		this.customData = customData;
+		this.dates = date;
 	}
 
 	public StudyScheduleMonthRes() {
