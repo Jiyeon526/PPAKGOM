@@ -74,6 +74,11 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 		studyApplyRepository.deleteBySenderIdAndStudyIdAndReceiverIdAndIsJoin(req.getSenderId(), req.getStudyId(), userId, false);
 	}
 
+	@Override
+	public Optional<StudyApply> getInviteListByStudyAndIsJoinAndReceiverId(Long studyId, boolean b, Long receiver_id) {
+		return studyApplyRepository.findByStudyIdAndIsJoinAndReceiverId(studyId, b, receiver_id);
+	}
+
 
 
 }
