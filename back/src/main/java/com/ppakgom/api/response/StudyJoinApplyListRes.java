@@ -21,4 +21,7 @@ public class StudyJoinApplyListRes {
 	
 	@ApiModelProperty(name="temperature", example="36.5")
 	float temperature;
+	
+	@ApiModelProperty(name="state", example="2")
+	Short state;
 }

@@ -64,6 +64,10 @@ public class UserServiceImpl implements UserService {
 			user.setAccess_token("none");
 			user.setPosition("user");
 			
+//			유저 아이디 미리 뽑아두기
+			User userTmp = userRepository.save(user);
+			Long userId = userTmp.getId();
+			
 			/*
 			 * 프로필 이미지 저장 순번-파일명으로 저장
 			 */
@@ -73,8 +77,7 @@ public class UserServiceImpl implements UserService {
 				user.setProfile_thumbnail(filePath);
 				
 			} else { // 프로필 사진 입력함 
-				
-				String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + thumbnail.getOriginalFilename();
+				String filePath = BASE_PATH + "\\user\\" + userId + "-" + thumbnail.getOriginalFilename();
 				File dest = new File(filePath);
 				thumbnail.transferTo(dest);
 

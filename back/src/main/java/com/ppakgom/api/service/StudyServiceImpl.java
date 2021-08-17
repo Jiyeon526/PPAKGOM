@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ppakgom.api.request.StudyCreatePostReq;
 import com.ppakgom.api.request.StudyRatePostReq;
+import com.ppakgom.api.response.CustomData;
 import com.ppakgom.api.response.AttendGetRes;
 import com.ppakgom.api.response.AttendRes;
 import com.ppakgom.api.response.MemberAttend;
@@ -295,12 +297,16 @@ public class StudyServiceImpl implements StudyService {
 			today = today.substring(0, 5) + studyMonth;
 
 			String studySchedule = sdFormat.format(studyPlan.getDate()); // 스터디 날짜
-
-			if (!today.equals(studySchedule))
-				continue; // 날짜 다르면 넘김
-
+			if(!today.equals(studySchedule)) continue; // 날짜 다르면 넘김
+			
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(studyPlan.getDate());
+			cal.add(Calendar.HOUR, +9);
+			nowDate = new Date(cal.getTimeInMillis());
+			
+			CustomData customData = new CustomData(studyPlan.getTitle(), studyPlan.getColor());
 			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
-					studyPlan.getTitle(), studyPlan.getDate(), studyPlan.getColor());
+					customData , nowDate);
 			// 저장
 			res.add(s);
 		}
@@ -567,23 +573,29 @@ public class StudyServiceImpl implements StudyService {
 				return Long.compare(o1.getId(), o2.getId());
 			}
 		});
-		
+//		전체 스터디 일정 개수
+		int wholeDays = studyPlans.size();
 //		2. 멤버 별로 객체에 담기 
 		for(User m : members) {
 			AttendGetRes attendGetRes = new AttendGetRes();
+			attendGetRes.setAll(wholeDays);
 			attendGetRes.setUser_id(m.getId());
 			attendGetRes.setUser_name(m.getName());
 			Long mId = m.getId();
 			//3.스터디 플랜 별로 출석 현황 질의
+			int attended = 0;
 			for(StudyPlan sp : studyPlans) {
 				AttendRes attendRes = new AttendRes();
 				Long spId = sp.getId();
 				StudyAttend at = studyAttendRepository.findByUserIdAndStudyPlanId(mId, spId);
 				attendRes.setAttend(at.isAttend());
+//				출석하면 +1
+				attended += at.isAttend() ? 1 : 0;
 				attendRes.setStudy_plan_id(spId);
 				attendRes.setStudy_plan_date(parseDate(sp.getDate()));
 				attendGetRes.getAttendList().add(attendRes);
 			}
+			attendGetRes.setAttended(attended);
 			res.add(attendGetRes);
 		}
 		return res;
@@ -648,13 +660,15 @@ public class StudyServiceImpl implements StudyService {
 			String today = sdFormat.format(nowDate); // 오늘 날짜
 			Date to = sdFormat.parse(today);
 
-			StudyPlan studyPlan = studyPlanRepository.findByDate(to);
+			StudyPlan studyPlan = studyPlanRepository.findByDateAndStudyId(to, studyId);
 			if(studyPlan == null) // 오늘 스터디 없을 경우
 				return "date";
 					
 			StudyAttend sa = studyAttendRepository.findByStudyIdAndUserIdAndStudyPlanId(studyId, userId, studyPlan.getId());
 			if(sa == null)
 				return "error";
+			if(sa.isAttend())
+				return "already";
 			
 			sa.setAttend(true);
 			studyAttendRepository.save(sa);
