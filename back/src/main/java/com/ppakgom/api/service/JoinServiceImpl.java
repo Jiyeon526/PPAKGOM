@@ -211,6 +211,10 @@ public class JoinServiceImpl implements JoinService {
 		String studyDate = sdFormat.format(study.get().getDeadline()); // 스터디 모집 날짜
 		if(today.compareTo(studyDate) > 0) return "deadline";
 		
+		// 중복 신청
+		StudyApply sa = studyApplyRepository.findBySender_IdAndStudy_Id(userId, studyId);
+		if(sa != null) return "already";
+		
 		// 사용자
 		User user = userRepository.findUserById(userId);
 		Short state = 2; // 대기 상태
