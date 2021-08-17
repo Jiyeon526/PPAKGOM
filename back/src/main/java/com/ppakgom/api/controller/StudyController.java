@@ -626,7 +626,13 @@ public class StudyController {
 	public void download(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws UnsupportedEncodingException {
 	    System.err.println(file);
 	    //String path = file;
-	    String path = "/image/study/" + file;
+	    String path = "/image/";
+	    
+	    if(!file.equals("default.png"))
+	    	path += "study/";
+
+	    path += file;
+	    
 	    String fileNm = file;
 	    StringBuffer sb = new StringBuffer(); 
 	    for (int i = 0; i < fileNm.length(); i++) 
