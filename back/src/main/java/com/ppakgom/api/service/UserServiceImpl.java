@@ -95,19 +95,6 @@ public class UserServiceImpl implements UserService {
 			if(registerInfo.getInterest() == null) return user;
 			insertUserInterest(user, registerInfo.getInterest());
 
-			for (String s : registerInfo.getInterest()) {
-				s = s.replaceAll(" ", ""); // 해시태그 공백제거
-				Interest exist = interestRepository.findByInterest(s); // 해당 단어가 관심사 테이블에 있는지 확인
-				if (exist == null) { // 만약 관심사가 존재안한다면
-					Interest interest = new Interest(s);
-					interestRepository.save(interest); // 관심사 insert
-					exist = interestRepository.findByInterest(s); // 다시 찾기
-				}
-
-				UserInterest userInterest = new UserInterest(user, exist); // 유저관심사 테이블에 저장
-				userInterestRepository.save(userInterest);
-			}
-
 			return user;
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
