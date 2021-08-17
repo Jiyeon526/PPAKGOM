@@ -25,6 +25,7 @@ public class InviteResByStudy {
 	String name;
 	String thumbnail;
 	float temperature;
+	Short state;
 	
 	public InviteResByStudy of(StudyApply sa) {
 		User user = sa.getReceiver();
@@ -32,6 +33,7 @@ public class InviteResByStudy {
 		this.setName(user.getName());
 		this.setThumbnail(user.getProfile_thumbnail());
 		this.setTemperature(user.getTemperature());
+		this.setState(sa.getState());
 		return this;
 	}
 	

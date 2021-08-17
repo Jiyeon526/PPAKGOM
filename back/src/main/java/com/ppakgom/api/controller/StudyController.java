@@ -1,6 +1,10 @@
 package com.ppakgom.api.controller;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -12,6 +16,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -429,8 +436,8 @@ public class StudyController {
 
 //		3. 회원이 가입한 스터디를 회원 - 스터디 테이블에서 가져오고, 그에 맞게 응답 객체를 생성하고 삽입한다.
 			for (User u : interestedUsers) {
-				List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
-				res.add(new SearchMember(u, studyList));
+//				List<UserStudy> studyList = userStudyService.findUserStudyByUserId(u.getId());
+				res.add(new SearchMember(u, null));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -610,4 +617,84 @@ public class StudyController {
 		
 		return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
 	}
+	
+//	스터디 썸네일
+	@GetMapping("/{file}/download")
+	@ApiOperation(value = "파일 경로", notes = "<strong>이미지</strong>를 다운로드 한다.")
+	public void download(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws UnsupportedEncodingException {
+	    System.err.println(file);
+	    //String path = file;
+	    String path = "/image/study/" + file;
+	    String fileNm = file;
+	    StringBuffer sb = new StringBuffer(); 
+	    for (int i = 0; i < fileNm.length(); i++) 
+	    { 
+	        char c = fileNm.charAt(i); 
+	        if (c > '~') 
+	        { 
+	            sb.append(URLEncoder.encode(Character.toString(c), "UTF-8")); 
+	        } else { 
+	            sb.append(c); 
+	        } 
+	    } 
+	    String reFileNm = sb.toString();    
+	    response.setContentType("application/octet-stream; charset=UTF-8");// 이번 응답은 html이 아니라 파일이다.
+	    response.setHeader("Content-Disposition", "attachment; filename=\""+reFileNm+"\"");
+	    response.setHeader("Content-Transfer-Encoding", "binary");
+	    try {
+	        FileInputStream is = new FileInputStream(path);// 서버에 저장된 파일 읽어서
+	        
+	        ServletOutputStream os = response.getOutputStream();
+	        
+	        int data = 0;
+	        while((data=is.read())!= -1)
+	            os.write(data);
+	        
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    } 
+	}
+	
+	
+//	문제집 썸네일
+	@GetMapping("test/{file}/download")
+	@ApiOperation(value = "파일 경로", notes = "<strong>이미지</strong>를 다운로드 한다.")
+	public void downloadTest(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws UnsupportedEncodingException {
+	    System.err.println(file);
+	    //String path = file;
+	    String path = "/test/" + file;
+	    String fileNm = file;
+	    StringBuffer sb = new StringBuffer(); 
+	    for (int i = 0; i < fileNm.length(); i++) 
+	    { 
+	        char c = fileNm.charAt(i); 
+	        if (c > '~') 
+	        { 
+	            sb.append(URLEncoder.encode(Character.toString(c), "UTF-8")); 
+	        } else { 
+	            sb.append(c); 
+	        } 
+	    } 
+	    String reFileNm = sb.toString();    
+	    response.setContentType("application/octet-stream; charset=UTF-8");// 이번 응답은 html이 아니라 파일이다.
+	    response.setHeader("Content-Disposition", "attachment; filename=\""+reFileNm+"\"");
+	    response.setHeader("Content-Transfer-Encoding", "binary");
+	    try {
+	        FileInputStream is = new FileInputStream(path);// 서버에 저장된 파일 읽어서
+	        
+	        ServletOutputStream os = response.getOutputStream();
+	        
+	        int data = 0;
+	        while((data=is.read())!= -1)
+	            os.write(data);
+	        
+	    } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    } 
+	}
+	
 }
