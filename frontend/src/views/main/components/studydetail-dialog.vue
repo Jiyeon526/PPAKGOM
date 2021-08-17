@@ -35,23 +35,6 @@
       <div>
         <Studyschedulecomponent :studyId="state.studyId" />
       </div>
-      <div style="width: 100%; display:flex; flex-direction:row; justify-content:center; align-items:center">
-        <div style="width: 50%; text-align:center;;">
-          <h4>출석현황</h4>
-        </div>
-        <div style="width: 50%; text-align:center;">
-          <h4>가입멤버</h4>
-          <el-table
-            :data="state.studyMember"
-            style="width: 100%">
-            <el-table-column
-              prop="name"
-              label="스터디원"
-              width="auto">
-            </el-table-column>
-          </el-table>
-        </div>
-      </div>
     </div>
     <el-divider style="margin: 5px"></el-divider>
     <div class="detail-dialog-footer">
@@ -140,27 +123,12 @@ export default {
       () => state.studyId,
       () => {
         state.likeStudy = state.firstLikeInfo
-        getStudyMember()
       }
     )
 
     onMounted(() => {
 
     });
-
-    const getStudyMember = () => {
-      store
-        .dispatch('root/requestStudyMember', {
-          studyId: state.studyId
-        })
-          .then(function(res) {
-            // console.log("스터디 멤버 가져오기", res)
-            state.studyMember = res.data
-          })
-          .catch(function(err) {
-            console.log("스터디 멤버 가져오기 에러", err)
-          })
-    }
 
     const enterStudy = () => {
     store.commit("root/setStudypk", props.selectStudy.study_id);
@@ -228,7 +196,7 @@ export default {
       emit("closeStudydetailDialog");
     };
 
-    return { state, handleClose, getStudyMember, enterStudy, requestJoinStudy, clickLikeBtn, clickLikeCancleBtn };
+    return { state, handleClose, enterStudy, requestJoinStudy, clickLikeBtn, clickLikeCancleBtn };
   }
 };
 </script>
