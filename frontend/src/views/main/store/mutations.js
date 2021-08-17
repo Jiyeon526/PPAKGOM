@@ -68,3 +68,7 @@ export function setSelectOption(state, payload) {
 export function setTestpk(state, payload) {
   state.testpk = payload
 }
+
+export function setReload(state) {
+  state.reload = !state.reload
+}

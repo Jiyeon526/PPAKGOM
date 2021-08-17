@@ -1,11 +1,11 @@
 <template>
   <h2>찜한 스터디</h2>
   <br>
-  <div v-if="state.likeStudyList.length !== 0">
-    <div v-for="i in state.likeStudyList.length" :key="i" @click="onClickStudyList(i)" class="study" >
+  <ul v-if="state.likeStudyList.length !== 0" class="ul-class">
+    <li v-for="i in state.likeStudyList.length" :key="i" @click="onClickStudyList(i)" class="li-class" >
       <study :studyData="state.likeStudyList[i-1]"/>
-    </div>
-  </div>
+    </li>
+  </ul>
   <el-alert v-else
     title="찜한 스터디가 없습니다. 관심있는 스터디를 찜해주세요."
     type="error"
@@ -15,8 +15,17 @@
 </template>
 
 <style>
-.study {
-  display: inline-block;
+.ul-class {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
+  grid-gap: 16px;
+  justify-content: center;
+  padding: initial;
+}
+.li-class {
+  list-style-type: none;
+  padding: 5px;
+  width: 300px;
 }
 </style>
 <script>

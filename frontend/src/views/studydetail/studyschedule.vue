@@ -1,9 +1,11 @@
 <template>
-  <h2>스터디 일정</h2>
-  <div style="float:right; margin:5px">
-    <el-button type="success" circle class="el-icon-plus" @click="onClickCalendar"></el-button>
+  <h1 style="font-size:35px;">스터디 일정</h1>
+  <div style="width: 80%; margin-left: auto; margin-right: auto;">
+    <div style="float:right; margin:5px">
+      <el-button type="success" circle class="el-icon-plus" @click="onClickCreateCalendar"></el-button>
+    </div>
+    <Studyschedulecomponent :studyId="state.studyId" />
   </div>
-  <Studyschedulecomponent :studyId="state.studyId" />
 </template>
 <script>
 
@@ -23,17 +25,18 @@ export default {
     const year = new Date().getFullYear();
     const state = reactive({
       studyId: computed(() => store.getters["root/getStudypk"]),
+      page: false,
     })
 
-    const onClickCalendar = () => {
-      emit("openStudyscheduleDialog", state.studyPk)
+    const onClickCreateCalendar = () => {
+      emit("openStudyscheduleDialog", state.studyId)
     }
 
     onMounted (() => {
 
     })
 
-    return { state, month, year, onClickCalendar }
+    return { state, month, year, onClickCreateCalendar }
   }
 };
 </script>

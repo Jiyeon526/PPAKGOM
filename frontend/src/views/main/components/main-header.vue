@@ -11,7 +11,7 @@
           <div class="logo-ppakgom" @click="clickLogo">PPAKGOM</div>
         </el-col>
         <el-col :span="16">
-          <el-dropdown trigger="click" v-if="state.value">
+          <el-dropdown trigger="click" v-if="state.studyPk">
             <span class="el-dropdown-link">
               {{ state.label }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>

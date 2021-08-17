@@ -17,7 +17,7 @@
   </el-card>
 </template>
 
-<style>
+<style scoped>
 .el-card {
   width: 300px;
   height: auto;

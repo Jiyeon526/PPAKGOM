@@ -129,13 +129,11 @@ export default {
       studyData: [],
       workbookInfo: [],
       problemCnt: 0,
-      // selectScheduleDate: null
     };
   },
   methods: {
-    onOpenStudyscheduleDialog(selectDate) {
+    onOpenStudyscheduleDialog() {
       this.studyscheduleDialogOpen = true;
-      // this.selectScheduleDate=selectDate
     },
     onCloseStudyscheduleDialog() {
       this.studyscheduleDialogOpen = false;

@@ -1,5 +1,5 @@
 <template>
-  <h2>빡곰 스터디</h2>
+  <h1 style="font-size:35px;">스터디 홈</h1>
   <div class="study-home-div">
     <div @click="onClickAttitude" style="width: 50%; margin: 10px;">
       <h4>차트</h4>

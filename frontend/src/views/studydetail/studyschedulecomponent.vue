@@ -1,33 +1,32 @@
 <template>
   <v-calendar
-      class="custom-calendar max-w-full"
-      :masks="state.masks"
-      :attributes="state.attributes"
-      disable-page-swipe
-      is-expanded
-    >
-      <template v-slot:day-content="{ day, attributes }">
-        <div class="flex flex-col h-full z-10 overflow-hidden">
-          <span class="day-label text-sm text-gray-900">{{ day.day }}</span>
-          <div class="flex-grow overflow-y-auto overflow-x-auto">
-            <p
-              v-for="attr in attributes"
-              :key="attr.id"
-              class="text-xs leading-tight rounded-sm p-1 mt-0 mb-1 text-color"
-              :class="attr.customData.class"
-            >
-              {{ attr.customData.title }}
-            </p>
-          </div>
+    class="custom-calendar max-w-full"
+    :masks="state.masks"
+    :attributes="state.attributes"
+    disable-page-swipe
+    is-expanded
+  >
+    <template v-slot:day-content="{ day, attributes }">
+      <div class="flex flex-col h-full z-10 overflow-hidden">
+        <span class="day-label text-sm text-gray-900">{{ day.day }}</span>
+        <div class="flex-grow overflow-y-auto overflow-x-auto">
+          <p
+            v-for="attr in attributes"
+            :key="attr.id"
+            class="text-xs leading-tight rounded-sm p-1 mt-0 mb-1 text-color"
+            :class="attr.customData.color"
+          >
+            {{ attr.customData.title }}
+          </p>
         </div>
-      </template>
-    </v-calendar>
-    <!-- {{ state.attributes }} -->
+      </div>
+    </template>
+  </v-calendar>
 </template>
 <script>
 
 // import { Calendar, DatePicker, VCalendar } from 'v-calendar';
-import { computed, onMounted, reactive, watch } from 'vue'
+import { computed, onMounted, reactive, watch, ref } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -40,35 +39,39 @@ export default {
       type: Number,
     }
   },
+
   setup (props, { emit }) {
     const store = useStore()
     const month = new Date().getMonth();
     const year = new Date().getFullYear();
+    // const calendar = ref(null)
     const state = reactive({
       studyId: computed(() => props.studyId),
+      reload: computed(() => store.getters["root/getReload"]),
+      // calendar: computed(() => calendar),
+      month: month + 1,
       masks: {
         weekdays: 'WWW',
       },
       attributes: [],
-      // attributes: [
-      //   {
-      //     key: 1,
-      //     customData: {
-      //       title: 'Lunch with mom.',
-      //       class: 'red',
-      //     },
-      //     dates: new Date(year, month, 1),
-      //   },
-      //   {
-      //     key: 2,
-      //     customData: {
-      //       title: 'Take Noah to basketball practice',
-      //       class: 'orange',
-      //     },
-      //     dates: new Date(year, month, 2),
-      //   },
-      // ],
     })
+
+    // watch(
+    //   () => calendar,
+    //   () => {
+    //     // state.changeCalendar = state.calendar
+    //     console.log("워치실행")
+    //     getScheduleList()
+    //   }
+    // )
+
+    watch(
+      () => state.reload,
+      () => {
+        console.log("실행되는지")
+        getScheduleList()
+      }
+    )
 
     watch(
       () => state.studyId,
@@ -77,28 +80,15 @@ export default {
       }
     )
 
-    const onClickCalendar = () => {
-      emit("openStudyscheduleDialog", state.studyId)
-    }
-
     const getScheduleList = () => {
-      console.log("props 값 출력 컴포넌트", state.studyId)
       store
         .dispatch('root/requestScheduleInfo', {
-          month: month + 1,
+          month: state.month,
           studyId: state.studyId
         })
           .then(function(res) {
             console.log("스케줄 정보 가져오기", res)
             state.attributes = res.data
-            state.attributes.forEach((attr) => {
-              attr.dates = attr.date
-              attr.key = attr.id
-              attr.customData = {
-                title : attr.title,
-                class : attr.color
-              }
-            })
           })
           .catch(function(err) {
             console.log("스케줄 정보 가져오기 에러!!", err)
@@ -107,10 +97,14 @@ export default {
 
     // 페이지 진입시 불리는 훅
     onMounted (() => {
+      // console.log("달력",calendar.value.pages[0].month)
+      // state.changeCalendar = state.calendar
+      // console.log("여기",state.calendar)
+      // console.log("여기2",state.changeCalendar)
       getScheduleList()
     })
 
-    return { state, month, year, onClickCalendar, getScheduleList }
+    return { state, month, year, getScheduleList }
   }
 };
 </script>
