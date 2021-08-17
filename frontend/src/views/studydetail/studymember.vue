@@ -194,10 +194,10 @@ export default {
 
     const joinAccept = function(index, row) {
       console.log(row)
-      store.dispatch("root/requestapplyOkay", {
-        user_id: row["user_id"],
-        study_id: state.studypk,
-        })
+      const body = new FormData()
+      body.append("study_id",state.studypk)
+      body.append("user_id", row["user_id"])
+      store.dispatch("root/requestapplyOkay", body)
       .then(function(res) {
         // console.log("!!!!")
         state.applyList.splice(index, 1)
@@ -210,7 +210,10 @@ export default {
     }
     const joinReject = function(index, row) {
       console.log(row)
-      store.dispatch("root/requestapplyReject", row["user_id"])
+      const body = new FormData()
+      body.append("study_id",state.studypk)
+      body.append("user_id", row["user_id"])
+      store.dispatch("root/requestapplyReject", body)
       .then(function(res) {
         // console.log("!!!!")
         state.applyList.splice(index, 1)

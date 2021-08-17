@@ -626,8 +626,7 @@ public class StudyController {
 	public void download(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws UnsupportedEncodingException {
 	    System.err.println(file);
 	    //String path = file;
-//	    String path = "/image/";
-	    String path = "C:/Users/multicampus/Desktop/images/";
+	    String path = "/image/";
 	    
 	    if(!file.equals("default.png"))
 	    	path += "study/";
@@ -673,8 +672,7 @@ public class StudyController {
 	public void downloadTest(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws UnsupportedEncodingException {
 	    System.err.println(file);
 	    //String path = file;
-	    String path = "C:/Users/multicampus/Desktop/images/test/" + file;
-//	    String path = "/test/" + file;
+	    String path = "/test/" + file;
 	    String fileNm = file;
 	    StringBuffer sb = new StringBuffer(); 
 	    for (int i = 0; i < fileNm.length(); i++) 
@@ -706,4 +704,5 @@ public class StudyController {
 	        e.printStackTrace();
 	    } 
 	}
+	
 }

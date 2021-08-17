@@ -315,7 +315,7 @@ export function requestShowApplyList({state}) {
 export function requestapplyReject({state}, payload ) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/join/request/reject/${state.userpk}`
-  const body = {user_id: payload, study_id: state.studypk }
+  const body = payload
   return $axios.put(url, body, { headers: headers })
 }
 
