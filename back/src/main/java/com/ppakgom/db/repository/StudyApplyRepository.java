@@ -43,4 +43,6 @@ public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 
 	List<StudyApply> findByStudy_Id(Long studyId);
 
+	StudyApply findBySender_IdAndStudy_Id(Long userId, Long studyId);
+
 }
