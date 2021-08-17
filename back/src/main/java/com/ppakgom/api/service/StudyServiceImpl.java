@@ -515,6 +515,8 @@ public class StudyServiceImpl implements StudyService {
 			StudyAttend sa = studyAttendRepository.findByStudyIdAndUserIdAndStudyPlanId(studyId, userId, studyPlan.getId());
 			if(sa == null)
 				return "error";
+			if(sa.isAttend())
+				return "already";
 			
 			sa.setAttend(true);
 			studyAttendRepository.save(sa);

@@ -541,6 +541,8 @@ public class StudyController {
 			return ResponseEntity.status(201).body(new BaseResponseBody(201, "오늘 진행 중인 스터디 일정이 없습니다."));
 		else if(res.equals("ok")) // 출석 성공
 			return ResponseEntity.status(200).body(new BaseResponseBody(200, "출석 완료"));
+		else if(res.equals("already"))
+			return ResponseEntity.status(200).body(new BaseResponseBody(200, "이미 출석했습니다."));
 		
 		return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
 	}
