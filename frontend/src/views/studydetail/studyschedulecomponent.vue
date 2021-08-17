@@ -1,28 +1,27 @@
 <template>
   <v-calendar
-      class="custom-calendar max-w-full"
-      :masks="state.masks"
-      :attributes="state.attributes"
-      disable-page-swipe
-      is-expanded
-    >
-      <template v-slot:day-content="{ day, attributes }">
-        <div class="flex flex-col h-full z-10 overflow-hidden">
-          <span class="day-label text-sm text-gray-900">{{ day.day }}</span>
-          <div class="flex-grow overflow-y-auto overflow-x-auto">
-            <p
-              v-for="attr in attributes"
-              :key="attr.id"
-              class="text-xs leading-tight rounded-sm p-1 mt-0 mb-1 text-color"
-              :class="attr.customData.class"
-            >
-              {{ attr.customData.title }}
-            </p>
-          </div>
+    class="custom-calendar max-w-full"
+    :masks="state.masks"
+    :attributes="state.attributes"
+    disable-page-swipe
+    is-expanded
+  >
+    <template v-slot:day-content="{ day, attributes }">
+      <div class="flex flex-col h-full z-10 overflow-hidden">
+        <span class="day-label text-sm text-gray-900">{{ day.day }}</span>
+        <div class="flex-grow overflow-y-auto overflow-x-auto">
+          <p
+            v-for="attr in attributes"
+            :key="attr.id"
+            class="text-xs leading-tight rounded-sm p-1 mt-0 mb-1 text-color"
+            :class="attr.customData.color"
+          >
+            {{ attr.customData.title }}
+          </p>
         </div>
-      </template>
-    </v-calendar>
-    <!-- {{ state.attributes }} -->
+      </div>
+    </template>
+  </v-calendar>
 </template>
 <script>
 
@@ -40,12 +39,14 @@ export default {
       type: Number,
     }
   },
+
   setup (props, { emit }) {
     const store = useStore()
     const month = new Date().getMonth();
     const year = new Date().getFullYear();
     const state = reactive({
       studyId: computed(() => props.studyId),
+      reload: computed(() => store.getters["root/getReload"]),
       masks: {
         weekdays: 'WWW',
       },
@@ -71,6 +72,14 @@ export default {
     })
 
     watch(
+      () => state.reload,
+      () => {
+        console.log("실행되는지")
+        getScheduleList()
+      }
+    )
+
+    watch(
       () => state.studyId,
       () => {
         getScheduleList()
@@ -82,7 +91,6 @@ export default {
     }
 
     const getScheduleList = () => {
-      console.log("props 값 출력 컴포넌트", state.studyId)
       store
         .dispatch('root/requestScheduleInfo', {
           month: month + 1,
@@ -93,10 +101,10 @@ export default {
             state.attributes = res.data
             state.attributes.forEach((attr) => {
               attr.dates = attr.date
-              attr.key = attr.id
+              // attr.key = attr.id
               attr.customData = {
                 title : attr.title,
-                class : attr.color
+                color : attr.color
               }
             })
           })

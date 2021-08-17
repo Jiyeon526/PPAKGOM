@@ -198,16 +198,16 @@ export default {
             })
               .then(function(res) {
                 ElMessage({
-                message: "스케줄 생성 성공!!",
+                message: "스케줄 생성 성공",
                 type: "success"
                 });
                 handleClose();
-                router.push({
-                  name: 'studyschedule'
-                })
+                store.commit('root/setReload')
+                // router.go('studyschedule')
+                // router.push('studyhome')
               })
               .catch(function(err) {
-                console.log('스케줄 생성 실패ㅠㅠㅠ', err)
+                console.log('스케줄 생성 실패', err)
               })
         }
         else {

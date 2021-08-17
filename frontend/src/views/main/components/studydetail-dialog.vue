@@ -5,19 +5,30 @@
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-  <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
-    <el-button v-if="state.likeStudy" style="border:0; outline:0" icon="el-icon-star-off" @click="clickLikeBtn"></el-button>
-    <el-button v-else style="border:0; outline:0" icon="el-icon-star-on" @click="clickLikeCancleBtn"></el-button>
-  </div>
-  <el-divider style="margin: 5px"></el-divider>
-    <el-image style="width: 80%; height: 80%; display:block; margin:0px auto;"
-      :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
-      :fit="fit"
-      >
-    </el-image>
+    <!-- <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
+      <el-button v-if="state.likeStudy" style="border:0; outline:0" icon="el-icon-star-on" @click="clickLikeCancleBtn"></el-button>
+      <el-button v-else style="border:0; outline:0" icon="el-icon-star-off" @click="clickLikeBtn"></el-button>
+    </div> -->
+    <el-divider style="margin: 5px"></el-divider>
+    <div style="display:flex; align-items:center">
+      <el-image style="width: 50%; height: 50%;"
+        :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
+        :fit="fit"
+        >
+      </el-image>
+      <div style="width:50%; height:50%; text-align:center">
+        <h4>모집 인원 : {{ selectStudy.joined_population }}/{{ selectStudy.population }}</h4>
+        <h4>관심 분야 : {{ state.interested }}</h4>
+        <h4>마감 날짜 : {{ selectStudy.deadline }}</h4>
+      </div>
+    </div>
     <div>
-      <h4>내용</h4>
+      <h3>설명</h3>
       <p>{{ selectStudy.content }}</p>
+    </div>
+    <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
+      <el-button v-if="state.likeStudy" style="border:0; outline:0" @click="clickLikeCancleBtn"><i class="fas fa-heart" style="color:red"></i></el-button>
+      <el-button v-else style="border:0; outline:0" @click="clickLikeBtn"><i class="far fa-heart" style="color:red"></i></el-button>
     </div>
     <el-divider style="margin: 5px"></el-divider>
     <div style="display:flex; flex-direction:column; justify-content:center; align-items:center">
@@ -25,11 +36,20 @@
         <Studyschedulecomponent :studyId="state.studyId" />
       </div>
       <div style="width: 100%; display:flex; flex-direction:row; justify-content:center; align-items:center">
-        <div style="width: 50%">
+        <div style="width: 50%; text-align:center;;">
           <h4>출석현황</h4>
         </div>
-        <div>
+        <div style="width: 50%; text-align:center;">
           <h4>가입멤버</h4>
+          <el-table
+            :data="state.studyMember"
+            style="width: 100%">
+            <el-table-column
+              prop="name"
+              label="스터디원"
+              width="auto">
+            </el-table-column>
+          </el-table>
         </div>
       </div>
     </div>
@@ -78,7 +98,7 @@
 </style>
 <script>
 import Studyschedulecomponent from "@/views/studydetail/studyschedulecomponent"
-import { reactive, computed, onMounted } from "vue";
+import { reactive, computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
@@ -109,21 +129,46 @@ export default {
     */
     const state = reactive({
       dialogVisible: computed(() => props.open),
+      firstLikeInfo: computed(() => props.selectStudy.liked),
       likeStudy: false,
-      studyId: computed(() => props.selectStudy.study_id)
+      studyId: computed(() => props.selectStudy.study_id),
+      interested: computed(() => props.selectStudy.interest.join(', ')),
+      studyMember: [],
     });
 
+    watch(
+      () => state.studyId,
+      () => {
+        state.likeStudy = state.firstLikeInfo
+        getStudyMember()
+      }
+    )
+
     onMounted(() => {
-      // console.log(loginForm.value)
+
     });
+
+    const getStudyMember = () => {
+      store
+        .dispatch('root/requestStudyMember', {
+          studyId: state.studyId
+        })
+          .then(function(res) {
+            // console.log("스터디 멤버 가져오기", res)
+            state.studyMember = res.data
+          })
+          .catch(function(err) {
+            console.log("스터디 멤버 가져오기 에러", err)
+          })
+    }
 
     const enterStudy = () => {
     store.commit("root/setStudypk", props.selectStudy.study_id);
     store.commit("root/setSelectOption", "studyhome");
     handleClose()
     router.push({
-      name: 'studyhome'
-    });
+      name: 'studyschedule'
+    })
   }
 
     const requestJoinStudy = () => {
@@ -183,7 +228,7 @@ export default {
       emit("closeStudydetailDialog");
     };
 
-    return { state, handleClose, enterStudy, requestJoinStudy, clickLikeBtn, clickLikeCancleBtn };
+    return { state, handleClose, getStudyMember, enterStudy, requestJoinStudy, clickLikeBtn, clickLikeCancleBtn };
   }
 };
 </script>

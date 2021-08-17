@@ -64,3 +64,7 @@ export function setStudypk(state, payload) {
 export function setSelectOption(state, payload) {
   state.selectOption = payload
 }
+
+export function setReload(state) {
+  state.reload = !state.reload
+}

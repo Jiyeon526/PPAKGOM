@@ -55,3 +55,7 @@ export function getStudypk(state) {
 export function getSelectOption(state) {
   return state.selectOption;
 }
+
+export function getReload(state) {
+  return state.reload;
+}

@@ -2,8 +2,8 @@
   <el-card :body-style="{ padding: '0px' }">
     <div class="image-wrapper">
       <el-image
-        style="width: 100%; height: 250px"
-        :src="'https://localhost:8443/' + studyData.study_thumbnail"
+        style="width: 100%; height: 250px;"
+        :src="state.uri"
         :fit="fit"
       >
       </el-image>
@@ -24,25 +24,24 @@
         <el-tag
           v-if="studyData.enter"
           type="success"
-          @click="enterStudy(studyData.study_id)"
+          @click.stop="enterStudy(studyData.study_id)"
           >입장</el-tag
         >
       </el-input-data>
     </div>
   </el-card>
 </template>
-<style>
+<style scoped>
 .el-card {
   width: 300px;
   height: auto;
-  margin: 0 8px;
   margin-bottom: 40px;
   border-radius: 10px;
+  border-color: rgb(143, 209, 141);
 }
 .el-card:hover {
   transform: scale(1.05, 1.05);
-  box-shadow: 5px 5px 30px 15px rgba(175, 175, 175, 0.25),
-    -5px -5px 30px 15px rgba(175, 175, 175, 0.25);
+  box-shadow: 5px 5px 5px rgb(143, 209, 141, 0.7);
 }
 .el-card .image-wrapper {
   width: 300px;
@@ -94,6 +93,7 @@
 import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import axios from "axios";
 
 export default {
   name: "Home",
@@ -104,10 +104,13 @@ export default {
     }
   },
 
-  setup() {
+  setup(props, { emit }) {
     const store = useStore();
     const router = useRouter();
-    const state = reactive({});
+    const state = reactive({
+      uri: '',
+      studyData: "",
+    });
 
     const enterStudy = studyPk => {
       console.log("스터디 데이터", studyPk);
@@ -118,6 +121,29 @@ export default {
         name: "studyhome"
       });
     };
+
+     onMounted(() => {
+      state.studyData = props.studyData.study_thumbnail;
+      console.log(state.studyData);
+      var name;
+      if (
+        state.studyData.split("\\").length > state.studyData.split("/").length
+      ) {
+        name = state.studyData.split("\\");
+      } else {
+        name = state.studyData.split("/");
+      }
+
+      console.log(name);
+      //name = "9-kakao.jpg";
+      axios({
+        url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+        method: "GET",
+        responseType: "blob"
+      }).then(res => {
+        state.uri = URL.createObjectURL(res.data);
+      });
+    });
 
     return { state, enterStudy };
   }

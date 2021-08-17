@@ -343,3 +343,10 @@ export function requestAttendence({state}, payload) {
   const url = `/study/${payload.studyId}/attend/${payload.userpk}`
   return $axios.post(url, {}, { headers: headers })
 }
+
+// 스터디 멤버 가져오기(디테일 팝업창)
+export function requestStudyMember({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${payload.studyId}/info/member`
+  return $axios.get(url, { headers: headers })
+}

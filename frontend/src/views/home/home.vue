@@ -1,5 +1,5 @@
 <template>
-  <h1>스터디 모집</h1>
+  <h1 style="font-size:35px;">스터디 모집</h1>
   <div class="search-bar">
     <el-select class="option" v-model="state.searchType" placeholder="Select">
       <el-option
@@ -23,29 +23,33 @@
     </div>
   </div>
   <br />
+  {{ state.uri }}
   <h4 v-if="state.recommendStudyList.length === 0">
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
   <el-carousel v-else :interval="4000" type="card" height="300px">
       <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
-        <el-image style="width: 300px; height: 300px"
-          :src="'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail"
+        <study :studyData="state.recommendStudyList[i-1]" style="width:100%"/>
+        <!-- <el-image style="width: 300px; height: 300px"
+          :src="state.uri[i-1]"
           :fit="fit"
           alt="PPAKGOM"
         >
-        </el-image>
+        </el-image> -->
       </el-carousel-item>
+      <!-- <p>'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail</p> -->
   </el-carousel>
-  <div v-if="state.studyList.length !== 0">
-    <div
+  <!-- <ul v-if="state.studyList.length !== 0" style="display:flex; flex-wrap: wrap; justify-content: flex-start;"> -->
+  <ul v-if="state.studyList.length !== 0" class="ul-class">
+    <li
       v-for="i in state.studyList.length"
       :key="i"
       @click="onClickStudyList(i)"
-      class="study"
+      class="li-class"
     >
-      <study :studyData="state.studyList[i-1]" />
-    </div>
-  </div>
+      <study :studyData="state.studyList[i-1]" style="width:100%"/>
+    </li>
+  </ul>
   <el-alert
     v-else
     title="존재하는 스터디가 없습니다. 새롭게 스터디를 생성하시거나 다른 제목으로 스터디를 검색해주세요."
@@ -55,9 +59,25 @@
   </el-alert>
 </template>
 <style scoped>
-.study {
-  display: inline-block;
+.ul-class {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
+  grid-gap: 16px;
+  justify-content: center;
+  padding: initial;
 }
+.li-class {
+  list-style-type: none;
+  padding: 5px;
+  width: 300px;
+}
+
+/* .study {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: auto;
+  margin-right: auto;
+} */
 .search-bar {
   display: flex;
 }
@@ -127,7 +147,9 @@ export default {
           value: 3,
           label: "해시태그"
         }
-      ]
+      ],
+      uri: [],
+      studyData: ''
     })
 
     const onClickRecommendStudyList = (id) => {
@@ -137,8 +159,8 @@ export default {
 
 
     const onClickStudyList = (id) => {
-        const selectStudy = state.studyList[id-1]
-        emit("openStudydetailDialog", selectStudy)
+      const selectStudy = state.studyList[id-1]
+      emit("openStudydetailDialog", selectStudy)
     }
 
     // 방 목록 리스트 가져오기
@@ -168,9 +190,48 @@ export default {
         })
     }
 
+    // const getImage = (thumbnail) => {
+    //   let studyData = thumbnail
+    //   console.log("여기 확인", studyData);
+    //   var name;
+    //   if (
+    //     studyData.split("\\").length > studyData.split("/").length
+    //   ) {
+    //     name = studyData.split("\\");
+    //   } else {
+    //     name = studyData.split("/");
+    //   }
+    //   console.log("네임",name);
+    //   //name = "9-kakao.jpg";
+    //    axios({
+    //     url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+    //     method: "GET",
+    //     responseType: "blob"
+    //   }).then(res => {
+    //     console.log("여여여",URL.createObjectURL(res.data))
+    //     state.uri.push(URL.createObjectURL(res.data));
+    //   });
+    // }
+
     onMounted(() => {
       if (state.isLoggedIn) {
         getRecommendStudyList()
+        // store
+        // .dispatch('root/requestRecommendStudyList', {
+        // })
+        // .then(function(res) {
+        //   console.log('추천 리스트 응답 결과', res)
+        //   state.recommendStudyList = res.data.studyResult
+        //   console.log("데이터확인", state.recommendStudyList)
+        //   console.log("길이 확인",state.recommendStudyList.length)
+        //   // for (let i = 0; i < state.recommendStudyList.length; i++) {
+        //     getImage(state.recommendStudyList[0].study_thumbnail)
+        //     console.log("여기")
+        //   // }
+        // })
+        // .catch(function(err) {
+        //   console.log('추천 리스트 응답 에러', err)
+        // })
       }
       getStudyList()
     })
