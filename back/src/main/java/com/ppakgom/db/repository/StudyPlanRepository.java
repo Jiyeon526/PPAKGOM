@@ -11,8 +11,7 @@ import com.ppakgom.db.entity.StudyPlan;
 public interface StudyPlanRepository extends JpaRepository<StudyPlan, Long> {
 
 	List<StudyPlan> findByStudy_Id(Long studyId);
-	
-//	@Query(value = "SELECT * FROM STUDY_PLAN WHERE DATE(date) = 1?", nativeQuery = true)
-	StudyPlan findByDate(Date date);
+
+	StudyPlan findByDateAndStudyId(Date to, Long study_id);
 
 }
