@@ -130,6 +130,8 @@ public class JoinController {
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "스터디 가입 요청을 보냈습니다."));
 		} else if(res.equals("deadline")) { // 모집 날짜 초과
 			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "마감한 스터디입니다."));
+		} else if(res.equals("already")) { // 이미 가입 신청함
+			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "이미 신청한 스터디 입니다."));
 		} else { // 그 외
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		}
