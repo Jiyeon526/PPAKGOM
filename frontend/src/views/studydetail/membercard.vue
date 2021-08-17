@@ -9,6 +9,9 @@
     <div style="text-align: left; padding: 14px;">
       <span>{{memberData.name}}님</span>
     </div>
+    <div v-if="condition == 1">
+      <el-button>초대하기</el-button>
+    </div>
   </el-card>
 </template>
 
@@ -35,6 +38,10 @@ export default {
   props: {
     memberData: {
       type: Object
+    },
+    condition: {
+      type: Number,
+      default: 0
     }
   },
 

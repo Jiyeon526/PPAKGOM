@@ -45,5 +45,6 @@ export default {
   kakaologin: false,
   userpk: userPk,
   studypk: studypk,
-  selectOption: ''
+  selectOption: '',
+  testpk: 0,
 }

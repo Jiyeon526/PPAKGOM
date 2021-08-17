@@ -71,7 +71,6 @@
       </el-table-column>
       <el-table-column
         prop="state"
-        label="buttons"
         align='right'
       >
         <template #default="scope">

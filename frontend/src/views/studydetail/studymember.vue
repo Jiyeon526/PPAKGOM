@@ -4,28 +4,23 @@
     <membercard :memberData='memberData' />
   </div>
   <el-divider></el-divider>
-  <el-row :gutter="24">
-    <el-col :span="12">
-      <h1>초대한 회원 현황</h1>
-      <el-button>초대하기</el-button>
+  <el-row :gutter="24" >
+    <el-col :span="12" align="left">
+      <h1 style="display: inline-block">초대한 회원 현황</h1>
+      <el-button size="mini" @click="findMember">초대하기</el-button>
     <el-table
       :data="state.sendList"
       height="400"
       @row-click="handleClick"
       style="width: 100%">
       <el-table-column
-        prop="studyId"
-        label="방번호"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="studyName"
-        label="스터디명"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="userName"
+        prop="name"
         label="회원명"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="temperature"
+        label="열정도"
       >
       </el-table-column>
       <el-table-column
@@ -48,46 +43,39 @@
     </el-table>
     </el-col>
 
-  <el-col :span="12">
+  <el-col :span="12" align="left">
       <h1>가입 요청 회원</h1>
-    <!-- <el-table
-      :data="state.receiveList"
+    <el-table
+      :data="state.applyList"
       height="400"
-      :show-header="false"
-      @row-click="handleUserClick"
+      @row-click="handleClick"
       style="width: 100%">
       <el-table-column
-        prop="studyId"
-        label="study_id"
+        prop="name"
+        label="회원명"
       >
       </el-table-column>
       <el-table-column
-        prop="studyName"
-        label="study_name"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="userName"
-        label="owner_user_name"
+        prop="temperature"
+        label="열정도"
       >
       </el-table-column>
       <el-table-column
         prop="state"
-        label="buttons"
         align='right'
       >
         <template #default="scope">
           <div v-if="scope.row['state'] == 2">
             <el-button
               size="mini" type="primary"
-              @click="inviteAccept(scope.$index, scope.row)">승인</el-button>
+              @click="joinAccept(scope.$index, scope.row)">승인</el-button>
             <el-button
               size="mini" type="danger"
-              @click="inviteReject(scope.$index, scope.row)">거절</el-button>
+              @click="joinReject(scope.$index, scope.row)">거절</el-button>
           </div>
         </template>
       </el-table-column>
-    </el-table> -->
+    </el-table>
     </el-col>
   </el-row>
 </template>
@@ -106,6 +94,7 @@ export default {
     const state = reactive({
       memberList : [],
       sendList : [],
+      applyList : [],
       inStudyList : [],
    })
 
@@ -113,6 +102,7 @@ export default {
     onMounted (() => {
       studyMemberList()
       inviteSendList()
+      applyUserList()
     })
 
     const studyMemberList = function() {
@@ -137,13 +127,22 @@ export default {
       })
     }
 
+    const applyUserList = function() {
+      store.dispatch("root/requestShowApplyList")
+      .then(function(res){
+        state.applyList = res.data
+        console.log(state.applyList)
+      })
+    }
+
     const handleClick = function(row, column, cell, event) {
+      console.log(row)
       if (column.property != "state") {
-        store.dispatch("root/requestNameUserJoinStudyList",row["userName"])
+        store.dispatch("root/requestNameUserJoinStudyList",row["name"])
         .then(function(res) {
           state.inStudyList = []
           state.inStudyList = res.data
-          store.dispatch("root/requestOtherProfile", row["userName"])
+          store.dispatch("root/requestOtherProfile", row["name"])
           .then(function(res) {
             const profileData = res.data
             const origin_url = profileData["profile_thumbnail"]
@@ -194,7 +193,12 @@ export default {
       })
     }
 
-  return { state, studyMemberList, inviteSendList, handleClick, handleCancelInvite, handleCheckReject }
+    const findMember = function() {
+      emit("openInviteDialog")
+    }
+
+
+  return { state, studyMemberList, inviteSendList, handleClick, handleCancelInvite, handleCheckReject, applyUserList, findMember }
   }
 }
 </script>

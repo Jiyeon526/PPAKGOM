@@ -62,7 +62,8 @@ export default {
       console.log(row)
       store.dispatch('root/requestWorkbookInfo',row["id"])
       .then(function(res) {
-        console.log(res.data.answer.length)
+
+        console.log(res.data.answer,res.data.answer.length)
         emit("OpenMakeworkbookDialog", res.data.test, res.data.answer.length)
       })
       .catch(function(err) {

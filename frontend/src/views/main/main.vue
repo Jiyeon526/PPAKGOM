@@ -27,6 +27,7 @@
           @openAnswerworkbookDialog="onOpenAnswerWorkbookDialog"
           @openMakeworkbookDialog="onOpenMakeworkbookDialog"
           @openOtherpeopleDialog="onOpenOtherpeopleDialog"
+          @openInviteDialog="onOpenInviteDialog"
         ></router-view>
       </el-main>
     </el-container>

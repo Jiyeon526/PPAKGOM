@@ -20,7 +20,7 @@
     <el-col :span="1"></el-col>
     <el-col :span="10">
       <el-input v-for="cnt in problemCnt" :key="cnt" v-model="state.tableData[cnt-1]"
-                      ></el-input>
+      ></el-input>
       <el-button @click="handleClick">submit</el-button>
     </el-col>
   </el-row>
@@ -100,22 +100,30 @@ export default {
 
     const handleClick = function() {
       console.log(state.tableData)
+      const newtab = []
+      for(let val in state.tableData) {
+        console.log([state.tableData[val]])
+        newtab.push(state.tableData[val])
+      }
+      store.commit('root/setTestpk', props.workbookInfo.id)
+      console.log(props.workbookInfo)
+      console.log(newtab)
+      // let body = new FormData()
+      // body.append("answer",newtab)
+      // store.dispatch('root/requestSubmitAnswer',body)
+      store.dispatch('root/requestSubmitAnswer', {
+        answer:JSON.stringify(newtab)
+      })
+      .then(function(res) {
+        console.log(res)
+      })
+      .catch(function(err) {
+        console.log(err)
+      })
     }
-    const addRow = function() {
-      const newRow = {}
-      state.tableData = [...state.tableData,newRow]
-      ++ state.tableCount
-      console.log("click!",state.tableCount)
-      console.log("click2!",state.tableData)
 
-    }
-    const deleteRow = function(index,row) {
-        state.tableData.splice(index, 1);
-        if(state.tableCount > 0)
-          -- state.tableCount;
-    }
 
-    return { answerbookForm, pdfUpload, pdfRef, state, handleClose, handleRender, addRow, deleteRow, handleClick };
+    return { answerbookForm, pdfUpload, pdfRef, state, handleClose, handleRender, handleClick };
   }
 };
 </script>

@@ -69,7 +69,7 @@
           </el-table>
         </el-form-item>
         <el-form-item align='right'>
-          <el-button type="primary" >만들기</el-button>
+          <el-button type="primary" @click="handleClick" >만들기</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -122,6 +122,8 @@ export default {
       pageCount: 1,
       tableCount: 0,
       tableData: [],
+      answerTable: ["1",],
+      userpk: computed(() => store.getters["root/getUserpk"]),
     });
 
     const isDisabled = function() {
@@ -134,7 +136,6 @@ export default {
     });
 
     const handleClose = function() {
-
       emit("closeAnswerWorkbookDialog");
     };
 
@@ -171,7 +172,29 @@ export default {
           -- state.tableCount;
     }
 
-    return { answerbookForm, pdfUpload, pdfRef, state, handleClose, handleRender, addRow, deleteRow, fileChange };
+    const handleClick = function() {
+      console.log(state.tableData)
+      const newtab = []
+      for(let val in state.tableData) {
+        console.log([state.tableData[val]["answer"]])
+        newtab.push(state.tableData[val]["answer"])
+      }
+
+      let body = new FormData()
+      body.append("test.userId",state.userpk)
+      body.append("test.title",state.form.title)
+      body.append("study_thumbnail",state.form.uploading)
+      body.append("answer",newtab)
+      store.dispatch('root/requestMakeWorkbook',body)
+      .then(function(res) {
+        console.log(res)
+      })
+      .catch(function(err) {
+        console.log(err)
+      })
+    }
+
+    return { answerbookForm, pdfUpload, pdfRef, state, handleClose, handleRender, addRow, deleteRow, fileChange, handleClick };
   }
 };
 </script>

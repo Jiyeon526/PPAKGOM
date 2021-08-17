@@ -277,10 +277,10 @@ export function requestWorkbookInfo({state}, payload) {
   return $axios.get(url, { headers: headers })
 }
 
-// 초대받은 현황 목록 가져오기
+// 초대한 현황 목록 가져오기
 export function requestinviteSendList({state}) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/invitation/response/${state.userpk}`
+  const url = `/study/${state.studypk}/invitelist`
   return $axios.get(url, { headers: headers })
 }
 
@@ -300,28 +300,30 @@ export function requestCheckInviteReject({state}, payload ) {
   return $axios.delete(url, { headers: headers, params:params })
 }
 
-// 신청한 회원 목록 가져오기
-export function requestShowApply({state}) {
+// 가입 요청한 회원 목록 가져오기
+export function requestShowApplyList({state}) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/join/request/${state.userpk}`
+  const url = `/study/${state.studypk}/joinlist`
   return $axios.get(url, { headers: headers })
 }
 
-// // 초대 취소하기
-// export function requestCancelInvite({state}, payload ) {
-//   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-//   const url = `/invitation/response/cancel/${state.userpk}`
-//   const params = payload
-//   return $axios.delete(url, { headers: headers, params:params })
-// }
+//////////// 확인 요망!
 
-// // 초대 거절 확인
-// export function requestCheckInviteReject({state}, payload ) {
-//   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-//   const url = `/invitation/response/reject/${state.userpk}`
-//   const params = payload
-//   return $axios.delete(url, { headers: headers, params:params })
-// }
+// 가입 요청 거절
+export function requestapplyReject({state}, payload ) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/join/request/reject/${payload.userid}`
+  const body = payload
+  return $axios.put(url, body, { headers: headers })
+}
+
+// 가입 요청 승인
+export function requestapplyOkay({state}, payload ) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/join/request/ok/${payload.userid}`
+  const params = payload
+  return $axios.post(url, body, { headers: headers })
+}
 
 // 스케줄 생성
 export function requestCreateSchedule({state}, payload) {
@@ -342,4 +344,29 @@ export function requestAttendence({state}, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/study/${payload.studyId}/attend/${payload.userpk}`
   return $axios.post(url, {}, { headers: headers })
+}
+
+// 문제집 만들기
+export function requestMakeWorkbook({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${state.studypk}`
+  const body = payload
+  console.log(body)
+  return $axios.post(url, body, { headers: headers })
+}
+
+// 문제집 제출 후 채점 결과 확인
+export function requestSubmitAnswer({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${state.userpk}/score/${state.testpk}`
+  const body = payload
+  console.log(payload,body)
+  return $axios.post(url, body, { headers: headers })
+}
+
+// 해당 관심사 회원 목록
+export function requestSearchInterest({state}, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${state.studypk}/member/${payload}`
+  return $axios.get(url, { headers: headers })
 }
