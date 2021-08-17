@@ -181,7 +181,7 @@ public class JoinServiceImpl implements JoinService {
 			if(study.isJoin() == false || study.getState() != 2) continue; // 초대이거나 상태가 이미 승인/거절한거면 넘기기
 			StudyJoinApplyListRes list = new StudyJoinApplyListRes();
 			// 스터디 신청한 사람들 정보 저장
-			list.setUser_id(study.getSender().getUserId()); // 아이디 저장
+			list.setUser_id(study.getSender().getId()); // 아이디 저장
 			list.setName(study.getSender().getName()); // 닉네임 저장
 			list.setThumbnail(study.getSender().getProfile_thumbnail()); // 썸네일 저장
 			list.setTemperature(study.getSender().getTemperature()); // 온도 저장
