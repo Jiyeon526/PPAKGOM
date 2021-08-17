@@ -386,9 +386,14 @@ public class StudyController {
 			User sender = study.getUser();
 			// is_join 가지고
 			// state는 2
-			studyApplyService.inviteStudy(sender, study, receiver, req.is_join());
+//			중복 방지 코드 추가
+			Optional<StudyApply> sa = studyApplyService.getInviteListByStudyAndIsJoinAndReceiverId(studyId, false,req.getReceiver_id());
+			
+			if(!sa.isPresent())
+				studyApplyService.inviteStudy(sender, study, receiver, req.is_join());
 
 			return ResponseEntity.ok(new BaseResponseBody(200, "성공"));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(400).body(new BaseResponseBody(400, "실패"));

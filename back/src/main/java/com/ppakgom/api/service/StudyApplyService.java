@@ -35,5 +35,7 @@ public interface StudyApplyService {
 	void agreeInvitation(InviteReq_sender req, Long userId);
 
 	List<StudyApply> getInviteListByStudyAndIsJoin(Long studyId, boolean isJoin);
+
+	Optional<StudyApply> getInviteListByStudyAndIsJoinAndReceiverId(Long studyId, boolean b, Long receiver_id);
 	
 }

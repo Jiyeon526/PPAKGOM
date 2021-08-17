@@ -1,6 +1,7 @@
 package com.ppakgom.db.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -42,6 +43,8 @@ public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 	StudyApply findByReceiver_IdAndStudy_IdAndSender_Id(Long userid, Long study_id, Long user_id);
 
 	List<StudyApply> findByStudy_Id(Long studyId);
+
+	Optional<StudyApply> findByStudyIdAndIsJoinAndReceiverId(Long studyId, boolean isJoin, Long receiverId);
 
 	StudyApply findBySender_IdAndStudy_Id(Long userId, Long studyId);
 
