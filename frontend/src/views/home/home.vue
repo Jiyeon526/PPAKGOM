@@ -71,20 +71,9 @@
 }
 
 /* carousel */
-/* .el-carousel {
+.el-carousel {
   margin: 50px 0px;
-  display: flex;
-  flex-direction: column;
 }
-.el-carousel__container {
-  display: flex;
-  justify-content: center;
-} */
-
-/* .el-carousel .el-carousel__item {
-  width: 300px;
-  height: 300px;
-} */
 
 .el-carousel__item h3 {
   color: #d3dce6;
@@ -125,16 +114,6 @@ export default {
       searchValue: "",
       searchType: "",
       isCardClick: true,
-      // addRecommendStudy: {
-      //   study_id: 0,
-      //   interest: ["프로그래밍","개발자"],
-      //   name: "관심분야를 더 등록해주세요",
-      //   content: "빡곰 스터디는 원할한 스터디를 지원합니다.",
-      //   population: 5,
-      //   study_thumbnail: require('@/assets/images/ppakgom.png'),
-      //   joined_population: 3,
-      //   deadline: "2021-08-23"
-      // },
       options: [
         {
           value: 1,
@@ -156,11 +135,10 @@ export default {
       emit("openStudydetailDialog", selectStudy);
     }
 
+
     const onClickStudyList = (id) => {
-      if (state.isCardClick) {
         const selectStudy = state.studyList[id-1]
-        emit("openStudydetailDialog", selectStudy);
-      }
+        emit("openStudydetailDialog", selectStudy)
     }
 
     // 방 목록 리스트 가져오기
@@ -184,23 +162,6 @@ export default {
         .then(function(res) {
           console.log('추천 리스트 응답 결과', res)
           state.recommendStudyList = res.data.studyResult
-          // 받아온 study_thumbnail에 'https://localhost:8443/'를 붙여서 주소로 만들고 src로 넣어준다.
-          // 1개나 2개의 데이터를 받아오는 경우 기본 이미지를 출력하기 위해
-          // const recommendStudyIndex = state.recommendStudyList.length
-          // console.log("너는 몇이니", recommendStudyIndex)
-          // let cnt = 0
-          // while (cnt < recommendStudyIndex) {
-          //   state.recommendStudyList[cnt].study_thumbnail = 'https://localhost:8443/' + state.recommendStudyList[cnt].study_thumbnail
-          //   cnt += 1
-          // }
-          // console.log("여기!",state.recommendStudyList.length)
-          // console.log(0 < state.recommendStudyList.length && state.recommendStudyList.length < 3)
-          // if (0 < state.recommendStudyList.length && state.recommendStudyList.length < 3) {
-          //   state.recommendStudyList.push(state.addRecommendStudy)
-          //   if (0 < state.recommendStudyList.length && state.recommendStudyList.length < 3) {
-          //     state.recommendStudyList.push(state.addRecommendStudy)
-          //   }
-          // }
         })
         .catch(function(err) {
           console.log('추천 리스트 응답 에러', err)

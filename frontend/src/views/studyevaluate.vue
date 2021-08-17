@@ -76,12 +76,11 @@ export default {
 
     const handleClick = function(row, column, cell, event) {
       state.studyData = row
-      store.dispatch("root/requestJoinStudyList")
+      store.dispatch("root/requestNameUserJoinStudyList", row["study_member_name"])
       .then(function(res) {
         state.inStudyList = []
-        for (const val in res.data.studyResult) {
-          state.inStudyList.push(res.data.studyResult[val]["name"])
-        }
+        state.inStudyList = res.data
+        state.studyData["joined_study"] = state.inStudyList
       })
       store.dispatch("root/requestOtherProfile", row["study_member_name"])
       .then(function(res) {
@@ -93,7 +92,7 @@ export default {
         const url_length = origin_url.length
         const process_thumbnail = origin_url.substring(need_from,url_length)
         profileData["profile_thumbnail"] = process_thumbnail
-        profileData["joined_study"] = state.inStudyList
+        // profileData["joined_study"] = state.inStudyList
         state.memberData = profileData
       })
       .catch(function(err) {

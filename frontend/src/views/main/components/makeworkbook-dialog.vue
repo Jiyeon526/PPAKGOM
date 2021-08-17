@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     custom-class="makeworkbook-dialog"
-    title="문제집 95173"
+    :title= workbookInfo.title
     v-model="state.dialogVisible"
     @close="handleClose"
   >
@@ -14,55 +14,20 @@
         style="height:80%"
         ref="pdfRef"
         :page = state.page
-        :source="state.src"
+        :source= "'https://localhost:8443/' + workbookInfo.test_url"
         @rendered="handleRender" />
     </el-col>
     <el-col :span="1"></el-col>
     <el-col :span="10">
-      <el-form
-        :model="answerbookForm"
-        :rules="rules"
-        ref="answerbookForm">
-        <el-form-item label="제목" prop="title">
-          <el-input v-model="state.form.title" autocomplete="off"></el-input>
-        </el-form-item>
-
-        <el-form-item>
-          <el-button @click="addRow">Add</el-button>
-          <el-button @click="saveAll">Save All</el-button>
-
-          <el-table
-            height="400"
-            :data="state.tableData">
-            <el-table-column
-              label="NO."
-              type="index">
-            </el-table-column>
-            <el-table-column prop="answer" label="Answer">
-              <template #default="scope">
-                  <el-input size="small"
-                    style="text-align:center"
-                    v-model="scope.row.answer" controls-position="right"></el-input>
-              </template>
-            </el-table-column>
-            <el-table-column align='right' width="50" >
-              <template #default="scope">
-                <el-button icon="el-icon-circle-close" @click="deleteRow(scope.$index, scope.row)" type="text" size="small">
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-form-item>
-        <el-form-item align='right'>
-          <el-button type="primary" >만들기</el-button>
-        </el-form-item>
-      </el-form>
+      <el-input v-for="cnt in problemCnt" :key="cnt" v-model="state.tableData[cnt-1]"
+                      ></el-input>
+      <el-button @click="handleClick">submit</el-button>
     </el-col>
   </el-row>
   </el-dialog>
 </template>
 <script>
-import { reactive, computed, ref, onMounted } from "vue";
+import { reactive, computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
@@ -79,6 +44,12 @@ export default {
     open: {
       type: Boolean,
       default: false
+    },
+    workbookInfo: {
+      type: Object
+    },
+    problemCnt: {
+      type: Number
     }
   },
 
@@ -99,7 +70,6 @@ export default {
         title: "",
         align: "left"
       },
-      src: "https://cdn.rawgit.com/mozilla/pdf.js/c6e8ca86/test/pdfs/freeculture.pdf",
       dialogVisible: computed(() => props.open),
       formLabelWidth: "120px",
       page: 1,
@@ -108,17 +78,19 @@ export default {
       tableData: [],
     });
 
+
+
     const isDisabled = function() {
       return "disabled";
     };
 
     onMounted(() => {
       // state.pagecount = pdfRef.value.pagecount
-      // console.log(loginForm.value)
+      console.log(props.problemCnt)
     });
 
     const handleClose = function() {
-
+      console.log(state.tableData)
       emit("closeMakeworkbookDialog");
     };
 
@@ -126,6 +98,9 @@ export default {
       state.pageCount = pdfRef.value.pageCount
     }
 
+    const handleClick = function() {
+      console.log(state.tableData)
+    }
     const addRow = function() {
       const newRow = {}
       state.tableData = [...state.tableData,newRow]
@@ -140,7 +115,7 @@ export default {
           -- state.tableCount;
     }
 
-    return { answerbookForm, pdfUpload, pdfRef, state, handleClose, handleRender, addRow, deleteRow };
+    return { answerbookForm, pdfUpload, pdfRef, state, handleClose, handleRender, addRow, deleteRow, handleClick };
   }
 };
 </script>

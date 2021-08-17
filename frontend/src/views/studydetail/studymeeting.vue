@@ -8,9 +8,10 @@
     <el-main>
       <div id="join" v-if="!state.session">
         <div id="join-dialog" class="jumbotron vertical-center">
-          <h1>Join a video session</h1>
+          <h1>입장 전 거울 화면</h1>
+          <video id="test-video" autoplay loop muted></video>
           <div class="form-group">
-            <p>
+            <!-- <p>
               <label>Participant</label>
               <input
                 v-model="state.myUserName"
@@ -27,12 +28,11 @@
                 type="text"
                 required
               />
-            </p>
-            <p class="text-center">
-              <button class="btn btn-lg btn-success" @click="joinSession()">
-                Join!
-              </button>
-            </p>
+            </p> -->
+
+            <el-button @click="joinSession()" type="success" round
+              >화상 미팅 입장</el-button
+            >
           </div>
         </div>
       </div>
@@ -65,6 +65,9 @@
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
+                :is-speak="
+                  state.isSpeakList.includes(sub.stream.connection.connectionId)
+                "
               />
               <!-- <user-video
                 class="screen-res"
@@ -91,6 +94,9 @@
                 :key="sub.stream.connection.connectionId"
                 :stream-manager="sub"
                 @click="updateMainVideoStreamManager(sub)"
+                :is-speak="
+                  state.isSpeakList.includes(sub.stream.connection.connectionId)
+                "
               />
               <!-- <user-video
                 class="screen-res"
@@ -107,21 +113,33 @@
             </el-container>
           </el-col>
           <el-col :span="state.narrow">
-            <el-popover placement="bottom-start" :width="580" trigger="click">
+            <el-popover placement="bottom-end" :width="580" trigger="click">
               <template #reference>
-                <el-button @click="widthreverse">채팅</el-button>
+                <el-badge :value="state.messagelength" :max="99" class="item">
+                  <el-button @click="widthreverse">채팅</el-button>
+                </el-badge>
               </template>
               <div style="height:550px;">
                 <el-collapse v-model="state.activeNames">
-                  <el-collapse-item title="채팅" name="1">
+                  <el-collapse-item title="채팅내역" name="1">
                     <!-- <el-scrollbar height="500px" id="chat-area"> -->
 
                     <div id="chat-area" style=" height:520px; overflow:scroll;">
                       <div v-for="(item, i) in state.messages" :key="i">
-                        <el-avatar
+                        <!-- <el-avatar
                           src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-                        ></el-avatar>
-                        {{ item.from }}:{{ item.content }}
+                        ></el-avatar> -->
+                        <div
+                          class="chatbox"
+                          v-if="item.from == state.myUserName"
+                        >
+                          {{ item.content }}
+                          <el-avatar>{{ item.from }}</el-avatar>
+                        </div>
+                        <div class="otherchatbox" v-else>
+                          <el-avatar>{{ item.from }}</el-avatar
+                          >{{ item.content }}
+                        </div>
                       </div>
                     </div>
 
@@ -135,7 +153,7 @@
                 clearable
                 :rows="2"
                 placeholder="채팅 내용을 입력하세요"
-                maxlength="100"
+                maxlength="40"
                 @keyup.enter="sendMessage"
                 show-word-limit
               />
@@ -211,6 +229,10 @@
           @click="toggleMainmode"
           >분할모드</el-button
         >
+
+        <el-button type="success" icon="el-icon-bell" @click="attendance"
+          >출석</el-button
+        >
         <el-button
           type="success"
           icon="el-icon-switch-button"
@@ -224,13 +246,13 @@
 
 <script>
 import axios from "axios";
+
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./openviducomponents/UserVideo";
-import Swal from "sweetalert2";
 import { ElNotification, ElMessageBox, ElMessage } from "element-plus";
 import { onMounted, onUnmounted, reactive } from "vue";
 import { useStore } from "vuex";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -245,16 +267,18 @@ export default {
   },
   setup() {
     const store = useStore();
-    const route = useRoute();
+    const router = useRouter();
 
     const state = reactive({
+      userpk: 0,
+      studypk: 0,
       //메인모드
       mainmode: false,
       // 화면 크기 변화
       widthflag: false,
       wide: 22,
       narrow: 2,
-
+      readmessages: 0,
       //채팅
       message: "",
       messages: [],
@@ -267,8 +291,8 @@ export default {
       publisher: undefined,
       subscribers: [],
       mySessionId: "SessionA",
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
-
+      //myUserName: "Participant" + Math.floor(Math.random() * 100),
+      myUserName: "default" + Math.floor(Math.random() * 100),
       //마이크 ONOFF 카메라 ONOFF
       audioOn: true,
       videoOn: true,
@@ -280,42 +304,142 @@ export default {
       screenPublisher: undefined,
       screenSubscribers: [],
       screenOvToken: null,
-      isSharingMode: false
+      isSharingMode: false,
+
+      //확인 스피크
+      isSpeakList: [],
+
+      //입장 전 화면
+      stream: "",
+      video: "",
+
+      messagelength: 0
     });
     // 페이지 진입시 불리는 훅
-    onMounted(() => {});
-    onUnmounted(() => {
-      if (state.screenSubscribers) stopShareScreen();
-      if (state.session) leaveSession();
-      //window.removeEventListener("beforeunload", leaveSession);
-      console.log("파괴");
-      console.log("session");
+    onMounted(() => {
+      state.studypk = store.getters["root/getStudypk"];
+      state.userpk = store.getters["root/getUserpk"];
+      console.log("방번호", state.studypk);
+      state.mySessionId = "room" + state.studypk;
+      console.log("방이름", state.mySessionId);
+      store
+        .dispatch("root/requestReadMyInfo")
+        .then(function(result) {
+          state.myUserName = result.data.name + Math.floor(Math.random() * 100);
+
+          navigator.getUserMedia =
+            navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia;
+          var video = document.getElementById("test-video");
+          navigator.getUserMedia(
+            { video: true, audio: false },
+            function(stream) {
+              state.stream = stream;
+              video.srcObject = stream;
+              video.play();
+              state.video = video;
+            },
+            function(error) {}
+          );
+        })
+        .catch(function(err) {
+          ElMessage.error(err);
+          state.myUserName = "error" + Math.floor(Math.random() * 100);
+        });
     });
+
+    onUnmounted(() => {
+      if (state.stream) {
+        state.video.pause();
+        state.video.srcObjec = "";
+        state.stream.getTracks().forEach(track => track.stop());
+        state.video.remove();
+        //state.stream.getTracks()[0].stop();
+      }
+      if (state.screenSubscribers) stopShareScreen();
+      if (state.session) {
+        state.session = undefined;
+        state.mainStreamManager = undefined;
+        state.publisher = undefined;
+        state.subscribers = [];
+        state.OV = undefined;
+        state.audioOn = true;
+        state.videoOn = true;
+        state.messages = [];
+      }
+      window.removeEventListener("beforeunload", leaveSession);
+    });
+
+    const attendance = function() {
+      store
+        .dispatch("root/requestAttendence", {
+          userpk: state.userpk,
+          studyId: state.studypk
+        })
+        .then(res => {
+          //console.log(res.data);
+          if (res.data.statusCode === 201) {
+            ElMessage({
+              message: res.data.message
+            });
+          } else if (res.data.statusCode === 200) {
+            ElMessage({ message: res.data.message, type: "success" });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
 
     const toggleMainmode = function() {
       state.mainmode = !state.mainmode;
     };
+
     const widthreverse = function() {
-      if (state.widthflag) {
-        state.wide = 22;
-        state.narrow = 2;
-        state.widthflag = !state.widthflag;
-      } else {
-        state.wide = 18;
-        state.narrow = 6;
-        state.widthflag = !state.widthflag;
-      }
+      state.widthflag = !state.widthflag;
+      if (state.widthflag) state.messagelength = 0;
     };
+
     const joinSession = function() {
       // --- Get an OpenVidu object ---
+      state.video.pause();
+      state.video.srcObjec = "";
+      state.stream.getTracks().forEach(track => track.stop());
       state.OV = new OpenVidu();
 
-      // --- Init a session ---
+      state.OV.setAdvancedConfiguration({
+        publisherSpeakingEventsOptions: {
+          interval: 100, // Frequency of the polling of audio streams in ms (default 100)
+          threshold: -50 // Threshold volume in dB (default -50)
+        }
+      });
+
       state.session = state.OV.initSession();
+
+      // --- Init a session ---
 
       // --- Specify the actions when events take place in the session ---
 
       // On every new Stream received...
+      state.session.on("publisherStartSpeaking", event => {
+        console.log(
+          "User " + event.connection.connectionId + " start speaking"
+        );
+        state.isSpeakList.push(event.connection.connectionId);
+      });
+
+      state.session.on("publisherStopSpeaking", event => {
+        console.log("User " + event.connection.connectionId + " stop speaking");
+        let temp = state.isSpeakList;
+        let index = temp.indexOf(event.connection.connectionId, 0);
+        if (index >= 0) {
+          temp.splice(index, 1);
+          state.isSpeakList = temp;
+        }
+      });
+
       state.session.on("streamCreated", ({ stream }) => {
         const subscriber = state.session.subscribe(stream);
         let client = JSON.parse(subscriber.stream.connection.data);
@@ -371,7 +495,7 @@ export default {
               videoSource: undefined, // The source of video. If undefined default webcam
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
               publishVideo: true, // Whether you want to start publishing with your video enabled or not
-              resolution: "640x360", // The resolution of your video
+              resolution: "960x540", // The resolution of your video
               frameRate: 30, // The frame rate of your video
               insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
               mirror: false // Whether to mirror your local video or not
@@ -392,22 +516,19 @@ export default {
             );
           });
       });
-      var num = 0;
+
       state.session.on("signal:chat", event => {
         let eventData = JSON.parse(event.data);
         state.messages.push(eventData);
+        if (eventData.from != state.myUserName && !state.widthflag)
+          state.messagelength++;
         setTimeout(() => {
           var chatDiv = document.getElementById("chat-area");
 
-          console.log(chatDiv);
-          console.log(chatDiv.scrollHeight);
-          console.log(chatDiv.clientHeight);
-          console.log(num);
           chatDiv.scrollTo({
             top: chatDiv.scrollHeight,
             behavior: "smooth"
           });
-          num += 20;
         }, 50);
       });
       window.addEventListener("beforeunload", leaveSession);
@@ -415,6 +536,24 @@ export default {
 
     const leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
+
+      // setTimeout(() => {
+      //   navigator.getUserMedia =
+      //     navigator.getUserMedia ||
+      //     navigator.webkitGetUserMedia ||
+      //     navigator.mozGetUserMedia ||
+      //     navigator.msGetUserMedia;
+      //   var video = document.getElementById("test-video");
+      //   navigator.getUserMedia(
+      //     { video: true, audio: false },
+      //     function(stream) {
+      //       video.srcObject = stream;
+      //       video.play();
+      //       state.video = video;
+      //     },
+      //     function(error) {}
+      //   );
+      // }, 100);
       if (state.session) state.session.disconnect();
 
       state.session = undefined;
@@ -425,7 +564,10 @@ export default {
       state.audioOn = true;
       state.videoOn = true;
       state.messages = [];
-      window.removeEventListener("beforeunload", leaveSession);
+      router.push({ name: "studyhome" }).then(() => {
+        store.commit("root/setSelectOption", "studyhome");
+        window.removeEventListener("beforeunload", leaveSession);
+      });
     };
 
     const updateMainVideoStreamManager = function(stream) {
@@ -499,6 +641,7 @@ export default {
         data: JSON.stringify(messageData),
         to: []
       });
+      state.readmessages = state.messages.length;
     };
     // See https://docs.openvidu.io/en/stable/reference-docs/REST-API/#post-openviduapisessionsltsession_idgtconnection
     const createToken = function(sessionId) {
@@ -571,11 +714,11 @@ export default {
       state.screenSession = undefined;
       state.screenSubscribers = [];
       state.screenOvToken = null;
-      state.session.signal({
-        data: "F",
-        to: [],
-        type: "share"
-      });
+      // state.session.signal({
+      //   data: "F",
+      //   to: [],
+      //   type: "share"
+      // });
     };
     const startShareScreen = function() {
       const screenOV = new OpenVidu();
@@ -594,7 +737,7 @@ export default {
           mirror: false // Whether to mirror your local video or not
         });
         screenSession
-          .connect(token2, { clientData: state.myUserName + "s" })
+          .connect(token2, { clientData: state.myUserName + " 화면" })
           .then(() => {
             screenPublisher.once("accessAllowed", () => {
               screenPublisher.stream
@@ -647,7 +790,8 @@ export default {
       createToken,
       toggleShareScreen,
       startShareScreen,
-      stopShareScreen
+      stopShareScreen,
+      attendance
     };
   }
   // beforeDestroy: function() {
@@ -659,6 +803,31 @@ export default {
 };
 </script>
 <style>
+#test-video {
+  max-width: 60%;
+  border: 4px solid #000000;
+  border-radius: 15px;
+  margin: 0px;
+  padding: 0;
+}
+.otherchatbox {
+  border: 1px solid #ffffff;
+  width: 550px;
+  height: 46px;
+  padding: 6px;
+  margin: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+}
+.chatbox {
+  border: 1px solid #ffffff;
+  width: 550px;
+  height: 46px;
+  padding: 6px;
+  margin: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+  align-content: right;
+  text-align: right;
+}
 .main-stream {
   max-width: 70%;
 }
@@ -673,7 +842,9 @@ export default {
   height: auto;
   width: inherit;
   /* min-width: 33%; */
-  max-width: 33%;
+  max-width: 32%;
+  margin-right: 8px;
+  margin-bottom: 4px;
 }
 
 .screen-res-small {
@@ -783,31 +954,6 @@ a:hover .demo-logo {
 	transform: translate(-50%, -50%);*/
 }
 
-#img-div img {
-  height: 15%;
-}
-
-#join-dialog label {
-  color: #0088aa;
-}
-
-#join-dialog input.btn {
-  margin-top: 15px;
-}
-
-#session-header {
-  margin-bottom: 20px;
-}
-
-#session-title {
-  display: inline-block;
-}
-
-#buttonLeaveSession {
-  float: right;
-  margin-top: 20px;
-}
-
 #video-container video {
   position: relative;
   float: left;
@@ -840,8 +986,8 @@ video {
   position: relative;
   display: inline-block;
   background: #f8f8f8;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
   font-size: 22px;
   color: #777777;
   font-weight: bold;
