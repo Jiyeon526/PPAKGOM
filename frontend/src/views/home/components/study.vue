@@ -125,6 +125,9 @@ export default {
      onMounted(() => {
       state.studyData = props.studyData.study_thumbnail;
       console.log(state.studyData);
+      if (!state.studyData) {
+        state.studyData = "default.png/default.png/default.png"
+      }
       var name;
       if (
         state.studyData.split("\\").length > state.studyData.split("/").length

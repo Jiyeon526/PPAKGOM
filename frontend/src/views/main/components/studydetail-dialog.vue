@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     width="40%"
-    :title="selectStudy.name"
+    :title="selectStudy.study_id + '번 스터디'"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
@@ -17,6 +17,10 @@
         >
       </el-image>
       <div style="width:50%; height:50%; text-align:center">
+        <h2 style="margin:30px">{{ selectStudy.name }}
+          <i v-if="state.likeStudy" @click="clickLikeCancleBtn" class="fas fa-heart" style="color:red"></i>
+          <i v-else @click="clickLikeBtn" class="far fa-heart" style="color:red"></i>
+        </h2>
         <h4>모집 인원 : {{ selectStudy.joined_population }}/{{ selectStudy.population }}</h4>
         <h4>관심 분야 : {{ state.interested }}</h4>
         <h4>마감 날짜 : {{ selectStudy.deadline }}</h4>
@@ -26,11 +30,18 @@
       <h3>설명</h3>
       <p>{{ selectStudy.content }}</p>
     </div>
-    <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
+    <div>
+      <h3 style="margin-bottom:5px;">열정도</h3>
+        <p style="text-align:right; font-weight:bold; margin-top:2px; margin-bottom:2px;">{{ selectStudy.temperature }}
+          <i class="far fa-laugh-squint"></i>
+        </p>
+        <el-progress show-text="false" :stroke-width="24" :percentage="selectStudy.temperature" status="success"></el-progress>
+    </div>
+    <!-- <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
       <el-button v-if="state.likeStudy" style="border:0; outline:0" @click="clickLikeCancleBtn"><i class="fas fa-heart" style="color:red"></i></el-button>
       <el-button v-else style="border:0; outline:0" @click="clickLikeBtn"><i class="far fa-heart" style="color:red"></i></el-button>
-    </div>
-    <el-divider style="margin: 5px"></el-divider>
+    </div> -->
+    <el-divider style="margin: 10px 0px"></el-divider>
     <div style="display:flex; flex-direction:column; justify-content:center; align-items:center">
       <div>
         <Studyschedulecomponent :studyId="state.studyId" />
@@ -38,7 +49,6 @@
     </div>
     <el-divider style="margin: 5px"></el-divider>
     <div class="detail-dialog-footer">
-      <h4 style="display: inline-block">열정도 : {{ selectStudy.temperature }}</h4>
       <el-button v-if="selectStudy.enter" type="success" plain style="height: 30px" @click="enterStudy">입장</el-button>
       <el-button v-else type="success" plain style="height: 30px" @click="requestJoinStudy">가입</el-button>
     </div>
@@ -53,7 +63,7 @@
 }
 .detail-dialog-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 }
 /* 테블릿, 모바일의 경우 두 줄 말줄임표시 */
@@ -76,6 +86,10 @@
   display: flex;
   justify-content: space-between;
   margin: 2px;
+}
+.el-progress__text {
+  display: none;
+  width: 0px;
 }
 
 </style>
@@ -135,7 +149,7 @@ export default {
     store.commit("root/setSelectOption", "studyhome");
     handleClose()
     router.push({
-      name: 'studyschedule'
+      name: 'studyhome'
     })
   }
 
