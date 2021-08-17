@@ -6,28 +6,33 @@
     @close="handleClose"
   >
     <el-row :gutter="24">
-      <el-col :span="16">
-        <p>{{userData.name}}</p>
-        <p>{{userData.temperature}}</p>
-        <el-progress :stroke-width="20" :percentage="userData.temperature" :show-text='false'>
-        </el-progress>
+      <el-col :span="10">
+        <div style="display: inline-block">
+          <el-progress type="dashboard" :percentage="userData.temperature" :color="state.colors" :width="180" status="success">
+            <!-- <el-avatar :src="'https://localhost:8443/' + userData.profile_thumbnail" :fit="fill" :size="120"></el-avatar> -->
+            <el-avatar :src="state.uri" :fit="fill" :size="150"></el-avatar>
+          </el-progress>
+        </div>
+
       </el-col>
       <el-col :span="8">
-        <el-image style="width: 100px; height: 100px"
+        <p style="font-size: 30px; font-weight: bold; margin: 5px">{{userData.name}}</p>
+        <p style="font-size: 20px; font-weight: bold">열정도: {{userData.temperature}}°C</p>
+        <!-- <el-image style="width: 100px; height: 100px"
         :src="'https://localhost:8443/' + userData.profile_thumbnail"
         :fit="fit"
         >
-        </el-image>
+        </el-image> -->
       </el-col>
     </el-row>
-    <el-divider></el-divider>
+    <el-divider style="margin: 5px;"></el-divider>
     <el-row>
-      <el-col>
-        <p>가입된 스터디</p>
+      <h3>가입한 스터디</h3>
+      <ul>
         <li v-for="std in studyData">
           {{ std }}
         </li>
-      </el-col>
+      </ul>
     </el-row>
     <template #footer>
       <span>관심분야: </span>
@@ -56,9 +61,10 @@
 
 </style>
 <script>
-import { reactive, computed, ref, onMounted } from "vue";
+import { reactive, computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import axios from "axios";
 import { ElMessage } from "element-plus";
 export default {
   name: "otherpeople-dialog",
@@ -85,12 +91,66 @@ export default {
       dialogVisible: computed(() => props.open),
       formLabelWidth: "120px",
       passion: 50,
+      colors: [
+        {color: '#f56c6c', percentage: 20},
+        {color: '#e6a23c', percentage: 40},
+        {color: '#5cb87a', percentage: 60},
+        {color: '#1989fa', percentage: 80},
+        {color: '#6f7ad3', percentage: 100}
+      ],
       circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+      uri: "",
+      studyData: "",
     });
 
+    watch(()=>props.userData,()=>{
+      console.log(props.userData)
+      state.studyData = props.userData.profile_thumbnail;
+
+      console.log(state.studyData);
+      var name;
+      if (
+        state.studyData.split("\\").length > state.studyData.split("/").length
+      ) {
+        name = state.studyData.split("\\");
+      } else {
+        name = state.studyData.split("/");
+      }
+
+      console.log(name);
+      axios({
+        url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+        method: "GET",
+        responseType: "blob"
+      }).then(res => {
+        state.uri = URL.createObjectURL(res.data);
+      })
+    })
+
     onMounted(() => {
-      // console.log(otherpeopleForm.value)
-    });
+      // console.log(props.userData)
+      // state.studyData = props.userData.profile_thumbnail;
+
+      // console.log(state.studyData);
+      // var name;
+      // if (
+      //   state.studyData.split("\\").length > state.studyData.split("/").length
+      // ) {
+      //   name = state.studyData.split("\\");
+      // } else {
+      //   name = state.studyData.split("/");
+      // }
+
+      // console.log(name);
+      // axios({
+      //   url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+      //   method: "GET",
+      //   responseType: "blob"
+      // }).then(res => {
+      //   state.uri = URL.createObjectURL(res.data);
+      // })
+    })
+
 
     const handleClose = function() {
       emit("closeOtherpeopleDialog")

@@ -359,8 +359,7 @@ export function requestMakeWorkbook({state}, payload) {
 export function requestSubmitAnswer({state}, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/study/${state.userpk}/score/${state.testpk}`
-  const body = payload
-  console.log(payload,body)
+  const body = payload.answer
   return $axios.post(url, body, { headers: headers })
 }
 
