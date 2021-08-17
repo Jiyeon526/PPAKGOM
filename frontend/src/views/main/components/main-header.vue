@@ -10,12 +10,6 @@
         <el-col :span="4">
           <div class="logo-ppakgom" @click="clickLogo">PPAKGOM</div>
         </el-col>
-<<<<<<< HEAD
-        <el-col :span="16">
-          <el-dropdown trigger="click" v-if="state.studyPk">
-            <span class="el-dropdown-link">
-              {{ state.label }}<i class="el-icon-arrow-down el-icon--right"></i>
-=======
 
         <el-col :span="19">
           <div class="button-wrapper" style="float:right;">
@@ -39,7 +33,6 @@
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
->>>>>>> feature/FE/organize
             </span>
 
             <div
