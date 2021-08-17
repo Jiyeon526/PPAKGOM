@@ -59,3 +59,8 @@ export function getSelectOption(state) {
 export function getReload(state) {
   return state.reload;
 }
+
+export function getJoinStudyList(state) {
+  return state.joinStudyList;
+}
+

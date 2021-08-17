@@ -3,9 +3,6 @@
     <div class="contents">
       PPAKGOM
     </div>
-    <el-badge class="item">
-      <el-button icon="el-icon-chat-round" circle type="success" plain></el-button>
-    </el-badge>
   </el-row>
 </template>
 <style>

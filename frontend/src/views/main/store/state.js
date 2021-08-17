@@ -47,5 +47,6 @@ export default {
   studypk: studypk,
   selectOption: '',
   testpk: 0,
-  reload: false
+  reload: false,
+  joinStudyList:[]
 }

@@ -72,3 +72,9 @@ export function setTestpk(state, payload) {
 export function setReload(state) {
   state.reload = !state.reload
 }
+
+export function setJoinStudyList(state, payload) {
+  state.joinStudyList = payload
+}
+
+

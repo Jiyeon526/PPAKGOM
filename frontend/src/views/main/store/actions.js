@@ -376,9 +376,17 @@ export function requestSearchInterest({state}, payload) {
 }
 
 // 해당 회원 초대
-export function requestInviteMember({state}, payload) {
+export function requestInviteMember({ state }, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/study/${state.studypk}/member`
   let body = payload
   return $axios.post(url, body, { headers: headers })
 }
+
+//문제 푼 점수 결과 가져오기
+export function requestScore({ state }, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${payload}/score`
+  return $axios.get(url,  { headers: headers })
+}
+

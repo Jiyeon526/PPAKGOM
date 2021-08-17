@@ -101,10 +101,8 @@ import {
   ElNotification,
 } from 'element-plus';
 
-import VueChartkick from 'vue-chartkick'
-import 'chartkick/chart.js'
-
-
+ import VueChartkick from 'vue-chartkick'
+ import 'chartkick/chart.js'
 
 const components = [
   ElAlert,

@@ -353,15 +353,25 @@ export default {
               localStorage.setItem("userId", state.form.id);
               localStorage.setItem("userPk", result.data.id);
               store.commit("root/setUserpk", result.data.id);
+              store.commit("root/setUserId", state.form.id);
               console.log("로그인정보", result.data);
               console.log("기본키", store.getters["root/getUserpk"]);
-              ElMessage({
-                message: "로그인 성공",
-                type: "success"
-              });
-              handleClose();
-              //console.log(store.getters['root/isLoggedIn'])
-              loginsuccess();
+              store
+                .dispatch("root/requestJoinStudyList")
+                .then(function(res) {
+                  console.log("가입한 스터디 목록 가져오기", res.data);
+                  store.commit("root/setJoinStudyList", res.data.studyResult);
+                  ElMessage({
+                    message: "로그인 성공",
+                    type: "success"
+                  });
+                  handleClose();
+                  //console.log(store.getters['root/isLoggedIn'])
+                  loginsuccess();
+                })
+                .catch(function(err) {
+                  console.log("가입한 스터디 목록 가져오기 에러", err);
+                });
             })
             .catch(function(err) {
               alert(err.message);
