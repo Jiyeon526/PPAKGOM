@@ -185,6 +185,7 @@ public class JoinServiceImpl implements JoinService {
 			list.setName(study.getSender().getName()); // 닉네임 저장
 			list.setThumbnail(study.getSender().getProfile_thumbnail()); // 썸네일 저장
 			list.setTemperature(study.getSender().getTemperature()); // 온도 저장
+			list.setState(study.getState());
 			res.add(list);
 		}
 		
