@@ -2,7 +2,6 @@
   <h2>스터디 점수그래프</h2>
   <div v-if="state.scoredata">
     <line-chart :data="state.cdata" loading="loading" />
-    {{ state.cdata }} {{ state.scoredata }}{{ state.data }}
   </div>
 </template>
 

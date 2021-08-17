@@ -7,29 +7,36 @@
             <div class="ic ic-logo"></div>
           </div>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="4">
           <div class="logo-ppakgom" @click="clickLogo">PPAKGOM</div>
         </el-col>
-        <el-col :span="16">
-          <el-dropdown trigger="click" v-if="state.value">
-            <span class="el-dropdown-link">
-              {{ state.label }}<i class="el-icon-arrow-down el-icon--right"></i>
+
+        <el-col :span="19">
+          <div class="button-wrapper" style="float:right;">
+            <span style="display:inline-block;  " v-if="state.studyPk">
+              <el-dropdown trigger="click" Button>
+                <span>
+                  <el-button class="el-dropdown-link" plain type="success">
+                    <i :class="state.icon"></i> {{ state.label }}
+                    <i class="el-icon-arrow-down"></i
+                  ></el-button>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item
+                      v-for="item in state.options"
+                      :key="item.value"
+                      @click="gotodetail(item)"
+                      ><i :class="item.icon"></i>
+                      {{ item.label }}</el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item
-                  v-for="item in state.options"
-                  :key="item.value"
-                  @click="gotodetail(item)"
-                  >{{ item.label }}</el-dropdown-item
-                >
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </el-col>
-        <el-col :span="4">
-          <div class="button-wrapper">
+
             <div
+              style="display:inline-block;"
               v-if="
                 state.isLoggedIn ||
                   state.googleislogin ||
@@ -37,10 +44,52 @@
                   state.isNaverLoggedIn
               "
             >
+              <span style="display:inline-block;">
+                <el-popover
+                  placement="bottom"
+                  :width="300"
+                  trigger="click"
+                  :visible="state.visible"
+                >
+                  <template #reference>
+                    <div style="margin:5px; padding:5px;">
+                      <el-badge
+                        class="item"
+                        :value="state.length"
+                        :max="99"
+                        type="warning"
+                      >
+                        <el-button
+                          icon="el-icon-chat-round"
+                          type="success"
+                          plain
+                          @click="reversea"
+                        >
+                        </el-button>
+                      </el-badge>
+                    </div>
+                  </template>
+                  <div style="height:300px; overflow:scroll;">
+                    <!-- <input
+                      v-model="state.message"
+                      type="text"
+                      @keyup="sendMessagePub"
+                    /> -->
+                    <div v-for="(item, idx) in state.recvList" :key="idx">
+                      <div v-if="item.writer != state.userId">
+                        <span class="otherchatbox">
+                          {{ item.conference_id }}번방 : {{ item.message }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </el-popover>
+              </span>
               <el-button type="success" plain @click="clickMypage"
                 ><i class="el-icon-s-custom"></i> 프로필</el-button
               >
               <el-button
+                style="display:inline-block; flex:right;"
                 type="success"
                 plain
                 icon="el-icon-switch-button"
@@ -49,7 +98,7 @@
                 로그아웃</el-button
               >
             </div>
-            <div v-else>
+            <div style="display:inline-block;" v-else>
               <!-- <el-button type="primary" @click="clickOtherpeoplepage">타프로필</el-button>
             <el-button type="primary" @click="clickMypage">프로필</el-button> -->
               <el-button type="success" plain @click="clickRegister"
@@ -63,70 +112,15 @@
         </el-col>
       </el-row>
     </div>
-    <div class="hide-on-big">
-      <div class="menu-icon-wrapper" @click="changeCollapse">
-        <i class="el-icon-menu"></i>
-      </div>
-      <div class="logo-wrapper" @click="clickLogo">
-        <div class="ic ic-logo" />
-      </div>
-      <div class="mobile-sidebar-wrapper" v-if="!state.isCollapse">
-        <div class="mobile-sidebar">
-          <div class="mobile-sidebar-tool-wrapper">
-            <div class="logo-wrapper"><div class="ic ic-logo" /></div>
-
-            <div v-if="state.isLoggedIn">
-              <el-button class="mobile-sidebar-btn" @click="clickLogout"
-                >로그아웃</el-button
-              >
-              <el-button
-                class="mobile-sidebar-btn"
-                type="primary"
-                @click="clickMypage"
-                >프로필</el-button
-              >
-            </div>
-            <div v-else>
-              <el-button
-                type="primary"
-                class="mobile-sidebar-btn login-btn"
-                @click="clickLogin"
-                >로그인</el-button
-              >
-              <el-button
-                type="primary"
-                class="mobile-sidebar-btn register-btn"
-                @click="clickRegister"
-                >회원가입</el-button
-              >
-            </div>
-          </div>
-          <el-menu
-            :default-active="String(state.activeIndex)"
-            active-text-color="#ffd04b"
-            class="el-menu-vertical-demo"
-            @select="menuSelect"
-          >
-            <el-menu-item
-              v-for="(item, index) in state.menuItems"
-              :key="index"
-              :index="index.toString()"
-            >
-              <i v-if="item.icon" :class="['ic', item.icon]" />
-              <span>{{ item.title }}</span>
-            </el-menu-item>
-          </el-menu>
-        </div>
-        <div class="mobile-sidebar-backdrop" @click="changeCollapse"></div>
-      </div>
-    </div>
   </el-row>
 </template>
 <script>
-import { reactive, computed, watch } from "vue";
+import { reactive, computed, watch, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
 export default {
   name: "main-header",
 
@@ -175,37 +169,135 @@ export default {
       options: [
         {
           value: "studyhome",
-          label: "홈"
+          label: "메인 홈",
+          icon: "el-icon-s-home"
         },
         {
           value: "studyworkbook",
-          label: "문제집"
+          label: "문제모음",
+          icon: "el-icon-reading"
         },
         {
           value: "studyscore",
-          label: "점수"
+          label: "점수차트",
+          icon: "el-icon-s-marketing"
         },
         {
           value: "studyattitude",
-          label: "출석현황"
+          label: "출석현황",
+          icon: "el-icon-s-claim"
         },
         {
           value: "studyschedule",
-          label: "스터디 일정"
+          label: "일정관리",
+          icon: "el-icon-date"
         },
         {
           value: "studymeeting",
-          label: "화상회의"
+          label: "화상회의",
+          icon: "el-icon-video-camera-solid"
         },
         {
           value: "studymember",
-          label: "맴버관리"
+          label: "맴버관리",
+          icon: "el-icon-user-solid"
         }
       ],
       value: "", // computed는 readonly이기 때문에 이후에 option에서 value값을 바꿔도 바뀌지 않음 -> 변수를 나누어 2개로 설정
       value2: computed(() => store.getters["root/getSelectOption"]),
-      label: "STUDY"
+      label: "STUDY",
+      length: 0,
+      visible: false,
+      icon: "",
+      joinlist: computed(() => store.getters["root/getJoinStudyList"]),
+      stompClient: "",
+      connected: false,
+      recvList: [],
+      Client: "",
+      message: "",
+      tempid: []
     });
+
+    onUnmounted(() => {
+      for (let i = 0; i < state.tempid.length; i++) {
+        const msg = {
+          conference_id: state.tempid[i],
+          writer: state.userId,
+          message: state.userId + "님이 나가셨습니다."
+        };
+        state.Client.send("/publish/conferences/send", JSON.stringify(msg), {});
+      }
+
+      state.Client.disconnect();
+    });
+
+    watch(
+      () => state.joinlist,
+      () => {
+        console.log("state.joinlist", state.joinlist);
+        let line = state.joinlist;
+
+        for (let i = 0; i < line.length; i++) {
+          console.log("원소", line[i]);
+          state.tempid.push(line[i].study_id);
+        }
+        console.log("확인", state.tempid);
+        const serverURL = "https://localhost:8443/api/v1/ws";
+        var socket = new SockJS(serverURL);
+        state.stompClient = Stomp.over(socket);
+        console.log(state.stompClient);
+
+        state.stompClient.connect(
+          {},
+          frame => {
+            // 소켓 연결 성공
+            state.connected = true;
+            console.log("소켓 연결 성공", frame);
+            state.Client = state.stompClient;
+            // 서버의 메시지 전송 endpoint를 구독합니다.
+            // 이런형태를 pub sub 구조라고 합니다.
+
+            var sendurl = "/publish/conferences/join";
+            //var temp = "/subscribe";
+            for (let i = 0; i < state.tempid.length; i++) {
+              var temp = "/subscribe/" + "conferences/" + state.tempid[i];
+              state.stompClient.subscribe(temp, res => {
+                console.log("구독으로 받은 메시지 입니다.", res.body);
+                let temp = JSON.parse(res.body);
+                // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
+                state.recvList.push(temp);
+                if (!state.visible && temp.writer != state.userId)
+                  state.length++;
+              });
+            }
+          },
+          error => {
+            // 소켓 연결 실패
+            console.log("소켓 연결 실패", error);
+            state.connected = false;
+          }
+        );
+      }
+    );
+
+    watch(
+      () => state.Client,
+      Client => {
+        for (let i = 0; i < state.tempid.length; i++) {
+          const msg = {
+            conference_id: state.tempid[i],
+            writer: state.userId,
+            message: state.message
+          };
+          state.Client.send(
+            "/publish/conferences/join",
+            JSON.stringify(msg),
+            {}
+          );
+        }
+      }
+    );
+
     watch(
       () => state.value,
       () => {
@@ -217,15 +309,23 @@ export default {
         });
       }
     );
+
     watch(
       () => state.value2,
       () => {
-        state.value = state.value2;
+        //state.value = state.value2;
+        state.options.forEach(e => {
+          if (e.value == state.value2) {
+            state.label = e.label;
+          }
+        });
+
         router.push({
           name: state.value2
         });
       }
     );
+
     if (state.activeIndex === -1) {
       state.activeIndex = 0;
       store.commit("root/setMenuActive", 0);
@@ -330,6 +430,7 @@ export default {
     };
     const gotodetail = file => {
       state.label = file.label;
+      state.icon = file.icon;
       router.push({
         name: file.value
         // params: {
@@ -337,6 +438,38 @@ export default {
         // }
       });
     };
+
+    const reversea = function() {
+      state.visible = !state.visible;
+      state.length = 0;
+    };
+
+    const sendMessagePub = function(e) {
+      console.log(state.userId);
+      console.log(state.message);
+      if (e.keyCode === 13 && state.userId !== "" && state.message !== "") {
+        //send();
+        console.log("Send message:" + state.message);
+        console.log(state.Client);
+        console.log(state.connected);
+        if (state.Client && state.connected) {
+          const msg = {
+            conference_id: 1,
+            writer: state.userId,
+            message: state.message
+          };
+
+          console.log(msg);
+          state.Client.send(
+            "/publish/conferences/send",
+            JSON.stringify(msg),
+            {}
+          );
+        }
+        state.message = "";
+      }
+    };
+
     return {
       state,
       menuSelect,
@@ -349,7 +482,9 @@ export default {
       clickRoomCreation,
       clicktestanswer,
       clickOtherpeoplepage,
-      gotodetail
+      gotodetail,
+      reversea,
+      sendMessagePub
     };
   }
 };
@@ -459,7 +594,7 @@ export default {
   width: 50%;
   float: right;
 }
-.main-header .hide-on-small .tool-wrapper .button-wrapper {
+/* .main-header .hide-on-small .tool-wrapper .button-wrapper {
   width: 45%;
   float: right;
 }
@@ -468,7 +603,7 @@ export default {
   height: 50px;
   cursor: pointer;
   margin-right: 1%;
-}
+} */
 
 .main-header .hide-on-small .tool-wrapper .el-input .el-input__inner {
   /* width: 88%; */
@@ -477,5 +612,18 @@ export default {
 }
 .main-header .hide-on-small .tool-wrapper .el-input .el-input__prefix {
   top: 5px;
+}
+
+.otherchatbox {
+  border: 1px solid #111111;
+  border-radius: 10px;
+  padding: 6px;
+  margin: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 0 8px rgba(0, 0, 0, 0.04);
+  word-break: break-all;
+  align-content: left;
+  text-align: left;
+  display: block;
+  flex: left;
 }
 </style>
