@@ -11,7 +11,7 @@ import lombok.Setter;
 public class StudyJoinApplyListRes {
 	
 	@ApiModelProperty(name="user_id", example="ssafy")
-	String user_id;
+	Long user_id;
 	
 	@ApiModelProperty(name="name", example="ssafy")
 	String name;
