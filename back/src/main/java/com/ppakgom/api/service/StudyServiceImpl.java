@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -282,9 +283,14 @@ public class StudyServiceImpl implements StudyService {
 			String studySchedule = sdFormat.format(studyPlan.getDate()); // 스터디 날짜
 			if(!today.equals(studySchedule)) continue; // 날짜 다르면 넘김
 			
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(studyPlan.getDate());
+			cal.add(Calendar.HOUR, +9);
+			nowDate = new Date(cal.getTimeInMillis());
+			
 			CustomData customData = new CustomData(studyPlan.getTitle(), studyPlan.getColor());
 			StudyScheduleMonthRes s = new StudyScheduleMonthRes(studyPlan.getId(), 
-					customData , studyPlan.getDate());
+					customData , nowDate);
 			// 저장
 			res.add(s);
 		}
