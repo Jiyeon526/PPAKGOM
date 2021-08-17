@@ -131,7 +131,7 @@ export default {
     };
   },
   methods: {
-    onOpenStudyscheduleDialog(selectDate) {
+    onOpenStudyscheduleDialog() {
       this.studyscheduleDialogOpen = true;
     },
     onCloseStudyscheduleDialog() {

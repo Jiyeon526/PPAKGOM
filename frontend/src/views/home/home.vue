@@ -23,20 +23,19 @@
     </div>
   </div>
   <br />
-  {{ state.uri }}
   <h4 v-if="state.recommendStudyList.length === 0">
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
-  <el-carousel v-else :interval="4000" type="card" height="300px">
-      <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
-        <study :studyData="state.recommendStudyList[i-1]" style="width:100%"/>
-        <!-- <el-image style="width: 300px; height: 300px"
-          :src="state.uri[i-1]"
-          :fit="fit"
-          alt="PPAKGOM"
-        >
-        </el-image> -->
-      </el-carousel-item>
+  <el-carousel  :interval="4000" type="card" height="300px" >
+    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)" style="width:300px">
+      <StudyCarousel :studyData="state.recommendStudyList[i-1]" style="width:100%"/>
+      <!-- <el-image style="width: 300px; height: 300px"
+        :src="state.uri[i-1]"
+        :fit="fit"
+        alt="PPAKGOM"
+      >
+      </el-image> -->
+    </el-carousel-item>
       <!-- <p>'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail</p> -->
   </el-carousel>
   <!-- <ul v-if="state.studyList.length !== 0" style="display:flex; flex-wrap: wrap; justify-content: flex-start;"> -->
@@ -113,6 +112,7 @@
 </style>
 <script>
 import Study from "./components/study"
+import StudyCarousel from "./components/studycarousel"
 import { onMounted, reactive, computed } from "vue"
 import { useRouter } from "vue-router"
 import { useStore } from "vuex"
@@ -121,7 +121,8 @@ export default {
   name: "Home",
 
   components: {
-    Study
+    Study,
+    StudyCarousel,
   },
 
   setup(props, { emit }) {

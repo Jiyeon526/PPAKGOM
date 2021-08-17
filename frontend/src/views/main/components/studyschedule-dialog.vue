@@ -17,11 +17,8 @@
             <el-radio :label="5">Purple</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item prop="date" label="스터디 날짜" >
+        <el-form-item prop="date" label="스터디 날짜">
           <el-input v-model="state.selectDate" placeholder="달력에서 날짜를 선택해주세요."></el-input>
-        </el-form-item>
-        <el-form-item label="스터디 날짜 확인" >
-          <el-input v-model="state.date" placeholder="달력에서 날짜를 선택해주세요."></el-input>
         </el-form-item>
         <el-form-item prop="title" label="스터디 내용">
           <el-input v-model="state.form.title"></el-input>
@@ -47,14 +44,12 @@ export default {
       type: Boolean,
       default: false
     },
-    // selectDate: {
-    //   type: Object,
-    // }
   },
 
   setup(props, { emit }) {
     const store = useStore();
     const router = useRouter();
+    const month = new Date().getMonth();
     const scheduleForm = ref(null);
     const state = reactive({
       dialogVisible: computed(() => props.open),
@@ -203,8 +198,6 @@ export default {
                 });
                 handleClose();
                 store.commit('root/setReload')
-                // router.go('studyschedule')
-                // router.push('studyhome')
               })
               .catch(function(err) {
                 console.log('스케줄 생성 실패', err)
@@ -220,7 +213,7 @@ export default {
       emit("closeStudyscheduleDialog");
     };
 
-    return { state, scheduleForm, onClickCreateSchedule, handleClose };
+    return { state, month, scheduleForm, onClickCreateSchedule, handleClose };
   }
 };
 </script>

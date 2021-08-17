@@ -333,7 +333,9 @@ export function requestCreateSchedule({state}, payload) {
 
 // 스케줄 정보 가져오기
 export function requestScheduleInfo({ state }, payload) {
+  console.log("여기확인",payload)
   const url = `/study/${payload.studyId}/schedule?month=${payload.month}`
+  console.log("유알엘",url)
   return $axios.get(url)
 }
 
