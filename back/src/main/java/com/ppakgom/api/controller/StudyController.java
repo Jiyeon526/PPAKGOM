@@ -391,8 +391,7 @@ public class StudyController {
 			
 			if(!sa.isPresent())
 				studyApplyService.inviteStudy(sender, study, receiver, req.is_join());
-			else
-				System.out.println("중복스~");
+
 			return ResponseEntity.ok(new BaseResponseBody(200, "성공"));
 			
 		} catch (Exception e) {
