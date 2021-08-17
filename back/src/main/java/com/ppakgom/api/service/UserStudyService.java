@@ -20,4 +20,5 @@ public interface UserStudyService {
 	void addMember(Study study, User newUser);
 
 	List<UserStudy> findUserStudyByUserId(Long userId);
+
 }

@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,14 +37,14 @@ import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.Interest;
 import com.ppakgom.db.entity.Study;
 import com.ppakgom.db.entity.StudyApply;
-import com.ppakgom.db.entity.StudyAttend;
+import com.ppakgom.db.entity.StudyPlan;
 import com.ppakgom.db.entity.StudyRate;
 import com.ppakgom.db.entity.User;
 import com.ppakgom.db.entity.UserInterest;
 import com.ppakgom.db.entity.UserStudy;
 import com.ppakgom.db.repository.StudyInterestRepository;
-import com.ppakgom.db.repository.StudyRepository;
 import com.ppakgom.db.repository.UserStudyRepository;
+import com.ppakgom.api.response.AttendGetRes;
 import com.ppakgom.api.response.InviteGetResByStudy;
 import com.ppakgom.api.response.InviteResByStudy;
 import com.ppakgom.api.response.SearchMember;
@@ -255,7 +256,7 @@ public class StudyController {
 		StudySearchGetRes res = new StudySearchGetRes();
 		res.setStudyResult(new ArrayList<>());
 		// 사용자의 관심사들에 매칭된 스터디가 겹칠 경우.
-		// 예: 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
+		// 예: 사용자 관심사: 면접, 대기업이고 한 스터디 관심사도 면접, 대기업 인 경우 해당 스터디가 두 번삽입되는 문제 방지.
 		HashSet<Study> tmp = new HashSet<>();
 
 //		1. 사용자 관심사 불러오기.
@@ -267,14 +268,15 @@ public class StudyController {
 		if (userInterest != null) {
 			for (UserInterest ui : userInterest) {
 //				최대 3개만 저장스
+//				System.out.println("사용자 "+ui.getUser()+" "+"관심사: "+ui.getInterest());
 				resultSet = studyService.getStudyByInterest(ui.getInterest().getName());
 				for (Study s : resultSet) {
 					tmp.add(s);
-					if (tmp.size() == 3)
-						break;
+//					if (tmp.size() == 3)
+//						break;
 				}
-				if (tmp.size() == 3)
-					break;
+//				if (tmp.size() == 3)
+//					break;
 			}
 		}
 		List<Study> userStudy = studyService.getUserJoinStudy(user);
@@ -282,6 +284,9 @@ public class StudyController {
 		
 		/* 검색 결과 삽입 */
 		for (Study s : tmp) {
+//			내가 가입한 스터디 제외시키기
+			if(userStudy.contains(s))
+				continue;
 			StudyRes sr = STUDY_RES.of(s, studyInterestRepository, userStudyRepository, userStudy, userLikedStudy);
 			res.getStudyResult().add(sr);
 		}
@@ -485,7 +490,6 @@ public class StudyController {
 
 	}
 
-
 	@GetMapping("/{studyId}/workbook/{testId}")
 	@ApiOperation(value = "스터디 문제집 클릭 시 정보 가져오기", notes = "스터디 문제집 클릭 시 정보 가져오기")
 	public ResponseEntity<StudyTestInfoRes> getStudyTestInfo(@PathVariable(value = "studyId") Long studyId,
@@ -502,7 +506,7 @@ public class StudyController {
 			@ApiParam(value = "로그인 정보", required = true) WorkbookCreatePostReq workbookInfo,
 			@RequestPart(value = "study_thumbnail", required = false) MultipartFile testFile,
 			@PathVariable(value = "studyId") Long studyId) {
-		
+
 		try {
 			Study study = studyService.getStudyById(studyId).get();
 			User writer = userService.getUserById(workbookInfo.getTest().getUserId());
@@ -516,8 +520,70 @@ public class StudyController {
 			System.out.println(" 유저 ,스터디 번호 잘못됨.");
 			return ResponseEntity.status(404).body(new BaseResponseBody(404, "존재하지 않는 id 인자값"));
 		}
-		
+
 		return ResponseEntity.status(200).body(new BaseResponseBody(200, "문제집 생성 완료"));
+	}
+
+	/* 스터디 수정 */
+	@PutMapping("/{studyId}/update")
+	@ApiOperation(value = "스터디 수정", notes = "스터디 명, 마감인원 등을 받으면 스터디를 생성합니다.", consumes = "multipart/form-data", produces = "multipart/form-data")
+	public ResponseEntity<BaseResponseBody> createStudy(
+			@ApiParam(value = "로그인 정보", required = true) StudyCreatePostReq studyInfo,
+			@RequestPart(value = "study_thumbnail", required = false) MultipartFile studyThumbnail,
+			@PathVariable(value = "studyId") Long studyId) {
+
+//		1. 스터디 찾고
+		Study study = studyService.getStudyById(studyId).orElse(null);
+		if (study == null)
+			return ResponseEntity.status(404).body(new BaseResponseBody(404, "존재하지 않는 스터디"));
+
+//		2. 그 스터디 수정하기
+		try {
+			studyService.updateStudy(study, studyThumbnail, studyInfo);
+			return ResponseEntity.status(500).body(new BaseResponseBody(200, "스터디 수정 완료"));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body(new BaseResponseBody(500, "파싱/파일저장 에러"));
+		}
+
+	}
+
+	/* 출석 현황 가져오기 */
+	@GetMapping("/{studyId}/attend")
+	@ApiOperation(value = "스터디 출석 현황", notes = "스터디멤버 별로 출석 현황을 리턴합니다.")
+	public ResponseEntity<?> getAttendList(@PathVariable(value = "studyId") Long studyId) {
+
+//		1. 스터디 찾기
+		Study study = studyService.getStudyById(studyId).orElse(null);
+		if (study == null)
+			return ResponseEntity.status(404).body(new BaseResponseBody(404, "존재하지 않는 스터디"));
+
+		List<AttendGetRes> res = new ArrayList<>();
+		
+		try {
+//		2. 스터디 플랜 찾기
+			List<StudyPlan> studyPlans = studyService.getPlansByStudy(studyId);
+			
+//		3. 멤버 찾기
+			if (studyPlans.size() != 0) {
+
+				List<UserStudy> userStudy = userStudyService.getCurrentMember(studyId);
+				List<User> members = new ArrayList<User>();
+				for (UserStudy us : userStudy) {
+					members.add(us.getUser());
+				}
+				res = studyService.getAttendList(studyPlans, members);
+			}
+
+			return ResponseEntity.ok(res);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body(new BaseResponseBody(500, "서버 에러"));
+
+		}
+
 	}
 
 	
