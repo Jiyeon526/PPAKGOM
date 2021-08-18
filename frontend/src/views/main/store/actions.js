@@ -390,3 +390,10 @@ export function requestScore({ state }, payload) {
   return $axios.get(url,  { headers: headers })
 }
 
+//출석 결과 가져오기
+export function requestStudyAttend({ state }, payload) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/study/${payload}/attend`
+  return $axios.get(url,  { headers: headers })
+}
+

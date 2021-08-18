@@ -13,28 +13,6 @@
 
         <el-col :span="19">
           <div class="button-wrapper" style="float:right;">
-            <span style="display:inline-block;  " v-if="state.studyPk">
-              <el-dropdown trigger="click" Button>
-                <span>
-                  <el-button class="el-dropdown-link" plain type="success">
-                    <i :class="state.icon"></i> {{ state.label }}
-                    <i class="el-icon-arrow-down"></i
-                  ></el-button>
-                </span>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item
-                      v-for="item in state.options"
-                      :key="item.value"
-                      @click="gotodetail(item)"
-                      ><i :class="item.icon"></i>
-                      {{ item.label }}</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </span>
-
             <div
               style="display:inline-block;"
               v-if="
@@ -44,6 +22,27 @@
                   state.isNaverLoggedIn
               "
             >
+              <span style="display:inline-block;  " v-if="state.studyPk">
+                <el-dropdown trigger="click" Button>
+                  <span>
+                    <el-button class="el-dropdown-link" plain type="success">
+                      <i :class="state.icon"></i> {{ state.label }}
+                      <i class="el-icon-arrow-down"></i
+                    ></el-button>
+                  </span>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item
+                        v-for="item in state.options"
+                        :key="item.value"
+                        @click="gotodetail(item)"
+                        ><i :class="item.icon"></i>
+                        {{ item.label }}</el-dropdown-item
+                      >
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </span>
               <span style="display:inline-block;">
                 <el-popover
                   placement="bottom"
@@ -115,7 +114,7 @@
   </el-row>
 </template>
 <script>
-import { reactive, computed, watch, onUnmounted } from "vue";
+import { reactive, computed, watch, onUnmounted, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
@@ -215,20 +214,26 @@ export default {
       recvList: [],
       Client: "",
       message: "",
-      tempid: []
+      tempid: [],
+      subcribelist: []
+    });
+
+    onMounted(() => {
+      state.tempid = new Set();
+      state.subcribelist = new Set();
     });
 
     onUnmounted(() => {
-      for (let i = 0; i < state.tempid.length; i++) {
+      state.subcribelist.forEach(e => {
         const msg = {
-          conference_id: state.tempid[i],
+          conference_id: e,
           writer: state.userId,
           message: state.userId + "님이 나가셨습니다."
         };
         state.Client.send("/publish/conferences/send", JSON.stringify(msg), {});
-      }
+      });
 
-      state.Client.disconnect();
+      if (state.Client) state.Client.disconnect();
     });
 
     watch(
@@ -239,13 +244,14 @@ export default {
 
         for (let i = 0; i < line.length; i++) {
           console.log("원소", line[i]);
-          state.tempid.push(line[i].study_id);
+          state.tempid.add(line[i].study_id);
         }
         console.log("확인", state.tempid);
+
+        //const serverURL = "https://i5b306.p.ssafy.io/api/v1/ws";
         const serverURL = "https://localhost:8443/api/v1/ws";
         var socket = new SockJS(serverURL);
         state.stompClient = Stomp.over(socket);
-        console.log(state.stompClient);
 
         state.stompClient.connect(
           {},
@@ -259,17 +265,44 @@ export default {
 
             var sendurl = "/publish/conferences/join";
             //var temp = "/subscribe";
-            for (let i = 0; i < state.tempid.length; i++) {
-              var temp = "/subscribe/" + "conferences/" + state.tempid[i];
-              state.stompClient.subscribe(temp, res => {
-                console.log("구독으로 받은 메시지 입니다.", res.body);
-                let temp = JSON.parse(res.body);
-                // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
-                state.recvList.push(temp);
-                if (!state.visible && temp.writer != state.userId)
-                  state.length++;
-              });
-            }
+            state.tempid.forEach(e => {
+              if (!state.subcribelist.has(e)) {
+                state.subcribelist.add(e);
+                console.log("구독 방번호", e);
+                var temp = "/subscribe/" + "conferences/" + e;
+                state.stompClient.subscribe(temp, res => {
+                  console.log("구독으로 받은 메시지 입니다.", res.body);
+                  let temp = JSON.parse(res.body);
+                  // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
+                  state.recvList.push(temp);
+                  if (!state.visible && !(temp.writer === state.userId))
+                    state.length += 1;
+                });
+
+                const msg = {
+                  conference_id: e,
+                  writer: state.userId,
+                  message: state.message
+                };
+                state.Client.send(
+                  "/publish/conferences/join",
+                  JSON.stringify(msg),
+                  {}
+                );
+              }
+            });
+
+            // for (let i = 0; i < state.tempid.length; i++) {
+            //   var temp = "/subscribe/" + "conferences/" + state.tempid[i];
+            //   state.stompClient.subscribe(temp, res => {
+            //     console.log("구독으로 받은 메시지 입니다.", res.body);
+            //     let temp = JSON.parse(res.body);
+            //     // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
+            //     state.recvList.push(temp);
+            //     if (!state.visible && temp.writer != state.userId)
+            //       state.length++;
+            //   });
+            // }
           },
           error => {
             // 소켓 연결 실패
@@ -277,24 +310,6 @@ export default {
             state.connected = false;
           }
         );
-      }
-    );
-
-    watch(
-      () => state.Client,
-      Client => {
-        for (let i = 0; i < state.tempid.length; i++) {
-          const msg = {
-            conference_id: state.tempid[i],
-            writer: state.userId,
-            message: state.message
-          };
-          state.Client.send(
-            "/publish/conferences/join",
-            JSON.stringify(msg),
-            {}
-          );
-        }
       }
     );
 
@@ -398,6 +413,17 @@ export default {
           login: false
         });
       }
+
+      state.subcribelist.forEach(e => {
+        const msg = {
+          conference_id: e,
+          writer: state.userId,
+          message: state.userId + "님이 나가셨습니다."
+        };
+        state.Client.send("/publish/conferences/send", JSON.stringify(msg), {});
+      });
+
+      if (state.Client) state.Client.disconnect();
       router.push({
         name: "main"
       });
@@ -441,7 +467,7 @@ export default {
 
     const reversea = function() {
       state.visible = !state.visible;
-      state.length = 0;
+      if (state.visible) state.length = 0;
     };
 
     const sendMessagePub = function(e) {
