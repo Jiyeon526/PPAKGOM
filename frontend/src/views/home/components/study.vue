@@ -1,11 +1,7 @@
 <template>
   <el-card :body-style="{ padding: '0px' }">
     <div class="image-wrapper">
-      <el-image
-        style="width: 100%; height: 250px;"
-        :src="state.uri"
-        :fit="fit"
-      >
+      <el-image style="width: 100%; height: 250px;" :src="state.uri" :fit="fit">
       </el-image>
     </div>
     <div style="text-align: left; padding: 14px;">
@@ -108,8 +104,8 @@ export default {
     const store = useStore();
     const router = useRouter();
     const state = reactive({
-      uri: '',
-      studyData: "",
+      uri: "",
+      studyData: ""
     });
 
     const enterStudy = studyPk => {
@@ -122,10 +118,13 @@ export default {
       });
     };
 
-     onMounted(() => {
+    onMounted(() => {
       state.studyData = props.studyData.study_thumbnail;
-      console.log(state.studyData);
+      console.log("studyData", state.studyData);
       var name;
+      if (!state.studyData) {
+        state.studyData = "default.png/default.png/default.png";
+      }
       if (
         state.studyData.split("\\").length > state.studyData.split("/").length
       ) {

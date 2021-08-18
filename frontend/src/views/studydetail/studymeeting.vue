@@ -579,8 +579,8 @@ export default {
       state.audioOn = true;
       state.videoOn = true;
       state.messages = [];
+      store.commit("root/setSelectOption", "studyhome");
       router.push({ name: "studyhome" }).then(() => {
-        store.commit("root/setSelectOption", "studyhome");
         window.removeEventListener("beforeunload", leaveSession);
       });
     };
@@ -891,7 +891,8 @@ export default {
   width: inherit;
   /* min-width: 33%; */
   max-width: 32%;
-  margin-right: 8px;
+  margin-left: 4px;
+  margin-right: 4px;
   margin-bottom: 4px;
 }
 

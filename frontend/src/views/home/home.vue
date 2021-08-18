@@ -26,9 +26,17 @@
   <h4 v-if="state.recommendStudyList.length === 0">
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
-  <el-carousel  :interval="4000" type="card" height="300px" >
-    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)" style="width:300px">
-      <StudyCarousel :studyData="state.recommendStudyList[i-1]" style="width:100%"/>
+  <el-carousel v-else :interval="4000" type="card" height="300px">
+    <el-carousel-item
+      v-for="i in state.recommendStudyList.length"
+      :key="i"
+      @click="onClickRecommendStudyList(i)"
+      style="width:300px"
+    >
+      <StudyCarousel
+        :studyData="state.recommendStudyList[i - 1]"
+        style="width:100%"
+      />
       <!-- <el-image style="width: 300px; height: 300px"
         :src="state.uri[i-1]"
         :fit="fit"
@@ -36,7 +44,7 @@
       >
       </el-image> -->
     </el-carousel-item>
-      <!-- <p>'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail</p> -->
+    <!-- <p>'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail</p> -->
   </el-carousel>
   <!-- <ul v-if="state.studyList.length !== 0" style="display:flex; flex-wrap: wrap; justify-content: flex-start;"> -->
   <ul v-if="state.studyList.length !== 0" class="ul-class">
@@ -46,7 +54,7 @@
       @click="onClickStudyList(i)"
       class="li-class"
     >
-      <study :studyData="state.studyList[i-1]" style="width:100%"/>
+      <study :studyData="state.studyList[i - 1]" style="width:100%" />
     </li>
   </ul>
   <el-alert
@@ -103,31 +111,31 @@
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: rgba( 255, 255, 255, 0 );
+  background-color: rgba(255, 255, 255, 0);
 }
 
 .el-carousel__item:nth-child(2n + 1) {
-  background-color: rgba( 255, 255, 255, 0 );
+  background-color: rgba(255, 255, 255, 0);
 }
 </style>
 <script>
-import Study from "./components/study"
-import StudyCarousel from "./components/studycarousel"
-import { onMounted, reactive, computed } from "vue"
-import { useRouter } from "vue-router"
-import { useStore } from "vuex"
-import { ElMessage } from "element-plus"
+import Study from "./components/study";
+import StudyCarousel from "./components/studycarousel";
+import { onMounted, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { ElMessage } from "element-plus";
 export default {
   name: "Home",
 
   components: {
     Study,
-    StudyCarousel,
+    StudyCarousel
   },
 
   setup(props, { emit }) {
-    const store = useStore()
-    const router = useRouter()
+    const store = useStore();
+    const router = useRouter();
     const state = reactive({
       isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
       studyList: [],
@@ -150,46 +158,44 @@ export default {
         }
       ],
       uri: [],
-      studyData: ''
-    })
+      studyData: ""
+    });
 
-    const onClickRecommendStudyList = (id) => {
-      const selectStudy = state.recommendStudyList[id-1]
+    const onClickRecommendStudyList = id => {
+      const selectStudy = state.recommendStudyList[id - 1];
       emit("openStudydetailDialog", selectStudy);
-    }
+    };
 
-
-    const onClickStudyList = (id) => {
-      const selectStudy = state.studyList[id-1]
-      emit("openStudydetailDialog", selectStudy)
-    }
+    const onClickStudyList = id => {
+      const selectStudy = state.studyList[id - 1];
+      emit("openStudydetailDialog", selectStudy);
+    };
 
     // 방 목록 리스트 가져오기
     const getStudyList = function() {
       store
         .dispatch("root/requestStudyList", {})
         .then(function(res) {
-          state.studyList = res.data.studyResult
-          console.log("스터디 목록 받아오기", state.studyList)
+          state.studyList = res.data.studyResult;
+          console.log("스터디 목록 받아오기", state.studyList);
         })
         .catch(function(err) {
-          console.log("스터디 목록 받아오기 에러", err)
-        })
-    }
+          console.log("스터디 목록 받아오기 에러", err);
+        });
+    };
 
     // 추천 리스트 가져오기
     const getRecommendStudyList = function() {
       store
-        .dispatch('root/requestRecommendStudyList', {
-        })
+        .dispatch("root/requestRecommendStudyList", {})
         .then(function(res) {
-          console.log('추천 리스트 응답 결과', res)
-          state.recommendStudyList = res.data.studyResult
+          console.log("추천 리스트 응답 결과", res);
+          state.recommendStudyList = res.data.studyResult;
         })
         .catch(function(err) {
-          console.log('추천 리스트 응답 에러', err)
-        })
-    }
+          console.log("추천 리스트 응답 에러", err);
+        });
+    };
 
     // const getImage = (thumbnail) => {
     //   let studyData = thumbnail
@@ -216,7 +222,7 @@ export default {
 
     onMounted(() => {
       if (state.isLoggedIn) {
-        getRecommendStudyList()
+        getRecommendStudyList();
         // store
         // .dispatch('root/requestRecommendStudyList', {
         // })
@@ -234,19 +240,19 @@ export default {
         //   console.log('추천 리스트 응답 에러', err)
         // })
       }
-      getStudyList()
-    })
+      getStudyList();
+    });
 
     // 검색한 내용으로 스터디 목록 가져오기
     const searchStudy = function() {
       let cleanValue = state.searchValue.trim();
-      console.log(cleanValue)
+      console.log(cleanValue);
       if (cleanValue !== "") {
         if (!state.searchType) {
           ElMessage({
             type: "info",
             message: "검색하려는 분야를 선택해주세요"
-          })
+          });
         } else {
           store
             .dispatch("root/requestSearchStudyList", {
@@ -254,19 +260,19 @@ export default {
               searchValue: cleanValue
             })
             .then(function(res) {
-              state.studyList = res.data.studyResult
-              console.log("검색 스터디 목록 받아오기", state.studyList)
+              state.studyList = res.data.studyResult;
+              console.log("검색 스터디 목록 받아오기", state.studyList);
             })
             .catch(function(err) {
-              console.log("검색 스터디 목록 받아오기 에러", err)
-            })
+              console.log("검색 스터디 목록 받아오기 에러", err);
+            });
         }
       } else {
-        state.searchValue = ""
+        state.searchValue = "";
       }
-    }
+    };
 
-    return { state, onClickStudyList, onClickRecommendStudyList, searchStudy, }
+    return { state, onClickStudyList, onClickRecommendStudyList, searchStudy };
   }
-}
+};
 </script>
