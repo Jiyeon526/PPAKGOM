@@ -11,7 +11,6 @@
       </el-image> -->
     </div>
     <div style="text-align: left; padding: 14px;">
-      <p>{{ memberData }}</p>
       <span v-if="condition == 1">
         {{memberData.user_name}}님
         <el-button @click="inviteMember" >초대</el-button>

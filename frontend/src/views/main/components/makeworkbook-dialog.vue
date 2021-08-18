@@ -35,7 +35,7 @@
         </el-table-column>
       </el-table>
 
-      <el-button style="margin-top:20px" @click="handleClick">submit</el-button>
+      <el-button style="margin: 10px 0px 10px 10px; display: block; float: right;" plain type="success" @click="handleClick">제출하기</el-button>
     </el-col>
   </el-row>
   </el-dialog>

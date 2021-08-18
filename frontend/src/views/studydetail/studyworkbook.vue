@@ -1,20 +1,15 @@
 <template>
   <h2>스터디 문제집</h2>
 
-  <el-button @click="clickCreateWorkbook">문제집 만들기</el-button>
+  <!-- <el-button style="margin: 10px" plain type="success" @click="clickCreateWorkbook">문제집 만들기</el-button> -->
   <el-row :gutter="24" justify="center">
     <el-col :span="12">
-      <h1>가입된 스터디</h1>
     <el-table
       :data="state.workbookList"
       height="400"
       @row-click="clickWorkbook"
       style="width: 100%">
-      <el-table-column
-        prop="date"
-        label="Date"
-      >
-      </el-table-column>
+
       <el-table-column
         prop="id"
         label="NO."
@@ -31,9 +26,9 @@
       >
       </el-table-column>
     </el-table>
+    <el-button style="margin: 10px 0px 10px 10px; display: block; float: right;" plain type="success" @click="clickCreateWorkbook">문제집 만들기</el-button>
     </el-col>
   </el-row>
-
 
 </template>
 

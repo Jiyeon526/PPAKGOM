@@ -27,14 +27,14 @@
             ref="pdfUpload"
             :on-remove="handleRemove"
           >
-          <el-button type="primary">Upload</el-button>
+          <el-button plain type="success">Upload</el-button>
           </el-upload>
         </el-form-item>
         <el-form-item>
-          <el-button @click="addRow">Add</el-button>
-          <el-button @click="saveAll">Save All</el-button>
+          <el-button @click="addRow" plain type="success"><i class="el-icon-circle-plus-outline"></i> Add</el-button>
 
           <el-table
+            style="margin-top: 10px"
             height="400"
             :data="state.tableData">
             <el-table-column
@@ -44,6 +44,7 @@
             <el-table-column prop="answer" label="Answer">
               <template #default="scope">
                   <el-input size="small"
+                    placeholder="답을 입력하세요. EX) 1"
                     style="text-align:center"
                     v-model="scope.row.answer" controls-position="right"></el-input>
               </template>
@@ -57,7 +58,7 @@
           </el-table>
         </el-form-item>
         <el-form-item align='right'>
-          <el-button type="primary" @click="handleClick" >만들기</el-button>
+          <el-button plain type="success" @click="handleClick" >만들기</el-button>
         </el-form-item>
       </el-form>
     </el-col>

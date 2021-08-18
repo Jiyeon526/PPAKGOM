@@ -16,12 +16,13 @@
         </template>
       </el-input>
     </div>
-    <div v-if="state.memberList.length !== 0">
+    <div v-if="state.memberList.length !== 0" style="display: flex; justify-content: center; flex-wrap: wrap; ">
       <div
+        style="display: inline-block;"
         v-for="i in state.memberList.length"
         :key="i"
       >
-        <membercard :memberData="state.memberList[i-1]" :condition="1" />
+        <membercard  :memberData="state.memberList[i-1]" :condition="1" />
       </div>
     </div>
     <el-alert
