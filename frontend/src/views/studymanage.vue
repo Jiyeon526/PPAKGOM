@@ -1,7 +1,7 @@
 <template>
-  <el-row>
+  <!-- <el-row>
     <h1>방관리</h1>
-  </el-row>
+  </el-row> -->
 
     <el-row :gutter="24">
     <el-col :span="12">
@@ -51,22 +51,21 @@
     <el-table
       :data="state.receiveList"
       height="400"
-      :show-header="false"
       @row-click="handleUserClick"
       style="width: 100%">
       <el-table-column
         prop="studyId"
-        label="study_id"
+         label="방번호"
       >
       </el-table-column>
       <el-table-column
         prop="studyName"
-        label="study_name"
+        label="스터디명"
       >
       </el-table-column>
       <el-table-column
         prop="userName"
-        label="owner_user_name"
+        label="방장명"
       >
       </el-table-column>
       <el-table-column

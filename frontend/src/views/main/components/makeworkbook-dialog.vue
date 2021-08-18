@@ -10,12 +10,7 @@
       <button :disabled="state.page <= 1" @click="state.page--">❮</button>
         {{ state.page }} / {{ state.pageCount }}
       <button :disabled="state.page >= state.pageCount" @click="state.page++">❯</button>
-      <!-- <vue-pdf-embed
-        style="height:80%"
-        ref="pdfRef"
-        :page = state.page
-        :source= "'https://localhost:8443/' + workbookInfo.test_url"
-        @rendered="handleRender" /> -->
+
       <vue-pdf-embed
         style="height:80%"
         ref="pdfRef"
@@ -25,9 +20,22 @@
     </el-col>
     <el-col :span="1"></el-col>
     <el-col :span="10">
-      <el-input v-for="cnt in problemCnt" :key="cnt" v-model="state.tableData[cnt-1]"
-      ></el-input>
-      <el-button @click="handleClick">submit</el-button>
+      <el-table
+        height="600"
+        :data="state.tableData">
+        <el-table-column
+          label="NO."
+          type="index">
+        </el-table-column>
+        <el-table-column prop="answer" label="Answer">
+          <template #default="scope">
+              <el-input size="small"
+                v-model="scope.row.answer" controls-position="right"></el-input>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-button style="margin-top:20px" @click="handleClick">submit</el-button>
     </el-col>
   </el-row>
   </el-dialog>
@@ -77,10 +85,17 @@ export default {
       page: 1,
       pageCount: 1,
       tableCount: 0,
-      tableData: [],
+      tableData: computed(() => store.getters["root/getproblemCnt"]),
       uri: "",
       studyData: "",
     });
+
+    watch(()=>props.problemCnt,()=>{
+      store.commit('root/setproblemCnt', props.problemCnt)
+      // for (let i=0; i < props.problemCnt; i++ ){
+      //   state.tableData.push({'answer': ""})
+      // }
+    })
 
     watch(()=>props.workbookInfo,()=>{
       console.log(props.workbookInfo)
@@ -107,6 +122,7 @@ export default {
       })
     })
 
+
     const isDisabled = function() {
       return "disabled";
     };
@@ -117,7 +133,10 @@ export default {
     });
 
     const handleClose = function() {
+      console.log(props.problemCnt)
       console.log(state.tableData)
+      props.problemCnt = 0,
+      console.log(props.problemCnt)
       state.page = 1,
       state.pageCount = 1,
       state.tableData = [],
@@ -132,17 +151,15 @@ export default {
       console.log(state.tableData)
       const newtab = []
       for(let val in state.tableData) {
-        console.log([state.tableData[val]])
-        newtab.push(state.tableData[val])
+        newtab.push(state.tableData[val]["answer"])
       }
       store.commit('root/setTestpk', props.workbookInfo.id)
       store.dispatch('root/requestSubmitAnswer', {
         answer: newtab
       })
       .then(function(res) {
-        console.log(res)
         ElMessage({
-          message: res.data,
+          message: "문제 수: " + res.data["number"]+', ' + "맞은 문제 개수:" + res.data["correct"],
           type: "success"
         })
       })

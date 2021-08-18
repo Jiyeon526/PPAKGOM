@@ -11,6 +11,7 @@
           <el-progress type="dashboard" :percentage="userData.temperature" :color="state.colors" :width="180" status="success">
             <!-- <el-avatar :src="'https://localhost:8443/' + userData.profile_thumbnail" :fit="fill" :size="120"></el-avatar> -->
             <el-avatar :src="state.uri" :fit="fill" :size="150"></el-avatar>
+            <!-- <p>{{userData.temperature}}</p> -->
           </el-progress>
         </div>
 
@@ -27,12 +28,16 @@
     </el-row>
     <el-divider style="margin: 5px;"></el-divider>
     <el-row>
-      <h3>가입한 스터디</h3>
-      <ul>
-        <li v-for="std in studyData">
-          {{ std }}
-        </li>
-      </ul>
+      <h3>가입한 스터디({{studyData.length}}개)</h3>
+      <el-col>
+        <div>
+          <el-scrollbar height="80px" always>
+            <li v-for="std in studyData">
+              {{ std }}
+            </li>
+          </el-scrollbar>
+        </div>
+      </el-col>
     </el-row>
     <template #footer>
       <span>관심분야: </span>
@@ -93,10 +98,10 @@ export default {
       passion: 50,
       colors: [
         {color: '#f56c6c', percentage: 20},
-        {color: '#e6a23c', percentage: 40},
-        {color: '#5cb87a', percentage: 60},
-        {color: '#1989fa', percentage: 80},
-        {color: '#6f7ad3', percentage: 100}
+        {color: '#e6a23c', percentage: 30},
+        {color: '#5cb87a', percentage: 40},
+        {color: '#1989fa', percentage: 50},
+        {color: '#6f7ad3', percentage: 70}
       ],
       circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       uri: "",
@@ -109,6 +114,9 @@ export default {
 
       console.log(state.studyData);
       var name;
+      if (!state.studyData) {
+        state.studyData = "default.png/default.png/default.png"
+      }
       if (
         state.studyData.split("\\").length > state.studyData.split("/").length
       ) {

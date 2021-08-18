@@ -1,7 +1,7 @@
 <template>
-  <el-row>
+  <!-- <el-row>
     <h1>스터디원 평가</h1>
-  </el-row>
+  </el-row> -->
   <el-row :gutter="24">
     <el-col :span="12">
       <h1>스터디원 평가</h1>
@@ -37,8 +37,8 @@
       </el-table-column>
     </el-table>
     </el-col>
-    <el-col :span=1></el-col>
-    <el-col :span="10" >
+    <el-col :span="1"></el-col>
+    <el-col :span="10">
       <div @click="handleclick" v-if="state.isclick">
         <evaluateDetail :memberData="state.memberData" :studyData="state.studyData"/>
       </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import evaluateDetail from "./evaluate-detail.vue"
 
@@ -62,19 +62,23 @@ export default {
     const store = useStore();
 
     const state = reactive({
-      memberList: [],
+      memberList: computed(() => store.getters["root/getEvaluateMemberList"]),
       inStudyList: [],
       memberData: [],
       studyData: [],
-      isclick: false,
+      isclick: computed(() => store.getters["root/getIsevaluate"]),
     })
 
     onMounted(() => {
+      state.isclick = false
       store.commit("root/setMenuActiveMenuName", "evaluate")
       askmemberList()
     })
 
     const handleClick = function(row, column, cell, event) {
+      console.log(row)
+      console.log(column.index)
+      console.log(cell)
       state.studyData = row
       store.dispatch("root/requestNameUserJoinStudyList", row["study_member_name"])
       .then(function(res) {
@@ -84,7 +88,7 @@ export default {
       })
       store.dispatch("root/requestOtherProfile", row["study_member_name"])
       .then(function(res) {
-        state.isclick = true
+        store.commit('root/setIsevaluate',true)
         state.memberData = []
         const profileData = res.data
         const origin_url = profileData["profile_thumbnail"]
@@ -107,7 +111,17 @@ export default {
     const askmemberList = function() {
       store.dispatch("root/requestEvaluateMemberList")
       .then(function(res){
-        state.memberList = res.data
+        // state.memberList = res.data
+        const onlyNotEvaluate = []
+        console.log(res.data)
+        for (let i=0; i< res.data.length; i++) {
+          if (res.data[i]["checked"] == false) {
+            console.log(res.data[i])
+            onlyNotEvaluate.push(res.data[i])
+          }
+        }
+        console.log(onlyNotEvaluate)
+        store.commit('root/setEvaluateMemberList', onlyNotEvaluate)
       })
     }
 

@@ -26,7 +26,7 @@
   <h4 v-if="state.recommendStudyList.length === 0">
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
-  <el-carousel  :interval="4000" type="card" height="300px" >
+  <el-carousel v-else :interval="4000" type="card" height="300px" >
     <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)" style="width:300px">
       <StudyCarousel :studyData="state.recommendStudyList[i-1]" style="width:100%"/>
       <!-- <el-image style="width: 300px; height: 300px"

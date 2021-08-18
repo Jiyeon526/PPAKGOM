@@ -1,8 +1,9 @@
 <template>
-  <h2>스터디 멤버관리</h2>
+  <h2 style="text-align:left">MY 스터디 멤버</h2>
   <div v-for="memberData in state.memberList" class="study-membercard">
     <membercard :memberData='memberData' />
   </div>
+  <div v-if="state.curId == state.ownerId">
   <el-divider></el-divider>
   <el-row :gutter="24" >
     <el-col :span="12" align="left">
@@ -78,6 +79,7 @@
     </el-table>
     </el-col>
   </el-row>
+  </div>
 </template>
 
 <script>
@@ -93,10 +95,12 @@ export default {
     const store = useStore()
     const state = reactive({
       memberList : [],
-      sendList : [],
+      sendList : computed(() => store.getters["root/getSendInviteMemberList"]),
       applyList : [],
       inStudyList : [],
       studypk: computed(() => store.getters["root/getStudypk"]),
+      ownerId: null,
+      curId: computed(() => store.getters["root/getUserpk"])
    })
 
     // 페이지 진입시 불리는 훅
@@ -104,6 +108,7 @@ export default {
       studyMemberList()
       inviteSendList()
       applyUserList()
+      ownerOnly()
     })
 
     const studyMemberList = function() {
@@ -124,7 +129,9 @@ export default {
       store.dispatch("root/requestinviteSendList")
       .then(function(res){
         console.log(res)
-        state.sendList = res.data.inviteResult
+        store.commit('root/setSendInviteMemberList',res.data.inviteResult)
+        // state.sendList = res.data.inviteResult
+        // state.sendList = res.data.inviteResult
       })
     }
 
@@ -225,7 +232,17 @@ export default {
       })
     }
 
-  return { state, studyMemberList, inviteSendList, handleClick, handleCancelInvite, handleCheckReject, applyUserList, findMember, joinAccept, joinReject }
+    const ownerOnly = function() {
+      store.dispatch("root/requestStudyInfoDetail", state.studypk)
+      .then(function(res) {
+        console.log(res.data)
+        console.log(res.data.studyResult[0]["owner_id"])
+        state.ownerId = res.data.studyResult[0]["owner_id"]
+      })
+    }
+
+
+  return { state, studyMemberList, inviteSendList, handleClick, handleCancelInvite, handleCheckReject, applyUserList, findMember, joinAccept, joinReject,ownerOnly }
   }
 }
 </script>

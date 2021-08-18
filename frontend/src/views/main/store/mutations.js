@@ -77,4 +77,35 @@ export function setJoinStudyList(state, payload) {
   state.joinStudyList = payload
 }
 
+export function setEvaluateMemberList(state, payload) {
+  state.evaluateMemberList = payload
+}
 
+export function setIsevaluate(state, payload) {
+  state.isevaluate = payload
+}
+
+export function setDeleteEvaluatedMember(state, payload) {
+  // state.evaluateMemberList = payload
+  // console.log(payload["studyId"])
+  // console.log(state.evaluateMemberList.length,state.evaluateMemberList.length)
+  for (let i=0; i < state.evaluateMemberList.length; i++) {
+    if ((state.evaluateMemberList[i]["study_id"] == payload["studyId"]) &&
+    (state.evaluateMemberList[i]["studyMemberId"] == payload["studyMemberId"])) {
+      state.evaluateMemberList.splice(i,1)
+      break
+    }
+  }
+}
+
+export function setSendInviteMemberList(state, payload) {
+  state.inviteSendList = payload
+}
+
+export function setWorkbookList(state, payload) {
+  state.workbookList = payload
+}
+
+export function setproblemCnt(state, payload) {
+  state.problemCnt = payload
+}
