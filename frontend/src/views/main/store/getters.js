@@ -64,3 +64,26 @@ export function getJoinStudyList(state) {
   return state.joinStudyList;
 }
 
+export function getEvaluateMemberList(state) {
+  return state.evaluateMemberList
+}
+
+export function getIsevaluate(state) {
+  return state.isevaluate
+}
+
+export function getSendInviteMemberList(state) {
+  return state.inviteSendList
+}
+
+export function getWorkbookList(state) {
+  return state.workbookList
+}
+
+export function getproblemCnt(state) {
+  const sendTable = []
+  for (let i=0; i < state.problemCnt; i++ ){
+    sendTable.push({'answer': ""})
+  }
+  return sendTable
+}

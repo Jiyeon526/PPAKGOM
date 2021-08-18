@@ -48,5 +48,10 @@ export default {
   selectOption: '',
   testpk: 0,
   reload: false,
-  joinStudyList:[]
+  joinStudyList:[],
+  evaluateMemberList: [],
+  isevaluate: false,
+  inviteSendList: [],
+  workbookList: [],
+  problemCnt: 0,
 }

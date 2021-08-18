@@ -79,11 +79,6 @@
       </div>
     </el-carousel-item>
   </el-carousel>
-  <!-- <el-carousel v-else :interval="4000" type="card" height="300px" >
-    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)" style="width:300px">
-      <StudyCarousel :studyData="state.recommendStudyList[i-1]" style="width:100%"/>
-    </el-carousel-item>
-  </el-carousel> -->
   <ul v-if="state.studyList.length !== 0" class="ul-class">
     <li
       v-for="i in state.studyList.length"
@@ -122,12 +117,6 @@
   margin-right: auto;
 }
 
-/* .study {
-  display: flex;
-  justify-content: flex-start;
-  margin-left: auto;
-  margin-right: auto;
-} */
 .base-color {
   color: #c0c4cc;
 }

@@ -84,11 +84,10 @@ export function requestDeleteMyInfo({ state }) {
 export function requestUpdateMyInfo({ state }, payload) {
   console.log('requestMyInfo', state, payload)
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
-  const url = `/users/${state.userId}`
+  const url = `/users/${state.userpk}`
   let body = payload
-  console.log("updateInfo");
-  console.log(headers);
-  return $axios.patch(url, body, { headers: headers })
+  console.log(body);
+  return $axios.put(url, body, { headers: headers })
 }
 
 // 방 생성하기
@@ -356,7 +355,6 @@ export function requestMakeWorkbook({state}, payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
   const url = `/study/${state.studypk}`
   const body = payload
-  console.log(body)
   return $axios.post(url, body, { headers: headers })
 }
 

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import { useStore } from 'vuex'
 
 export default {
@@ -47,7 +47,7 @@ export default {
   setup (props, {emit}) {
     const store = useStore()
     const state = reactive({
-      workbookList: [],
+      workbookList: computed(() => store.getters['root/getWorkbookList']),
     })
     // 페이지 진입시 불리는 훅
     onMounted (() => {
@@ -74,7 +74,8 @@ export default {
     const AskWorkbookList = function() {
       store.dispatch('root/requestWorkbookList')
       .then(function(res) {
-        state.workbookList = res.data
+        // state.workbookList = res.data
+        store.commit('root/setWorkbookList', res.data)
       })
       .catch(function(err) {
         console.log(err)

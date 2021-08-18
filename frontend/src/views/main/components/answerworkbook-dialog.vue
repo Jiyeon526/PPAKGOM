@@ -6,19 +6,7 @@
     @close="handleClose"
   >
   <el-row :gutters="24">
-    <el-col :span="13" class="pdfCol">
-      <button :disabled="state.page <= 1" @click="state.page--">❮</button>
-        {{ state.page }} / {{ state.pageCount }}
-      <button :disabled="state.page >= state.pageCount" @click="state.page++">❯</button>
-      <vue-pdf-embed
-        style="height:80%"
-        ref="pdfRef"
-        :page = state.page
-        :source="state.src"
-        @rendered="handleRender" />
-    </el-col>
-    <el-col :span="1"></el-col>
-    <el-col :span="10">
+    <el-col>
       <el-form
         :model="answerbookForm"
         :rules="rules"
@@ -122,7 +110,7 @@ export default {
       pageCount: 1,
       tableCount: 0,
       tableData: [],
-      answerTable: ["1",],
+      // answerTable: ["1",],
       userpk: computed(() => store.getters["root/getUserpk"]),
     });
 
@@ -136,6 +124,10 @@ export default {
     });
 
     const handleClose = function() {
+      state.tableCount = 0
+      state.tableData = []
+      state.form.title = ""
+      state.form.uploading = []
       emit("closeAnswerWorkbookDialog");
     };
 
@@ -188,6 +180,17 @@ export default {
       store.dispatch('root/requestMakeWorkbook',body)
       .then(function(res) {
         console.log(res)
+        pdfUpload.value.submit()
+        ElMessage({
+          message: "문제집 생성 완료",
+          type: "success"
+        })
+        store.dispatch('root/requestWorkbookList')
+        .then(function(res) {
+          store.commit('root/setWorkbookList', res.data)
+        })
+        handleClose()
+
       })
       .catch(function(err) {
         console.log(err)
@@ -202,12 +205,12 @@ export default {
 <style>
 .answerworkbook-dialog {
   height: 800px;
-  width: 800px;
+  width: 400px;
 }
-.numbering {
+/* .numbering {
   height: 400px;
   border: solid;
-}
+} */
 .pdfCol {
   height: 700px;
   border: solid

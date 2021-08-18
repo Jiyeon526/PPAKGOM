@@ -50,20 +50,49 @@
           clearable
         ></el-input>
       </el-form-item>
-
+    <div v-if="!state.editMode">
       <el-form-item
         prop="thumbnail"
         label="프로필 사진"
         :label-width="state.formLabelWidth"
       >
-        <el-image
-          style="width: 100px; height: 100px"
+        <!-- <el-image style="width: 100%; height: 200px"
           :src="'https://localhost:8443/' + state.form.thumbnail"
-          :fit="fit"></el-image>
+          :fit="fill">
+        </el-image> -->
+        <el-image style="width: 100%; height: 200px"
+          :src="state.uri"
+          :fit="fill">
+        </el-image>
       </el-form-item>
+    </div>
+    <!-- <div v-else>
+      <el-form-item
+        label="프로필 사진"
+        prop="changing"
+        :label-width="state.formLabelWidth"
+      >
+
+        <el-upload
+          class="upload-demo"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          accept=".png, .jpg, .jpeg, .gif"
+          list-type="picture"
+          :on-change="prevUpload"
+          :auto-upload="false"
+          thumbnail-mode=true
+          :limit="1"
+          ref="toUpload"
+          :on-remove="handleRemove"
+        >
+        <el-button type="primary">Upload</el-button>
+        </el-upload>
+      </el-form-item>
+    </div> -->
+
     </el-form>
   </el-container>
-  <div v-if="!state.editMode">
+  <!-- <div v-if="!state.editMode">
     <el-button type="primary" @click="state.editMode = !state.editMode"
       >회원정보 수정</el-button
     >
@@ -74,7 +103,7 @@
   <div v-else>
     <el-button type="primary" @click="clickUpdate">수정</el-button>
     <el-button @click="state.editMode = !state.editMode">취소</el-button>
-  </div>
+  </div> -->
 </template>
 
 <style>
@@ -84,10 +113,11 @@ section.el-container {
 </style>
 
 <script>
-import { reactive, ref, onBeforeMount } from "vue";
+import { reactive, ref, onBeforeMount, onMounted, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
   name: "Mypage",
@@ -95,6 +125,7 @@ export default {
     const store = useStore();
     const router = useRouter();
     const editForm = ref(null);
+    const toUpload = ref(null);
 
     const state = reactive({
       form: {
@@ -103,6 +134,7 @@ export default {
         name: "",
         interest: "",
         thumbnail: "",
+        changing: "",
         align: "left"
       },
       rules: {
@@ -111,8 +143,37 @@ export default {
         // position: [{ validator: validatePosition, trigger: "blur" }]
       },
       editMode: false,
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      uri: "",
+      studyData: "",
     });
+
+    // 페이지 진입시 불리는 훅
+    watch(()=>state.form.thumbnail,()=>{
+      state.studyData = state.form.thumbnail;
+      console.log(state.studyData)
+      var name;
+      if (!state.studyData) {
+        state.studyData = "default.png/default.png/default.png"
+      }
+      console.log(name)
+      if (
+        state.studyData.split("\\").length > state.studyData.split("/").length
+      ) {
+        name = state.studyData.split("\\");
+      } else {
+        name = state.studyData.split("/");
+      }
+
+      axios({
+        url: `https://localhost:8443/api/v1/users/profile/${name[2]}/download`,
+        method: "GET",
+        responseType: "blob"
+      }).then(res => {
+        state.uri = URL.createObjectURL(res.data);
+      })
+    })
+
 
     const validateName = (rule, value, callback) => {
       if (value === "") {
@@ -161,7 +222,7 @@ export default {
     }
 
     const clickUpdate = function() {
-      console.log(state.form.thumbnail)
+      console.log("확인용",state.form.changing,state.form.thumbnail)
       console.log(editForm);
       editForm.value.validate(valid => {
         if (valid) {
@@ -170,14 +231,18 @@ export default {
             .dispatch("root/requestUpdateMyInfo", {
               name: state.form.name,
               interest: state.form.interest,
-              thumbnail: state.form.thumbnail,
+              thumbnail: state.form.changing,
             })
-            .then(function(result) {
+            .then(function(res) {
               ElMessage({
                 message: "수정이 완료되었습니다.",
                 type: "success"
               });
+              // toUpload.value.submit();
               state.editMode = !state.editMode;
+              state.form.thumbnail = state.form.changing
+              console.log("확인용",state.form.changing,state.form.thumbnail)
+              state.form.changing = ""
             })
             .catch(function(err) {
               console.log(err);
@@ -212,14 +277,14 @@ export default {
       const necessary = [];
       necessary.push(file["name"]);
       necessary.push(file["size"]);
-      state.form.thumbnail = necessary;
+      state.form.changing = necessary;
 
       state.uploading = file;
       console.log(
         "111",
         file,
-        state.form.thumbnail,
-        typeof state.form.thumbnail
+        state.form.changing,
+        typeof state.form.changing
       );
     };
     // 페이지 진입시 불리는 훅
@@ -227,7 +292,7 @@ export default {
       getUserInfo();
     });
 
-    return { editForm, state, clickUpdate, clickDelete, prevUpload }
+    return { editForm, toUpload, state, clickUpdate, clickDelete, prevUpload }
   }
 };
 </script>
