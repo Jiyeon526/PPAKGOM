@@ -1,7 +1,30 @@
 <template>
   <h2>스터디 점수그래프</h2>
-  <div v-if="state.scoredata">
-    <line-chart :data="state.cdata" loading="loading" />
+  <line-chart :data="state.cdata" empty="우리 문제 풀러 갈까요?" />
+
+  <div
+    v-for="result in state.results"
+    :key="result"
+    style="display:inline-block;"
+  >
+    <h1>{{ result.name }}</h1>
+    <el-table :data="result.data" style="width: 300px ">
+      <el-table-column prop="test_title" label="문제집" width="120">
+      </el-table-column>
+      <el-table-column prop="score" label="맞은 갯수" width="180" sortable>
+        <template #default="scope">
+          <div v-if="scope.row.score > 90">
+            {{ scope.row.score }}
+          </div>
+          <div v-else-if="scope.row.score > 50">
+            {{ scope.row.score }}
+          </div>
+          <div v-else>
+            {{ scope.row.score }}
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
@@ -17,58 +40,7 @@ export default {
       studypk: 0,
       userpk: 0,
       cdata: [],
-      data: [
-        {
-          //
-          //
-          name: "people1",
-          data: {
-            test1: "20"
-
-            // "2017-01-02 00:00:00 -0800": 90,
-            // "2017-01-03 00:00:00 -0800": 72,
-            // "2017-01-04 00:00:00 -0800": 70,
-            // "2017-01-05 00:00:00 -0800": 65,
-            // "2017-01-06 00:00:00 -0800": 80,
-            // "2017-01-07 00:00:00 -0800": 98,
-            // "2017-01-08 00:00:00 -0800": 85,
-            // "2017-01-09 00:00:00 -0800": 45
-          }
-        }
-        // ,
-        // {
-        //   name: "people2",
-        //   data: {
-        //     문제집1: 44,
-        //     문제집1: 8,
-        //     문제집1: 80
-        //     // "2017-01-02 00:00:00 -0800": 55,
-        //     // "2017-01-03 00:00:00 -0800": 66,
-        //     // "2017-01-04 00:00:00 -0800": 77,
-        //     // "2017-01-05 00:00:00 -0800": 88,
-        //     // "2017-01-06 00:00:00 -0800": 99,
-        //     // "2017-01-07 00:00:00 -0800": 55,
-        //     // "2017-01-08 00:00:00 -0800": 88,
-        //     // "2017-01-09 00:00:00 -0800": 86
-        //   }
-        // },
-        // {
-        //   name: "people3",
-        //   data: {
-        //     문제집1: 65,
-        //     문제집1: 65,
-        //     문제집1: 65
-        //     // "2017-01-02 00:00:00 -0800": 78,
-        //     // "2017-01-03 00:00:00 -0800": 85,
-        //     // "2017-01-04 00:00:00 -0800": 88,
-        //     // "2017-01-05 00:00:00 -0800": 92,
-        //     // "2017-01-06 00:00:00 -0800": 95,
-        //     // "2017-01-07 00:00:00 -0800": 70,
-        //     // "2017-01-08 00:00:00 -0800": 75,
-        //     // "2017-01-09 00:00:00 -0800": 65
-        //   }
-        // }
-      ],
+      results: [],
       scoredata: [],
       cdata: []
     });
@@ -84,7 +56,7 @@ export default {
       state.studypk = store.getters["root/getStudypk"];
       state.userpk = store.getters["root/getUserpk"];
       store.dispatch("root/requestScore", state.studypk).then(res => {
-        console.log(res.data);
+        state.results = res.data;
         res.data.forEach(element => {
           console.log(element);
           let data = "{";

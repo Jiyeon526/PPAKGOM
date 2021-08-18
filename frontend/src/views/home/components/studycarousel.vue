@@ -1,30 +1,22 @@
 <template>
-  <el-card :body-style="{ padding: '0px' }">
-    <el-image
-      style="width: 100%; height: 250px;"
-      :src="state.uri"
-      :fit="fit"
-    >
-    </el-image>
-  </el-card>
+  <el-image
+    class="img-center"
+    :src="state.uri"
+    :fit="fit"
+  >
+  </el-image>
 </template>
 <style scoped>
-.el-card {
-  width: 300px;
-  height: auto;
-  margin-bottom: 40px;
-  border-radius: 10px;
-  border: none;
-}
-.el-card:hover {
+.img-center:hover {
   transform: scale(1.05, 1.05);
   box-shadow: 5px 5px 5px rgb(143, 209, 141, 0.7);
 }
-.el-card .image-wrapper {
-  width: 300px;
-  height: auto;
-  margin: 0px;
-  text-align: center;
+.img-center {
+  height: 280px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
 }
 
 </style>

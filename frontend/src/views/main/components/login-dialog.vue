@@ -374,10 +374,10 @@ export default {
                 });
             })
             .catch(function(err) {
-              alert(err.message);
+              ElMessage.error("로그인에 실패하였습니다.");
             });
         } else {
-          alert("Validate error!");
+          ElMessage.error("입력 유효성에 어긋납니다.");
         }
       });
     };

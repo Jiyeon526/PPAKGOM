@@ -68,7 +68,6 @@ export default {
     watch(
       () => state.reload,
       () => {
-        console.log("실행되는지")
         getScheduleList()
       }
     )
