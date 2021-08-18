@@ -239,10 +239,12 @@ export default {
         .dispatch("root/requestStudyList", {})
         .then(function(res) {
           state.studyList = res.data.studyResult;
-          console.log("스터디 목록 받아오기", state.studyList);
         })
         .catch(function(err) {
-          console.log("스터디 목록 받아오기 에러", err);
+          ElMessage({
+            type: "error",
+            message: err.message
+          })
         });
     };
 
@@ -251,11 +253,13 @@ export default {
       store
         .dispatch("root/requestRecommendStudyList", {})
         .then(function(res) {
-          console.log("추천 리스트 응답 결과", res);
           state.recommendStudyList = res.data.studyResult;
         })
         .catch(function(err) {
-          console.log("추천 리스트 응답 에러", err);
+          ElMessage({
+            type: "error",
+            message: err.message
+          })
         });
     };
 
@@ -275,14 +279,14 @@ export default {
     // 검색한 내용으로 스터디 목록 가져오기
     const searchStudy = function() {
       let cleanValue = state.searchValue.trim();
-      console.log(cleanValue);
       if (cleanValue !== "") {
         if (!state.searchType) {
           ElMessage({
             type: "info",
-            message: "검색하려는 분야를 선택해주세요"
+            message: "검색하려는 분야를 선택해주세요."
           });
-        } else {
+        }
+        else {
           store
             .dispatch("root/requestSearchStudyList", {
               option: state.searchType,
@@ -290,10 +294,12 @@ export default {
             })
             .then(function(res) {
               state.studyList = res.data.studyResult;
-              console.log("검색 스터디 목록 받아오기", state.studyList);
             })
             .catch(function(err) {
-              console.log("검색 스터디 목록 받아오기 에러", err);
+              ElMessage({
+                type: "error",
+                message: err.message
+              })
             });
         }
       } else {

@@ -28,6 +28,7 @@
 // import { Calendar, DatePicker, VCalendar } from 'v-calendar';
 import { computed, onMounted, reactive, watch, ref } from 'vue'
 import { useStore } from 'vuex'
+import { ElMessage } from "element-plus";
 
 export default {
   name: 'studyschedule',
@@ -44,26 +45,15 @@ export default {
     const store = useStore()
     const month = new Date().getMonth();
     const year = new Date().getFullYear();
-    // const calendar = ref(null)
     const state = reactive({
       studyId: computed(() => props.studyId),
       reload: computed(() => store.getters["root/getReload"]),
-      // calendar: computed(() => calendar),
       month: month + 1,
       masks: {
         weekdays: 'WWW',
       },
       attributes: [],
     })
-
-    // watch(
-    //   () => calendar,
-    //   () => {
-    //     // state.changeCalendar = state.calendar
-    //     console.log("워치실행")
-    //     getScheduleList()
-    //   }
-    // )
 
     watch(
       () => state.reload,
@@ -86,20 +76,18 @@ export default {
           studyId: state.studyId
         })
           .then(function(res) {
-            console.log("스케줄 정보 가져오기", res)
             state.attributes = res.data
           })
           .catch(function(err) {
-            console.log("스케줄 정보 가져오기 에러!!", err)
+            ElMessage({
+              type: "error",
+              message: err.message
+            })
           })
     }
 
     // 페이지 진입시 불리는 훅
     onMounted (() => {
-      // console.log("달력",calendar.value.pages[0].month)
-      // state.changeCalendar = state.calendar
-      // console.log("여기",state.calendar)
-      // console.log("여기2",state.changeCalendar)
       getScheduleList()
     })
 
@@ -164,7 +152,7 @@ export default {
 }
 .custom-calendar.vc-container .vc-day {
   overflow: scroll;
-  padding: 0 5px 3px 5px;
+  padding: 0 5px 0px 5px;
   text-align: left;
   height: var(--day-height);
   min-width: var(--day-width);

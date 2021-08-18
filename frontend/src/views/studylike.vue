@@ -32,6 +32,7 @@
 import Study from "./home/components/study"
 import { onMounted, reactive } from "vue";
 import { useStore } from "vuex";
+import { ElMessage } from "element-plus";
 
 export default {
   name: "StudyJoin",
@@ -51,11 +52,13 @@ export default {
       store
         .dispatch('root/requestLikeStudyList')
           .then(function(res) {
-            console.log("가입한 스터디 목록 가져오기", res)
             state.likeStudyList = res.data.studyResult
           })
           .catch(function(err) {
-            console.log("가입한 스터디 목록 가져오기 에러", err)
+            ElMessage({
+              type: "error",
+              message: err.message
+            })
           })
     }
 

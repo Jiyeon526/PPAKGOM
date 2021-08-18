@@ -72,7 +72,7 @@ export default {
             validator(rule, value) {
               var error = [];
               if (value.length !== 10) {
-                error = ["2021-01-01과 같이 입력해주세요."];
+                error = ["날짜를 선택하거나 2021-01-01과 같이 입력해주세요."];
               }
               return error;
             }
@@ -184,7 +184,6 @@ export default {
     const onClickCreateSchedule = function() {
       scheduleForm.value.validate(valid => {
         if (valid) {
-          console.log("submit");
           store
             .dispatch("root/requestCreateSchedule", {
               date: state.date,
@@ -200,7 +199,10 @@ export default {
                 store.commit('root/setReload')
               })
               .catch(function(err) {
-                console.log('스케줄 생성 실패', err)
+                ElMessage({
+                  type: "error",
+                  message: err.message
+                })
               })
         }
         else {
@@ -210,6 +212,8 @@ export default {
     }
 
     const handleClose = function() {
+      state.selectDate = ''
+      state.form.title = ''
       emit("closeStudyscheduleDialog");
     };
 

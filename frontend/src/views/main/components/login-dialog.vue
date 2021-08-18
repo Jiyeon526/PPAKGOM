@@ -35,13 +35,13 @@
       </el-form-item>
     </el-form>
     <template #footer>
-      <span>
-        <span class="dialog-footer">
+      <!-- <span> -->
+        <div class="dialog-footer">
           <el-button type="success" @click="clickLogin" plain>로그인</el-button>
-        </span>
+        </div>
         <br />
         <div style="display: inline-block;">
-          <p>
+          <p style="margin:0px;">
             아직 회원이 아니신가요? &nbsp; &nbsp;
 
             <el-button
@@ -57,16 +57,19 @@
           <h3>간편 로그인</h3>
         </div>
 
-        <div class="google-logo-wrapper" id="google-signin-btn"></div>
-        &nbsp; &nbsp;
-        <div class="kakao-logo-wrapper" @click="kakaoLogin"></div>
+        <div style="display:flex; justify-content:center; align-items:center; width:100%;">
+          <span class="google-logo-wrapper" id="google-signin-btn"></span>
+          &nbsp; &nbsp;
+          <span class="kakao-logo-wrapper" @click="kakaoLogin"></span>
 
-        <div
-          class="naver-logo-wrapper"
-          id="naverIdLogin"
-          @click="naverlogin"
-        ></div>
-      </span>
+          <span
+            class="naver-logo-wrapper"
+            id="naverIdLogin"
+            @click="naverlogin"
+          ></span>
+        </div>
+
+      <!-- </span> -->
       <!-- <NaverLogin
         client-id="2skX9k2csf4rw6XBSD_S"
         callback-url="http://localhost:8083/naverlogin"
@@ -84,7 +87,7 @@
 
 .login-dialog .google-logo-wrapper {
   width: 120px;
-  height: 40px;
+  height: 36px;
   background-size: contain;
   background-repeat: no-repeat;
   /* background-image: url("../../../assets/images/google.png"); */
@@ -92,7 +95,7 @@
 }
 
 .login-dialog .kakao-logo-wrapper {
-  width: 100px;
+  width: 80px;
   height: 40px;
   background-size: contain;
   background-repeat: no-repeat;
@@ -101,11 +104,12 @@
 }
 
 .login-dialog .naver-logo-wrapper {
-  width: 50px;
+  width: 105px;
   height: 40px;
   background-size: contain;
   background-repeat: no-repeat;
   display: inline-block;
+  margin-left: 10px;
 }
 .login-dialog .el-dialog__headerbtn {
   float: right;
@@ -127,11 +131,17 @@
   display: none;
 }
 .login-dialog .el-dialog__footer {
-  margin: 0 calc(25% - 50px);
+  margin: 0;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* margin: 0 calc(25% - 50px);
   padding-top: 0;
   display: inline-block;
   align-self: center;
-  align-items: center;
+  align-items: center; */
 }
 .login-dialog .dialog-footer .el-button {
   width: 300px;
@@ -207,7 +217,7 @@ export default {
         ]
       },
       dialogVisible: computed(() => props.open),
-      formLabelWidth: "120px",
+      formLabelWidth: "80px",
       flag: ""
     });
 
