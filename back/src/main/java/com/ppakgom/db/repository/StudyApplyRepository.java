@@ -48,4 +48,7 @@ public interface StudyApplyRepository extends JpaRepository<StudyApply,Long>{
 
 	StudyApply findBySender_IdAndStudy_Id(Long userId, Long studyId);
 
+	Optional<StudyApply> findStudyApplyBySenderIdAndReceiverIdAndIsJoinAndStudyId(Long senderId, Long receiverId,
+			boolean isJoin, Long studyId);
+
 }

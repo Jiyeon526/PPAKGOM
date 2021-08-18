@@ -378,6 +378,18 @@ public class StudyController {
 			// study_id로 스터디 찾고
 			Study study = studyService.getStudyById(studyId).get();
 
+//			이미 회원이거나
+			Optional<UserStudy> us = userStudyService.findUserStudyByUserIdAndStudyId(receiver.getId(), study.getId());
+			if(us.isPresent())
+				return ResponseEntity.status(200).body(new BaseResponseBody(200, "이미 가입한 회원은 초대할 수 없습니다."));
+
+//			가입 요청 받은 유저면 초대 불가. -> study_apply 에서 sender_id, receiver_id, isJoin(true), study_id로 확인
+			Optional<StudyApply> studyApply = studyApplyService.findStudyApplyBySenderIdAndReceiverIdAndIsJoinAndStudyId(
+																				req.getReceiver_id(),study.getUser().getId(),true,study.getId());
+			if(studyApply.isPresent())
+				return ResponseEntity.status(200).body(new BaseResponseBody(200, "이미 가입요청한 회원입니다."));
+			
+			
 			if (study.getTemperature() > receiver.getTemperature()) {
 				return ResponseEntity.status(400).body(new BaseResponseBody(400, "열정도가 낮은 회원은 초대할 수 없습니다."));
 			}
