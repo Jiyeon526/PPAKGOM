@@ -1,15 +1,22 @@
 <template>
   <h1 style="font-size:35px;">스터디 모집</h1>
   <div class="search-bar">
-    <el-select class="option" v-model="state.searchType" placeholder="Select">
-      <el-option
-        v-for="item in state.options"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      >
-      </el-option>
-    </el-select>
+    <el-dropdown trigger="click" Button style="width:20%">
+      <el-button class="el-dropdown-link" style="width:100%;">
+        <span :class="state.selectColor">{{ state.label }}</span> <i class="el-icon-arrow-down"></i>
+      </el-button>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item
+            v-for="option in state.options"
+            :key="option.value"
+            @click="onClickSearchType(option)"
+          >
+            {{ option.label }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
     <div class="search-field">
       <el-input
         placeholder="화상 컨퍼런스 제목 검색"
@@ -26,19 +33,33 @@
   <h4 v-if="state.recommendStudyList.length === 0">
     회원님의 해시태그에 맞는 추천 스터디가 없습니다.
   </h4>
-  <el-carousel  :interval="4000" type="card" height="300px" >
+  <el-carousel v-else height="300px">
+    <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)">
+      <div style="display:flex; align-items:center; margin-left:5%; margin-right:15%">
+        <StudyCarousel :studyData="state.recommendStudyList[i-1]" style="width:300px"/>
+        <div style="width:40%; height:30%; text-align:center">
+          <div>
+            <h2 style="margin:30px">{{ state.recommendStudyList[i-1].name }}</h2>
+            <h4>모집 인원 : {{ state.recommendStudyList[i-1].joined_population }} / {{ state.recommendStudyList[i-1].population }}</h4>
+            <h4>관심 분야 : {{ state.recommendStudyList[i-1].interest.join(', ') }}</h4>
+            <h4>마감 날짜 : {{ state.recommendStudyList[i-1].deadline }}</h4>
+          </div>
+        </div>
+        <div style="margin-top:auto; margin-bottom:auto;">
+          <el-progress type="dashboard" :percentage="state.recommendStudyList[i-1].temperature" style="position:relative; z-index: 1;">
+          </el-progress>
+          <p style="position:relative; top:-90px; z-index: 2;">{{ state.recommendStudyList[i-1].temperature }}℃</p>
+          <h4>열정도</h4>
+        </div>
+
+      </div>
+    </el-carousel-item>
+  </el-carousel>
+  <!-- <el-carousel v-else :interval="4000" type="card" height="300px" >
     <el-carousel-item v-for="i in state.recommendStudyList.length" :key="i" @click="onClickRecommendStudyList(i)" style="width:300px">
       <StudyCarousel :studyData="state.recommendStudyList[i-1]" style="width:100%"/>
-      <!-- <el-image style="width: 300px; height: 300px"
-        :src="state.uri[i-1]"
-        :fit="fit"
-        alt="PPAKGOM"
-      >
-      </el-image> -->
     </el-carousel-item>
-      <!-- <p>'https://localhost:8443/' + state.recommendStudyList[i-1].study_thumbnail</p> -->
-  </el-carousel>
-  <!-- <ul v-if="state.studyList.length !== 0" style="display:flex; flex-wrap: wrap; justify-content: flex-start;"> -->
+  </el-carousel> -->
   <ul v-if="state.studyList.length !== 0" class="ul-class">
     <li
       v-for="i in state.studyList.length"
@@ -71,18 +92,28 @@
   width: 300px;
 }
 
+.img-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto
+}
+
 /* .study {
   display: flex;
   justify-content: flex-start;
   margin-left: auto;
   margin-right: auto;
 } */
-.search-bar {
-  display: flex;
+.base-color {
+  color:#c0c4cc;
 }
 
-.option {
-  width: 20%;
+.select-color {
+  color: black;
+}
+
+.search-bar {
+  display: flex;
 }
 
 .search-field {
@@ -109,6 +140,17 @@
 .el-carousel__item:nth-child(2n + 1) {
   background-color: rgba( 255, 255, 255, 0 );
 }
+
+.el-progress {
+  position: relative;
+  line-height: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
 </style>
 <script>
 import Study from "./components/study"
@@ -117,6 +159,7 @@ import { onMounted, reactive, computed } from "vue"
 import { useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { ElMessage } from "element-plus"
+
 export default {
   name: "Home",
 
@@ -135,6 +178,9 @@ export default {
       searchValue: "",
       searchType: "",
       isCardClick: true,
+      likeStudy: false,
+      label: '선택',
+      selectColor: 'base-color',
       options: [
         {
           value: 1,
@@ -191,51 +237,19 @@ export default {
         })
     }
 
-    // const getImage = (thumbnail) => {
-    //   let studyData = thumbnail
-    //   console.log("여기 확인", studyData);
-    //   var name;
-    //   if (
-    //     studyData.split("\\").length > studyData.split("/").length
-    //   ) {
-    //     name = studyData.split("\\");
-    //   } else {
-    //     name = studyData.split("/");
-    //   }
-    //   console.log("네임",name);
-    //   //name = "9-kakao.jpg";
-    //    axios({
-    //     url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
-    //     method: "GET",
-    //     responseType: "blob"
-    //   }).then(res => {
-    //     console.log("여여여",URL.createObjectURL(res.data))
-    //     state.uri.push(URL.createObjectURL(res.data));
-    //   });
-    // }
-
     onMounted(() => {
       if (state.isLoggedIn) {
         getRecommendStudyList()
-        // store
-        // .dispatch('root/requestRecommendStudyList', {
-        // })
-        // .then(function(res) {
-        //   console.log('추천 리스트 응답 결과', res)
-        //   state.recommendStudyList = res.data.studyResult
-        //   console.log("데이터확인", state.recommendStudyList)
-        //   console.log("길이 확인",state.recommendStudyList.length)
-        //   // for (let i = 0; i < state.recommendStudyList.length; i++) {
-        //     getImage(state.recommendStudyList[0].study_thumbnail)
-        //     console.log("여기")
-        //   // }
-        // })
-        // .catch(function(err) {
-        //   console.log('추천 리스트 응답 에러', err)
-        // })
       }
       getStudyList()
     })
+
+
+    const onClickSearchType = (option) => {
+      state.label = option.label
+      state.searchType = option.value
+      state.selectColor = 'select-color'
+    }
 
     // 검색한 내용으로 스터디 목록 가져오기
     const searchStudy = function() {
@@ -266,7 +280,7 @@ export default {
       }
     }
 
-    return { state, onClickStudyList, onClickRecommendStudyList, searchStudy, }
+    return { state, onClickStudyList, onClickRecommendStudyList, searchStudy, onClickSearchType}
   }
 }
 </script>
