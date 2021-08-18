@@ -214,6 +214,10 @@ public class JoinServiceImpl implements JoinService {
 		// 중복 신청
 		StudyApply sa = studyApplyRepository.findBySender_IdAndStudy_Id(userId, studyId);
 		if(sa != null) return "already";
+	
+		// 이미 초대된 회원인 경우
+		sa = studyApplyRepository.findBySender_IdAndStudy_IdAndReceiver_Id(study.get().getUser().getId(), studyId, userId);
+		if(sa != null) return "invitation";
 		
 		// 사용자
 		User user = userRepository.findUserById(userId);
