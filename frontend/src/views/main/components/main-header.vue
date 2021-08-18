@@ -214,8 +214,8 @@ export default {
       recvList: [],
       Client: "",
       message: "",
-      tempid: [],
-      subcribelist: []
+      tempid: new Set(),
+      subcribelist: new Set()
     });
 
     onMounted(() => {
@@ -232,7 +232,8 @@ export default {
         };
         state.Client.send("/publish/conferences/send", JSON.stringify(msg), {});
       });
-
+      state.tempid = new Set();
+      state.subcribelist = new Set();
       if (state.Client) state.Client.disconnect();
     });
 
@@ -275,7 +276,7 @@ export default {
                   let temp = JSON.parse(res.body);
                   // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
                   state.recvList.push(temp);
-                  if (!state.visible && !(temp.writer === state.userId))
+                  if (!state.visible && !(temp.writer == state.userId))
                     state.length += 1;
                 });
 
@@ -377,6 +378,17 @@ export default {
     };
 
     const clickLogout = () => {
+      state.subcribelist.forEach(e => {
+        const msg = {
+          conference_id: e,
+          writer: state.userId,
+          message: state.userId + "님이 나가셨습니다."
+        };
+        state.Client.send("/publish/conferences/send", JSON.stringify(msg), {});
+      });
+      state.tempid = new Set();
+      state.subcribelist = new Set();
+      state.recvList = [];
       store.dispatch("root/requestLogout");
       store.commit("root/deleteToken");
 
@@ -413,15 +425,6 @@ export default {
           login: false
         });
       }
-
-      state.subcribelist.forEach(e => {
-        const msg = {
-          conference_id: e,
-          writer: state.userId,
-          message: state.userId + "님이 나가셨습니다."
-        };
-        state.Client.send("/publish/conferences/send", JSON.stringify(msg), {});
-      });
 
       if (state.Client) state.Client.disconnect();
       router.push({
