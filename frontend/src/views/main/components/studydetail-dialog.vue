@@ -12,7 +12,7 @@
     <el-divider style="margin: 5px"></el-divider>
     <div style="display:flex; align-items:center">
       <el-image style="width: 50%; height: 50%;"
-        :src="'https://localhost:8443/' + selectStudy.study_thumbnail"
+        :src="state.uri"
         :fit="fit"
         >
       </el-image>
@@ -32,10 +32,12 @@
     </div>
     <div>
       <h3 style="margin-bottom:5px;">열정도</h3>
-        <p style="text-align:right; font-weight:bold; margin-top:2px; margin-bottom:2px;">{{ selectStudy.temperature }}
-          <i class="far fa-laugh-squint"></i>
+        <p style="text-align:right; font-weight:bold; margin-top:2px; margin-bottom:2px;">{{ selectStudy.temperature }}℃
+          <i v-if="state.iconTemp === 1" class="far fa-angry"></i>
+          <i v-if="state.iconTemp === 2" class="far fa-laugh"></i>
+          <i v-if="state.iconTemp === 3" class="far fa-laugh-squint"></i>
         </p>
-        <el-progress show-text="false" :stroke-width="24" :percentage="selectStudy.temperature" status="success"></el-progress>
+        <el-progress show-text="false" :stroke-width="24" :percentage="selectStudy.temperature" status="success" :color="state.customColor"></el-progress>
     </div>
     <!-- <div v-if="!selectStudy.enter" style="display:flex; justify-content:flex-end" >
       <el-button v-if="state.likeStudy" style="border:0; outline:0" @click="clickLikeCancleBtn"><i class="fas fa-heart" style="color:red"></i></el-button>
@@ -99,6 +101,8 @@ import { reactive, computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import axios from "axios";
+
 export default {
   name: "studydetail-dialog",
   components: {
@@ -131,14 +135,67 @@ export default {
       studyId: computed(() => props.selectStudy.study_id),
       interested: computed(() => props.selectStudy.interest.join(', ')),
       studyMember: [],
+      customColor: '',
+      iconTemp: 2,
+      studyData: '',
+      uri: '',
     });
 
     watch(
       () => state.studyId,
       () => {
         state.likeStudy = state.firstLikeInfo
+        if (props.selectStudy.temperature <= 20) {
+          state.customColor = "#f56c6c"
+          state.iconTemp = 1
+        }
+        else if (35 <= props.selectStudy.temperature && props.selectStudy.temperature <= 45) {
+          state.customColor = "#e6a23c"
+          state.iconTemp = 2
+        }
+        else if (45 <= props.selectStudy.temperature && props.selectStudy.temperature <= 60) {
+          state.customColor = "#5cb87a"
+          state.iconTemp = 2
+        }
+        else if (60 <= props.selectStudy.temperature && props.selectStudy.temperature <= 80) {
+          state.customColor = "#1989fa"
+          state.iconTemp = 3
+        }
+        else {
+          state.customColor = "#6f7ad3"
+          state.iconTemp = 3
+        }
       }
     )
+
+    watch(
+      () => props.selectStudy,
+      () => {
+        // 이미지 불러오기
+        console.log("여기처음", props.selectStudy.study_thumbnail)
+        state.studyData = props.selectStudy.study_thumbnail;
+        console.log("여기",state.studyData);
+        if (!state.studyData) {
+          state.studyData = "default.png/default.png/default.png"
+        }
+        var name;
+        if (
+          state.studyData.split("\\").length > state.studyData.split("/").length
+        ) {
+          name = state.studyData.split("\\");
+        } else {
+          name = state.studyData.split("/");
+        }
+        console.log(name);
+        //name = "9-kakao.jpg";
+        axios({
+          url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+          method: "GET",
+          responseType: "blob"
+        }).then(res => {
+          state.uri = URL.createObjectURL(res.data);
+        });
+    })
 
     onMounted(() => {
 

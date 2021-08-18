@@ -130,6 +130,8 @@ export default {
 
     const menuSelect = function(param) {
       console.log("param", param);
+      store.commit("root/setStudypk", 0);
+      localStorage.removeItem('studypk')
       store.commit("root/setMenuActive", param);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
