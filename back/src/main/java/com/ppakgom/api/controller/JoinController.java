@@ -124,14 +124,16 @@ public class JoinController {
 
 
 		String res = joinService.studyApply(studyId, userId);
-		if(res.equals("population")) { // 인원초과일 경우
+		if("population".equals(res)) { // 인원초과일 경우
 			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "인원 초과입니다."));
-		} else if(res.equals("ok")) { // 가입 승인 완료
+		} else if("ok".equals(res)) { // 가입 승인 완료
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "스터디 가입 요청을 보냈습니다."));
-		} else if(res.equals("deadline")) { // 모집 날짜 초과
+		} else if("deadline".equals(res)) { // 모집 날짜 초과
 			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "마감한 스터디입니다."));
-		} else if(res.equals("already")) { // 이미 가입 신청함
+		} else if("already".equals(res)) { // 이미 가입 신청함
 			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "이미 신청한 스터디 입니다."));
+		} else if("invitation".equals(res)) { // 이미 가입 신청함
+			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "초대 현황을 확인해보세요."));
 		} else { // 그 외
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		}
