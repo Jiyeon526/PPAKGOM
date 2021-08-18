@@ -627,11 +627,11 @@ public class StudyController {
 		
 		// 해당 멤버의 스터디 출석현황 true로 바꾸기
 		String res = studyService.postStudyAttend(studyId, userId);
-		if(res.equals("date")) // 스터디 일정 없음
+		if("date".equals(res)) // 스터디 일정 없음
 			return ResponseEntity.status(201).body(new BaseResponseBody(201, "오늘 진행 중인 스터디 일정이 없습니다."));
-		else if(res.equals("ok")) // 출석 성공
+		else if("ok".equals(res)) // 출석 성공
 			return ResponseEntity.status(200).body(new BaseResponseBody(200, "출석 완료"));
-		else if(res.equals("already"))
+		else if("already".equals(res))
 			return ResponseEntity.status(200).body(new BaseResponseBody(200, "이미 출석했습니다."));
 		
 		return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
@@ -645,7 +645,7 @@ public class StudyController {
 	    //String path = file;
 	    String path = "/image/";
 	    
-	    if(!file.equals("default.png"))
+	    if(!"default.png".equals(file))
 	    	path += "study/";
 
 	    path += file;

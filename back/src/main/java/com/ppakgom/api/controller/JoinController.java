@@ -104,9 +104,9 @@ public class JoinController {
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		
 		String res = joinService.studyApplyOk(studyApply);
-		if(res.equals("population")) { // 인원초과일 경우
+		if("population".equals(res)) { // 인원초과일 경우
 			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "인원 초과입니다."));
-		} else if(res.equals("ok")) { // 가입 승인 완료
+		} else if("ok".equals(res)) { // 가입 승인 완료
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "가입 승인 완료"));
 		} else { // 그 외
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));

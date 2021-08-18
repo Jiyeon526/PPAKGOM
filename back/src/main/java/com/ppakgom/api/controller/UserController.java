@@ -248,9 +248,9 @@ public class UserController {
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 
 		String res = userService.modifyUserInfo(user, userReq, file);
-		if(res.equals("ok")) {
+		if("ok".equals(res)) {
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원 정보 수정 완료"));
-		}else if(res.equals("name")) {
+		}else if("name".equals(res)) {
 			return ResponseEntity.status(401).body(BaseResponseBody.of(401, "닉네임을 다시 입력해주세요."));
 		}
 
@@ -411,7 +411,7 @@ public class UserController {
 	    System.err.println(file);
 	    
 	    String path = "/image/";
-	    if(!file.equals("default.png"))
+	    if(!"default.png".equals(file))
 	    	path += "user/";
 	    path += file;
 	    
