@@ -21,4 +21,6 @@ public interface UserStudyService {
 
 	List<UserStudy> findUserStudyByUserId(Long userId);
 
+	Optional<UserStudy> findUserStudyByUserIdAndStudyId(Long user_id, Long study_id);
+
 }
