@@ -37,5 +37,7 @@ public interface StudyApplyService {
 	List<StudyApply> getInviteListByStudyAndIsJoin(Long studyId, boolean isJoin);
 
 	Optional<StudyApply> getInviteListByStudyAndIsJoinAndReceiverId(Long studyId, boolean b, Long receiver_id);
+
+	Optional<StudyApply> findStudyApplyBySenderIdAndReceiverIdAndIsJoinAndStudyId(Long senderId, Long receiverId, boolean isJoin,Long studyId);
 	
 }

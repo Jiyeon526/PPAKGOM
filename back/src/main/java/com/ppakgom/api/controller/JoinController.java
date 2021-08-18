@@ -1,7 +1,7 @@
 package com.ppakgom.api.controller;
 
 import java.util.List;
-
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ppakgom.api.request.JoinApplyReq;
 import com.ppakgom.api.response.JoinApplyListRes;
 import com.ppakgom.api.service.JoinService;
+import com.ppakgom.api.service.UserService;
+import com.ppakgom.api.service.UserStudyService;
 import com.ppakgom.common.model.response.BaseResponseBody;
 import com.ppakgom.db.entity.StudyApply;
+import com.ppakgom.db.entity.UserStudy;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +33,9 @@ public class JoinController {
 	
 	@Autowired
 	JoinService joinService;
+	
+	@Autowired
+	UserStudyService userStudyService;
 	
 	@GetMapping("/response/{user_id}")
 	@ApiOperation(value="가입 신청 현황", notes="사용자의 가입 신청 현황")
@@ -88,6 +94,12 @@ public class JoinController {
 		// 해당 study_apply 정보 가져오기(어차피 하나밖에 없다)
 		StudyApply studyApply = joinService.getStudyApplyReceiver(userid, joinApplyReq);
 
+//		이미 가입한 사용자면 PASS
+		UserStudy userStudy = userStudyService.findUserStudyByUserIdAndStudyId(joinApplyReq.getUser_id(), joinApplyReq.getStudy_id()).orElse(null);
+		
+		if(userStudy != null)
+			return ResponseEntity.status(201).body(BaseResponseBody.of(201, "이미 가입이 완료된 사용자입니다."));
+		
 		if(studyApply == null)
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
 		

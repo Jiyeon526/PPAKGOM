@@ -79,6 +79,12 @@ public class StudyApplyServiceImpl implements StudyApplyService {
 		return studyApplyRepository.findByStudyIdAndIsJoinAndReceiverId(studyId, b, receiver_id);
 	}
 
+	@Override
+	public Optional<StudyApply> findStudyApplyBySenderIdAndReceiverIdAndIsJoinAndStudyId(Long senderId, Long receiverId,
+			boolean isJoin, Long studyId) {
+		return studyApplyRepository.findStudyApplyBySenderIdAndReceiverIdAndIsJoinAndStudyId(senderId,receiverId,isJoin,studyId);
+	}
+
 
 
 }

@@ -173,6 +173,7 @@ public class InvitationController {
 		try {
 			studyApplyService.agreeInvitation(req, userId);
 			Study study = studyService.getStudyById(req.getStudyId()).get();
+		
 			
 //		population vs 현재 인원 확인 -> 마감시 알려주기.
 			List<UserStudy> userStudy = userStudyService.getCurrentMember(study.getId());

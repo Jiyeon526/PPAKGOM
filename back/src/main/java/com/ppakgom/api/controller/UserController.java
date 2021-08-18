@@ -182,6 +182,9 @@ public class UserController {
 
 			for (Study s : resultSet) {
 				StudyRes studyRes = new StudyRes();
+//				찜한 스터디가 가입한 스터디일 경우 pass
+				if(userStudyList.contains(s))
+					continue;
 				res.getStudyResult().add(studyRes.of(s, studyInterestRepository, userStudyRepository, userStudyList, userLikedStudy));
 			}
 		} catch (Exception e) {

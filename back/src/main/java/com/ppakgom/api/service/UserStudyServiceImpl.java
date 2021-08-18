@@ -50,5 +50,10 @@ public class UserStudyServiceImpl implements UserStudyService {
 		return userStudyRepository.findByUserId(userId);
 	}
 
+	@Override
+	public Optional<UserStudy> findUserStudyByUserIdAndStudyId(Long user_id, Long study_id) {
+		return userStudyRepository.findUserStudyByUserIdAndStudyId(user_id, study_id);
+	}
+
 
 }
