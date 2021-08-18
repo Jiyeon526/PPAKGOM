@@ -15,17 +15,12 @@
         <line-chart :data="state.ccdata" empty="우리 문제 풀러 갈까요?" />
       </div>
     </div>
-    <div @click="onClicSchedule" style="width: 50%; margin: 10px;">
-      <h4>스터디 일정</h4>
+    <div @click="onClicSchedule" style="width: 50%;">
+      <h4 style="margin-bottom:50px">스터디 일정</h4>
       <Studyschedulecomponent
         :studyId="state.studyId"
         style=" vertical-align:top;"
       />
-    </div>
-  </div>
-  <div class="study-home-div">
-    <div @click="onClickWorkbook" style="width: 50%; margin: 10px;">
-      <h4>문제집</h4>
     </div>
   </div>
 </template>
@@ -84,7 +79,6 @@ export default {
     onMounted(() => {
       state.studypk = store.getters["root/getStudypk"];
       store.dispatch("root/requestStudyAttend", state.studypk).then(res => {
-        console.log(res.data);
         res.data.forEach(e => {
           let ss = [];
           ss.push(e.user_name);
@@ -93,24 +87,20 @@ export default {
           state.color.push("#" + Math.floor(Math.random() * 1000));
         });
         converse();
-        console.log(state.cdata);
       });
 
       state.studypk = store.getters["root/getStudypk"];
       state.userpk = store.getters["root/getUserpk"];
       store.dispatch("root/requestScore", state.studypk).then(res => {
         res.data.forEach(element => {
-          console.log(element);
           let data = "{";
           element.data.forEach(e => {
-            console.log("문제점수", e);
             let test = e.test_title;
             data += `"${test}":"${e.score}",`;
           });
           data = data.slice(0, -1);
           data += "}";
           // data = '{"test":"20"}';
-          console.log("모인데이터", data);
           let cdata = JSON.parse(data);
           state.scoredata.push({
             name: element.name,
@@ -130,7 +120,6 @@ export default {
     const converse = function() {
       state.cdata = state.temp;
       state.tcolor = state.color;
-      console.log(state.tcolor);
     };
 
     return {
@@ -149,6 +138,7 @@ export default {
   height: auto;
   display: flex;
   justify-content: space-evenly;
-  align-items: center;
+  align-items: flex-start;
+  margin-top: 50px;
 }
 </style>

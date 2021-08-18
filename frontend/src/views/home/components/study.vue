@@ -109,7 +109,6 @@ export default {
     });
 
     const enterStudy = studyPk => {
-      console.log("스터디 데이터", studyPk);
       localStorage.setItem("studypk", studyPk);
       store.commit("root/setStudypk", studyPk);
       store.commit("root/setSelectOption", "studyhome");
@@ -120,8 +119,6 @@ export default {
 
     onMounted(() => {
       state.studyData = props.studyData.study_thumbnail;
-      console.log(state.studyData);
-
       var name;
       if (!state.studyData) {
         state.studyData = "default.png/default.png/default.png";
@@ -133,9 +130,6 @@ export default {
       } else {
         name = state.studyData.split("/");
       }
-
-      console.log(name);
-      //name = "9-kakao.jpg";
       axios({
         url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
         method: "GET",

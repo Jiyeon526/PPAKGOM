@@ -172,9 +172,7 @@ export default {
       () => props.selectStudy,
       () => {
         // 이미지 불러오기
-        console.log("여기처음", props.selectStudy.study_thumbnail)
         state.studyData = props.selectStudy.study_thumbnail;
-        console.log("여기",state.studyData);
         if (!state.studyData) {
           state.studyData = "default.png/default.png/default.png"
         }
@@ -186,8 +184,6 @@ export default {
         } else {
           name = state.studyData.split("/");
         }
-        console.log(name);
-        //name = "9-kakao.jpg";
         axios({
           url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
           method: "GET",
@@ -216,14 +212,16 @@ export default {
           studyId: props.selectStudy.study_id
         })
           .then(function(res) {
-            console.log("가입 요청 성공", res)
             ElMessage({
               type: "success",
               message: "가입 요청을 보냈습니다."
             })
           })
           .catch(function(err) {
-            console.log("가입 신청 오류 발생!!", err)
+            ElMessage({
+              type: "error",
+              message: err.message
+            })
           })
     }
 
@@ -240,9 +238,11 @@ export default {
             })
           })
           .catch(function(err) {
-            console.log("찜하기 에러", err)
+              ElMessage({
+              type: "error",
+              message: err.message
+            })
           })
-      console.log("찜하기", state.likeStudy)
     }
 
     const clickLikeCancleBtn = () => {
@@ -258,9 +258,11 @@ export default {
             })
           })
           .catch(function(err) {
-            console.log("찜하기 에러", err)
+            ElMessage({
+              type: "error",
+              message: err.message
+            })
           })
-      console.log("찜하기취소", state.likeStudy)
     }
 
     const handleClose = function() {
