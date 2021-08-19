@@ -5,21 +5,11 @@
         :src="state.uri"
         :fit="fill">
       </el-image>
-      <!-- <el-image style="width: 100%; height: 200px"
-        :src="'https://localhost:8443/' + memberData.thumbnail"
-        :fit="fill">
-      </el-image> -->
     </div>
     <div style="text-align: left; padding: 14px;">
-      <span v-if="condition == 1">
-        {{memberData.user_name}}님
-        <el-button @click="inviteMember" >초대</el-button>
-        <!-- <div v-if="!isclick" >
-          <el-button @click="inviteMember" >초대</el-button>
-        </div>
-        <div v-else>
-          <el-button @click="inviteMember" disabled>초대중</el-button>
-        </div> -->
+      <span v-if="condition == 1" class="membercard-sort">
+        <p>{{memberData.user_name}}님</p>
+        <el-button @click="inviteMember" plain type="success">초대</el-button>
       </span>
       <span v-else>{{ memberData.name }}님</span>
     </div>
@@ -37,10 +27,15 @@
   width: 100%;
   height: 200px;
 }
+.membercard-sort {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px;
+}
 </style>
 
 <script>
-import { onMounted, reactive, watch } from 'vue'
+import { onMounted, reactive, } from 'vue'
 import { useStore } from 'vuex'
 import { ElMessage } from "element-plus"
 import axios from "axios"
@@ -65,10 +60,6 @@ export default {
       isclick: false,
     })
 
-    // watch(()=>state.isclick)
-
-
-    // 페이지 진입시 불리는 훅
     onMounted (() => {
       state.studyData = props.memberData.thumbnail;
 
@@ -83,7 +74,6 @@ export default {
       } else {
         name = state.studyData.split("/");
       }
-
       axios({
         url: `https://localhost:8443/api/v1/users/profile/${name[2]}/download`,
         method: "GET",
