@@ -1,7 +1,4 @@
 <template>
-  <!-- <el-row>
-    <h1>스터디원 평가</h1>
-  </el-row> -->
   <el-row :gutter="24">
     <el-col :span="12">
       <h1>스터디원 평가</h1>
@@ -10,6 +7,9 @@
       height="300"
       @row-click="handleClick"
       style="width: 100%">
+      <template #empty>
+        <h3>평가할 팀원이 없습니다!</h3>
+      </template>
       <el-table-column
         prop="study_id"
         label="방번호"
@@ -30,9 +30,7 @@
         align='right'
       >
       <template #default="scope">
-      <!-- <div v-if="scope.row['checked']"> -->
         <i v-if="scope.row['checked']" class="el-icon-circle-check"></i>
-      <!-- </div> -->
       </template>
       </el-table-column>
     </el-table>
@@ -51,6 +49,7 @@
 import { onMounted, reactive, computed } from "vue";
 import { useStore } from "vuex";
 import evaluateDetail from "./evaluate-detail.vue"
+import membercardVue from './studydetail/membercard.vue';
 
 export default {
   name: "Studyevaluate",
@@ -70,22 +69,17 @@ export default {
     })
 
     onMounted(() => {
-      state.isclick = false
+      store.commit('root/setIsevaluate',false)
       store.commit("root/setMenuActiveMenuName", "evaluate")
       askmemberList()
     })
 
-    const handleClick = function(row, column, cell, event) {
-      console.log(row)
-      console.log(column.index)
-      console.log(cell)
+    const handleClick = async function(row, column, cell, event) {
       state.studyData = row
-      store.dispatch("root/requestNameUserJoinStudyList", row["study_member_name"])
-      .then(function(res) {
-        state.inStudyList = []
-        state.inStudyList = res.data
-        state.studyData["joined_study"] = state.inStudyList
-      })
+      const wantMember = await store.dispatch("root/requestNameUserJoinStudyList", row["study_member_name"])
+      state.inStudyList = []
+      state.inStudyList = wantMember.data
+      state.studyData["joined_study"] = state.inStudyList
       store.dispatch("root/requestOtherProfile", row["study_member_name"])
       .then(function(res) {
         store.commit('root/setIsevaluate',true)
@@ -96,7 +90,6 @@ export default {
         const url_length = origin_url.length
         const process_thumbnail = origin_url.substring(need_from,url_length)
         profileData["profile_thumbnail"] = process_thumbnail
-        // profileData["joined_study"] = state.inStudyList
         state.memberData = profileData
       })
       .catch(function(err) {
@@ -104,35 +97,26 @@ export default {
       })
     }
 
-    const handleDelete = function(index, row) {
-      console.log(index, row)
-    }
-
     const askmemberList = function() {
       store.dispatch("root/requestEvaluateMemberList")
       .then(function(res){
-        // state.memberList = res.data
         const onlyNotEvaluate = []
-        console.log(res.data)
         for (let i=0; i< res.data.length; i++) {
           if (res.data[i]["checked"] == false) {
-            console.log(res.data[i])
             onlyNotEvaluate.push(res.data[i])
           }
         }
-        console.log(onlyNotEvaluate)
         store.commit('root/setEvaluateMemberList', onlyNotEvaluate)
       })
     }
 
-    return {state, handleClick, handleDelete, askmemberList }
+    return {state, handleClick, askmemberList }
 
   }
 }
 </script>
 
 <style>
-
 .el-table {
   border: solid #dcdfe6;
 }

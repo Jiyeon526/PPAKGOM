@@ -12,8 +12,6 @@ export function setMenuActiveMenuName(state, menuName) {
   state.activeMenu = menuName
 }
 
-/////
-
 export function setAccessToken(state) {
   state.accessToken = localStorage.getItem('accessToken')
   console.log(state.accessToken)
@@ -86,9 +84,6 @@ export function setIsevaluate(state, payload) {
 }
 
 export function setDeleteEvaluatedMember(state, payload) {
-  // state.evaluateMemberList = payload
-  // console.log(payload["studyId"])
-  // console.log(state.evaluateMemberList.length,state.evaluateMemberList.length)
   for (let i=0; i < state.evaluateMemberList.length; i++) {
     if ((state.evaluateMemberList[i]["study_id"] == payload["studyId"]) &&
     (state.evaluateMemberList[i]["studyMemberId"] == payload["studyMemberId"])) {

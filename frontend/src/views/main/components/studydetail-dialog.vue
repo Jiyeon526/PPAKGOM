@@ -56,7 +56,7 @@
     </div>
   </el-dialog>
 </template>
-<style>
+<style scoped>
 .el-dialog__header {
   padding: 20px !important
 }

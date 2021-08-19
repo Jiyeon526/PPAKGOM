@@ -1,7 +1,4 @@
 <template>
-  <!-- <el-row>
-    <h1>방관리</h1>
-  </el-row> -->
 
     <el-row :gutter="24">
     <el-col :span="12">
@@ -11,6 +8,9 @@
       height="400"
       @row-click="handleClick"
       style="width: 100%">
+      <template #empty>
+        <h3>가입 신청한 현황이 없습니다!</h3>
+      </template>
       <el-table-column
         prop="study_id"
         label="방번호"
@@ -39,7 +39,7 @@
           <div v-else>
             <el-button
               size="mini" type="danger"
-              @click="handleJoinDelete(scope.$index, scope.row)">가입거절</el-button>
+              @click="handleCheckJoinReject(scope.$index, scope.row)">가입거절</el-button>
           </div>
         </template>
       </el-table-column>
@@ -53,6 +53,9 @@
       height="400"
       @row-click="handleUserClick"
       style="width: 100%">
+      <template #empty>
+        <h3>초대 받은 현황이 없습니다!</h3>
+      </template>
       <el-table-column
         prop="studyId"
          label="방번호"
@@ -102,6 +105,9 @@ export default {
       receiveList: [],
       inStudyList: [],
       profileData: [],
+      studyId: 0,
+      ownerId: 0,
+      ownerName: "",
     })
 
     onMounted(() => {
@@ -110,51 +116,77 @@ export default {
       inviteReceiveList()
     })
 
-    const handleClick = function(row, column, cell, event) {
+    const handleClick = async function(row, column, cell, event) {
       if (column.property != "state") {
-        store.dispatch("root/requestNameUserJoinStudyList",row["owner_user_name"])
+        const wantOwner = await store.dispatch("root/requestNameUserJoinStudyList",row["owner_user_name"])
+        state.inStudyList = []
+        state.inStudyList = wantOwner.data
+        store.dispatch("root/requestOtherProfile", row["owner_user_name"])
         .then(function(res) {
-          state.inStudyList = []
-          state.inStudyList = res.data
-          store.dispatch("root/requestOtherProfile", row["owner_user_name"])
-          .then(function(res) {
-            const profileData = res.data
-            const origin_url = profileData["profile_thumbnail"]
-            const need_from = origin_url.indexOf('image')
-            const url_length = origin_url.length
-            const process_thumbnail = origin_url.substring(need_from,url_length)
-            profileData["profile_thumbnail"] = process_thumbnail
-            emit("openOtherpeopleDialog", profileData, state.inStudyList)
-          })
-          .catch(function(err) {
-            console.log(err)
-          })
+          const profileData = res.data
+          const origin_url = profileData["profile_thumbnail"]
+          const need_from = origin_url.indexOf('image')
+          const url_length = origin_url.length
+          const process_thumbnail = origin_url.substring(need_from,url_length)
+          profileData["profile_thumbnail"] = process_thumbnail
+          emit("openOtherpeopleDialog", profileData, state.inStudyList)
         })
       }
     }
 
-    const handleJoinDelete = function(index, row) {
-      store.dispatch("root/requestStudyInfoDetail", row["study_id"])
-      .then(function(res) {
-        const studyId = res.data.studyResult[0]['study_id']
-        const ownerId = res.data.studyResult[0]['owner_id']
-        store.dispatch("root/requestCancelJoin", {
-          study_id: studyId,
-          user_id: ownerId
-        })
+    const handleUserClick = async function(row, column, cell, event) {
+      if (column.property != "state") {
+        const wantOwner = await store.dispatch("root/requestNameUserJoinStudyList",row["userName"])
+        state.inStudyList = []
+        state.inStudyList = res.data
+        store.dispatch("root/requestOtherProfile", row["userName"])
         .then(function(res) {
-          // console.log("!!!!")
+          const profileData = res.data
+          const origin_url = profileData["profile_thumbnail"]
+          const need_from = origin_url.indexOf('image')
+          const url_length = origin_url.length
+          const process_thumbnail = origin_url.substring(need_from,url_length)
+          profileData["profile_thumbnail"] = process_thumbnail
+          emit("openOtherpeopleDialog", profileData, state.inStudyList)
         })
         .catch(function(err) {
-          console.log("error",err)
+          console.log(err)
         })
+      }
+    }
+
+    const handleJoinDelete = async function(index, row) {
+      const wantOwner = await store.dispatch("root/requestStudyInfoDetail", row["study_id"])
+      state.studyId = wantOwner.data.studyResult[0]['study_id']
+      state.ownerId = wantOwner.data.studyResult[0]['owner_id']
+      store.dispatch("root/requestCancelJoin", {
+        study_id: state.studyId,
+        user_id: state.ownerId
+      })
+      .then(function(res) {
+        console.log("!!!!")
       })
       .catch(function(err) {
         console.log("error",err)
       })
       state.joinList.splice(index, 1)
-      console.log('123',row)
-      console.log(index, state.joinList)
+    }
+
+    const handleCheckJoinReject = async function(index, row) {
+      const wantOwner = await store.dispatch("root/requestStudyInfoDetail", row["study_id"])
+      state.studyId = wantOwner.data.studyResult[0]['study_id']
+      state.ownerId = wantOwner.data.studyResult[0]['owner_id']
+      store.dispatch("root/requestCheckJoinReject", {
+        study_id: state.studyId,
+        user_id: state.ownerId
+      })
+      .then(function(res) {
+        console.log("!!!!")
+      })
+      .catch(function(err) {
+        console.log("error",err)
+      })
+      state.joinList.splice(index, 1)
     }
 
     const askJoinList = function() {
@@ -165,51 +197,22 @@ export default {
     }
 
     const inviteReceiveList = function() {
-      // 이거 userName 주는 거 방장이 맞나?
       store.dispatch("root/requestinviteReceiveList")
       .then(function(res){
         state.receiveList = res.data.inviteResult
       })
     }
 
-    const handleUserClick = function(row, column, cell, event) {
-      if (column.property != "state") {
-        store.dispatch("root/requestNameUserJoinStudyList",row["userName"])
-        .then(function(res) {
-          state.inStudyList = []
-          state.inStudyList = res.data
-          store.dispatch("root/requestOtherProfile", row["userName"])
-          .then(function(res) {
-            const profileData = res.data
-            const origin_url = profileData["profile_thumbnail"]
-            const need_from = origin_url.indexOf('image')
-            const url_length = origin_url.length
-            const process_thumbnail = origin_url.substring(need_from,url_length)
-            profileData["profile_thumbnail"] = process_thumbnail
-            emit("openOtherpeopleDialog", profileData, state.inStudyList)
-          })
-          .catch(function(err) {
-            console.log(err)
-          })
-        })
-      }
-    }
-
-    const inviteAccept = function(index, row) {
-      store.dispatch("root/requestStudyInfoDetail", row["studyId"])
+    const inviteAccept = async function(index, row) {
+      const wantOwner = await store.dispatch("root/requestStudyInfoDetail", row["studyId"])
+      state.studyId = wantOwner.data.studyResult[0]['study_id']
+      state.ownerId = wantOwner.data.studyResult[0]['owner_id']
+      let body = new FormData()
+      body.append("studyId",state.studyId)
+      body.append("senderId",state.ownerId)
+      store.dispatch("root/requestSendAccept", body)
       .then(function(res) {
-        const studyId = res.data.studyResult[0]['study_id']
-        const ownerId = res.data.studyResult[0]['owner_id']
-        let body = new FormData()
-        body.append("studyId",studyId)
-        body.append("senderId",ownerId)
-        store.dispatch("root/requestSendAccept", body)
-        .then(function(res) {
-          console.log("!!!!",res)
-        })
-        .catch(function(err) {
-          console.log("error",err)
-        })
+        console.log("!!!!",res)
       })
       .catch(function(err) {
         console.log("error",err)
@@ -217,29 +220,20 @@ export default {
       state.receiveList.splice(index, 1)
     }
 
-    const inviteReject = function(index, row) {
-      store.dispatch("root/requestStudyInfoDetail", row["studyId"])
+    const inviteReject = async function(index, row) {
+      const wantOwner = await store.dispatch("root/requestStudyInfoDetail", row["studyId"])
+      state.studyId = wantOwner.data.studyResult[0]['study_id']
+      state.ownerId = wantOwner.data.studyResult[0]['owner_id']
+      let body = new FormData()
+      body.append("studyId",state.studyId)
+      body.append("senderId",state.ownerId)
+      store.dispatch("root/requestSendReject", body)
       .then(function(res) {
-        const studyId = res.data.studyResult[0]['study_id']
-        const ownerId = res.data.studyResult[0]['owner_id']
-        let body = new FormData()
-        body.append("studyId",studyId)
-        body.append("senderId",ownerId)
-        store.dispatch("root/requestSendReject", body)
-        .then(function(res) {
-          console.log("!!!!",res)
         })
-        .catch(function(err) {
-          console.log("error",err)
-        })
-      })
-      .catch(function(err) {
-        console.log("error",err)
-      })
       state.receiveList.splice(index, 1)
     }
 
-    return {state, handleClick, handleUserClick, handleJoinDelete, askJoinList, inviteReceiveList, inviteAccept, inviteReject }
+    return {state, handleClick, handleUserClick, handleJoinDelete, askJoinList, inviteReceiveList, inviteAccept, inviteReject, handleCheckJoinReject }
 
   }
 }

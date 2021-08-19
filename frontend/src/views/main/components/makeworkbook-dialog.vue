@@ -41,7 +41,7 @@
   </el-dialog>
 </template>
 <script>
-import { reactive, computed, ref, onMounted, watch } from "vue";
+import { reactive, computed, ref, watch, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
@@ -88,20 +88,18 @@ export default {
       tableData: computed(() => store.getters["root/getproblemCnt"]),
       uri: "",
       studyData: ""
-    });
+    })
+
+    onMounted(() => {
+      store.commit('root/setproblemCnt', props.problemCnt)
+    })
 
     watch(()=>props.problemCnt,()=>{
       store.commit('root/setproblemCnt', props.problemCnt)
-      // for (let i=0; i < props.problemCnt; i++ ){
-      //   state.tableData.push({'answer': ""})
-      // }
     })
 
     watch(()=>props.workbookInfo,()=>{
-      console.log(props.workbookInfo)
       state.studyData = props.workbookInfo.test_url;
-
-      console.log(state.studyData);
       var name;
       if (
         state.studyData.split("\\").length > state.studyData.split("/").length
@@ -110,36 +108,28 @@ export default {
       } else {
         name = state.studyData.split("/");
       }
+      axios({
+        url: `https://localhost:8443/api/v1/study/test/${name[1]}/download`,
+        method: "GET",
+        responseType: "blob"
+      }).then(res => {
+        state.uri = URL.createObjectURL(res.data);
+      })
     }
-    );
-
-
-    const isDisabled = function() {
-      return "disabled";
-    };
-
-    onMounted(() => {
-      // state.pagecount = pdfRef.value.pagecount
-      console.log(props.problemCnt);
-    });
+    )
 
     const handleClose = function() {
-      console.log(props.problemCnt)
-      console.log(state.tableData)
-      props.problemCnt = 0,
-      console.log(props.problemCnt)
-      state.page = 1,
-      state.pageCount = 1,
-      state.tableData = [],
-      emit("closeMakeworkbookDialog");
+      state.tableData = computed(() => store.getters["root/getproblemCnt"])
+      state.page = 1
+      state.pageCount = 1
+      emit("closeMakeworkbookDialog")
     };
 
     const handleRender = function() {
-      state.pageCount = pdfRef.value.pageCount;
-    };
+      state.pageCount = pdfRef.value.pageCount
+    }
 
     const handleClick = function() {
-      console.log(state.tableData)
       const newtab = []
       for(let val in state.tableData) {
         newtab.push(state.tableData[val]["answer"])
@@ -153,17 +143,10 @@ export default {
           message: "문제 수: " + res.data["number"]+', ' + "맞은 문제 개수:" + res.data["correct"],
           type: "success"
         })
-        .then(function(res) {
-          console.log(res);
-          ElMessage({
-            message: res.data,
-            type: "success"
-          });
-        })
-        .catch(function(err) {
-          console.log(err);
-        });
-    })
+      })
+      .catch(function(err) {
+        console.log(err)
+      })
     }
 
     return {
@@ -174,7 +157,7 @@ export default {
       handleClose,
       handleRender,
       handleClick
-    };
+    }
   }
 }
 </script>

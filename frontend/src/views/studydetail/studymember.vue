@@ -1,84 +1,95 @@
 <template>
-  <h2 style="text-align:left">MY 스터디 멤버</h2>
-  <div v-for="memberData in state.memberList" class="study-membercard">
-    <membercard :memberData='memberData' />
-  </div>
-  <div v-if="state.curId == state.ownerId">
-  <el-divider></el-divider>
-  <el-row :gutter="24" >
-    <el-col :span="12" align="left">
-      <h1 style="display: inline-block">초대한 회원 현황</h1>
-      <el-button size="mini" @click="findMember">초대하기</el-button>
-    <el-table
-      :data="state.sendList"
-      height="400"
-      @row-click="handleClick"
-      style="width: 100%">
-      <el-table-column
-        prop="name"
-        label="회원명"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="temperature"
-        label="열정도"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="state"
-        align='right'
-      >
-        <template #default="scope">
-          <div v-if="scope.row['state'] == 2">
-            <el-button
-              size="mini" type="warning"
-              @click="handleCancelInvite(scope.$index, scope.row)">초대취소</el-button>
-          </div>
-          <div v-else>
-            <el-button
-              size="mini" type="danger"
-              @click="handleCheckReject(scope.$index, scope.row)">초대거절</el-button>
-          </div>
+  <div>
+    <h2 style="text-align:left">MY 스터디 멤버</h2>
+    <br>
+    <ul v-if="state.memberList.length !== 0" class="membercard-ul">
+      <li v-for="memberData in state.memberList" :key="memberData" class="membercard-li" >
+        <membercard :memberData='memberData' />
+      </li>
+    </ul>
+    <div v-if="state.curId == state.ownerId">
+    <el-divider></el-divider>
+    <el-row :gutter="24" >
+      <el-col :span="12" align="left">
+        <h1 style="display: inline-block; margin-right: 10px">초대한 회원 현황</h1>
+        <el-button size="mini" @click="findMember">초대하기</el-button>
+      <el-table
+        :data="state.sendList"
+        height="400"
+        @row-click="handleClick"
+        style="width: 100%">
+        <template #empty>
+          <h3>같이 공부할 회원을 초대해보세요!</h3>
         </template>
-      </el-table-column>
-    </el-table>
-    </el-col>
+        <el-table-column
+          prop="name"
+          label="회원명"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="temperature"
+          label="열정도"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="state"
+          align='right'
+        >
+          <template #default="scope">
+            <div v-if="scope.row['state'] == 2">
+              <el-button
+                size="mini" type="warning"
+                @click="handleCancelInvite(scope.$index, scope.row)">초대취소</el-button>
+            </div>
+            <div v-else>
+              <el-button
+                size="mini" type="danger"
+                @click="handleCheckReject(scope.$index, scope.row)">초대거절</el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+      </el-col>
 
-  <el-col :span="12" align="left">
-      <h1>가입 요청 회원</h1>
-    <el-table
-      :data="state.applyList"
-      height="400"
-      @row-click="handleClick"
-      style="width: 100%">
-      <el-table-column
-        prop="name"
-        label="회원명"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="temperature"
-        label="열정도"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="state"
-        align='right'
-      >
-        <template #default="scope">
-          <div v-if="scope.row['state'] == 2">
-            <el-button
-              size="mini" type="primary"
-              @click="joinAccept(scope.$index, scope.row)">승인</el-button>
-            <el-button
-              size="mini" type="danger"
-              @click="joinReject(scope.$index, scope.row)">거절</el-button>
-          </div>
+    <el-col :span="12" align="left">
+        <h1>가입 요청 회원</h1>
+      <el-table
+        :data="state.applyList"
+        height="400"
+        @row-click="handleClick"
+        style="width: 100%">
+        <template #empty>
+          <h3>가입 요청한 회원이 없습니다.</h3>
         </template>
-      </el-table-column>
-    </el-table>
-    </el-col>
-  </el-row>
+        <el-table-column
+          prop="name"
+          label="회원명"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="temperature"
+          label="열정도"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="state"
+          align='right'
+        >
+          <template #default="scope">
+            <div v-if="scope.row['state'] == 2">
+              <el-button
+                size="mini" type="primary"
+                @click="joinAccept(scope.$index, scope.row)">승인</el-button>
+              <el-button
+                size="mini" type="danger"
+                @click="joinReject(scope.$index, scope.row)">거절</el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+      </el-col>
+    </el-row>
+    </div>
   </div>
 </template>
 
@@ -103,7 +114,6 @@ export default {
       curId: computed(() => store.getters["root/getUserpk"])
    })
 
-    // 페이지 진입시 불리는 훅
     onMounted (() => {
       studyMemberList()
       inviteSendList()
@@ -128,10 +138,7 @@ export default {
     const inviteSendList = function() {
       store.dispatch("root/requestinviteSendList")
       .then(function(res){
-        console.log(res)
         store.commit('root/setSendInviteMemberList',res.data.inviteResult)
-        // state.sendList = res.data.inviteResult
-        // state.sendList = res.data.inviteResult
       })
     }
 
@@ -139,12 +146,10 @@ export default {
       store.dispatch("root/requestShowApplyList")
       .then(function(res){
         state.applyList = res.data
-        console.log(state.applyList)
       })
     }
 
     const handleClick = function(row, column, cell, event) {
-      console.log(row)
       if (column.property != "state") {
         store.dispatch("root/requestNameUserJoinStudyList",row["name"])
         .then(function(res) {
@@ -168,13 +173,9 @@ export default {
     }
 
     const handleCancelInvite = function(index, row) {
-      console.log(row)
       store.dispatch("root/requestCancelInvite", row["userId"])
       .then(function(res) {
-        console.log(res)
         state.sendList.splice(index, 1)
-        console.log('123',row)
-        console.log(index, state.sendList)
       })
       .catch(function(err) {
         console.log("error",err)
@@ -182,13 +183,9 @@ export default {
     }
 
     const handleCheckReject = function(index, row) {
-      console.log(row)
       store.dispatch("root/requestCheckInviteReject", row["userId"])
       .then(function(res) {
-        console.log(res)
         state.sendList.splice(index, 1)
-        console.log('123',row)
-        console.log(index, state.sendList)
       })
       .catch(function(err) {
         console.log("error",err)
@@ -200,32 +197,24 @@ export default {
     }
 
     const joinAccept = function(index, row) {
-      console.log(row)
       const body = new FormData()
       body.append("study_id",state.studypk)
       body.append("user_id", row["user_id"])
       store.dispatch("root/requestapplyOkay", body)
       .then(function(res) {
-        // console.log("!!!!")
         state.applyList.splice(index, 1)
-        console.log('123',row)
-        console.log(index, state.applyList)
       })
       .catch(function(err) {
         console.log("error",err)
       })
     }
     const joinReject = function(index, row) {
-      console.log(row)
       const body = new FormData()
       body.append("study_id",state.studypk)
       body.append("user_id", row["user_id"])
       store.dispatch("root/requestapplyReject", body)
       .then(function(res) {
-        // console.log("!!!!")
         state.applyList.splice(index, 1)
-        console.log('123',row)
-        console.log(index, state.applyList)
       })
       .catch(function(err) {
         console.log("error",err)
@@ -235,12 +224,9 @@ export default {
     const ownerOnly = function() {
       store.dispatch("root/requestStudyInfoDetail", state.studypk)
       .then(function(res) {
-        console.log(res.data)
-        console.log(res.data.studyResult[0]["owner_id"])
         state.ownerId = res.data.studyResult[0]["owner_id"]
       })
     }
-
 
   return { state, studyMemberList, inviteSendList, handleClick, handleCancelInvite, handleCheckReject, applyUserList, findMember, joinAccept, joinReject,ownerOnly }
   }
@@ -248,7 +234,16 @@ export default {
 </script>
 
 <style>
-.study-membercard {
-  display: inline-block;
+.membercard-ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
+  grid-gap: 16px;
+  justify-content: center;
+  padding: initial;
+}
+.membercard-li {
+  list-style-type: none;
+  padding: 5px;
+  width: 300px;
 }
 </style>

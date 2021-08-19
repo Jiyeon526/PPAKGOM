@@ -13,26 +13,20 @@
             :percentage="userData.temperature"
             :color="state.colors"
             :width="180"
+            :stroke-width="7"
             status="success"
           >
-            <!-- <el-avatar :src="'https://localhost:8443/' + userData.profile_thumbnail" :fit="fill" :size="120"></el-avatar> -->
             <el-avatar :src="state.uri" :fit="fill" :size="150"></el-avatar>
-            <!-- <p>{{userData.temperature}}</p> -->
           </el-progress>
         </div>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="12">
         <p style="font-size: 30px; font-weight: bold; margin: 5px">
           {{ userData.name }}
         </p>
-        <p style="font-size: 20px; font-weight: bold">
+        <p style="font-size: 20px; font-weight: bold; margin-left: 5px">
           열정도: {{ userData.temperature }}°C
         </p>
-        <!-- <el-image style="width: 100px; height: 100px"
-        :src="'https://localhost:8443/' + userData.profile_thumbnail"
-        :fit="fit"
-        >
-        </el-image> -->
       </el-col>
     </el-row>
     <el-divider style="margin: 5px;"></el-divider>
@@ -41,7 +35,7 @@
       <el-col>
         <div>
           <el-scrollbar height="80px" always>
-            <li v-for="std in studyData">
+            <li v-for="std in studyData" :key="std">
               {{ std }}
             </li>
           </el-scrollbar>
@@ -50,7 +44,7 @@
     </el-row>
     <template #footer>
       <span>관심분야: </span>
-      <span v-for="interest in userData.interest">#{{ interest }} </span>
+      <span v-for="interest in userData.interest" :key="interest">#{{ interest }} </span>
     </template>
   </el-dialog>
 </template>
@@ -74,11 +68,10 @@
 }
 </style>
 <script>
-import { reactive, computed, ref, onMounted, watch } from "vue";
+import { reactive, computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { ElMessage } from "element-plus";
 export default {
   name: "otherpeople-dialog",
 
@@ -111,8 +104,6 @@ export default {
         {color: '#1989fa', percentage: 50},
         {color: '#6f7ad3', percentage: 70}
       ],
-      circleUrl:
-        "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       uri: "",
       studyData: ""
     });
@@ -120,54 +111,27 @@ export default {
     watch(
       () => props.userData,
       () => {
-        console.log(props.userData);
-        state.studyData = props.userData.profile_thumbnail;
-
-      console.log(state.studyData);
-      var name;
-      if (!state.studyData) {
-        state.studyData = "default.png/default.png/default.png"
-      }
-      if (
-        state.studyData.split("\\").length > state.studyData.split("/").length
-      ) {
-        name = state.studyData.split("\\");
-      } else {
-        name = state.studyData.split("/");
-      }
-
-        console.log(name);
+        state.studyData = props.userData.profile_thumbnail
+        var name;
+        if (!state.studyData) {
+          state.studyData = "default.png/default.png/default.png"
+        }
+        if (
+          state.studyData.split("\\").length > state.studyData.split("/").length
+        ) {
+          name = state.studyData.split("\\")
+        } else {
+          name = state.studyData.split("/")
+        }
         axios({
           url: `https://localhost:8443/api/v1/users/profile/${name[2]}/download`,
           method: "GET",
           responseType: "blob"
         }).then(res => {
-          state.uri = URL.createObjectURL(res.data);
-        });
-      }
-    );
-
-    onMounted(() => {
-      // console.log(props.userData)
-      // state.studyData = props.userData.profile_thumbnail;
-      // console.log(state.studyData);
-      // var name;
-      // if (
-      //   state.studyData.split("\\").length > state.studyData.split("/").length
-      // ) {
-      //   name = state.studyData.split("\\");
-      // } else {
-      //   name = state.studyData.split("/");
-      // }
-      // console.log(name);
-      // axios({
-      //   url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
-      //   method: "GET",
-      //   responseType: "blob"
-      // }).then(res => {
-      //   state.uri = URL.createObjectURL(res.data);
-      // })
-    });
+          state.uri = URL.createObjectURL(res.data)
+        })
+        }
+      )
 
     const handleClose = function() {
       emit("closeOtherpeopleDialog");

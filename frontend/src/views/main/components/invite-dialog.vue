@@ -5,7 +5,7 @@
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-    <div class="search-member">
+    <div class="search-member" style="margin-bottom: 20px">
       <el-input
         placeholder="관심사 검색"
         v-model="state.searchValue"
@@ -30,15 +30,16 @@
       title="존재하는 스터디가 없습니다. 새롭게 스터디를 생성하시거나 다른 제목으로 스터디를 검색해주세요."
       type="error"
       center
+      :closable="false"
     >
     </el-alert>
   </el-dialog>
 </template>
+
 <script>
-import { reactive, computed, ref, onMounted } from "vue";
+import { reactive, computed, } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
 import membercard from '../../studydetail/membercard.vue';
 export default {
   components: { membercard },
@@ -60,20 +61,10 @@ export default {
       memberList: [],
       dialogVisible: computed(() => props.open),
       formLabelWidth: "120px"
-    });
+    })
 
-    const isDisabled = function() {
-      return "disabled";
-    };
-
-    onMounted(() => {
-      // console.log(loginForm.value)
-    });
-
-    // 검색한 내용으로 스터디 목록 가져오기
     const searchMember = function() {
       let cleanValue = state.searchValue.trim();
-      console.log(cleanValue)
       if (cleanValue !== "") {
         store
           .dispatch("root/requestSearchInterest", cleanValue)
