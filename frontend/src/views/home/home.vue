@@ -1,279 +1,308 @@
 <template>
-  <ul v-if="state.responseConference" class="infinite-list" v-infinite-scroll="load" style="overflow:auto">
-    <li class="grid-content el-button-group">
-      <el-button v-if="state.isSortTime === 'basic'" type="primary" icon="el-icon-sort" @click="clickFirstTimeSort">시간</el-button>
-      <el-button v-else-if="state.isSortTime" type="primary" icon="el-icon-sort-up" @click="clickTimeSort">시간</el-button>
-      <el-button v-else type="primary" icon="el-icon-sort-down" @click="clickTimeSort">시간</el-button>
-      <el-button v-if="state.isSortTitle === 'basic'" type="primary" icon="el-icon-sort" @click="clickFirstTitleSort">제목</el-button>
-      <el-button v-else-if="state.isSortTitle" type="primary" icon="el-icon-sort-up" @click="clickTitleSort">제목</el-button>
-      <el-button v-else type="primary" icon="el-icon-sort-down" @click="clickTitleSort">제목</el-button>
-    </li>
-    <li v-for="i in state.responseConference.length" @click="clickConference(i)" class="infinite-list-item" :key="i" >
-      <conference :conferenceData="state.responseConference[i-1]" />
+  <h1 style="font-size:35px;">스터디 모집</h1>
+  <div class="search-bar">
+    <el-dropdown trigger="click" Button style="width:20%">
+      <el-button class="el-dropdown-link" style="width:100%;">
+        <span :class="state.selectColor">{{ state.label }}</span>
+        <i class="el-icon-arrow-down"></i>
+      </el-button>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item
+            v-for="option in state.options"
+            :key="option.value"
+            @click="onClickSearchType(option)"
+          >
+            {{ option.label }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+    <div class="search-field">
+      <el-input
+        placeholder="화상 컨퍼런스 제목 검색"
+        v-model="state.searchValue"
+        @keyup.enter="searchStudy"
+      >
+        <template #append>
+          <el-button icon="el-icon-search" @click="searchStudy"></el-button>
+        </template>
+      </el-input>
+    </div>
+  </div>
+  <br />
+  <h4 v-if="state.recommendStudyList.length === 0">
+    회원님의 해시태그에 맞는 추천 스터디가 없습니다.
+  </h4>
+  <el-carousel v-else height="300px">
+    <el-carousel-item
+      v-for="i in state.recommendStudyList.length"
+      :key="i"
+      @click="onClickRecommendStudyList(i)"
+    >
+      <div
+        style="display:flex; align-items:center; margin-left:5%; margin-right:15%"
+      >
+        <StudyCarousel
+          :studyData="state.recommendStudyList[i - 1]"
+          style="width:300px"
+        />
+        <div style="width:40%; height:30%; text-align:center">
+          <div>
+            <h2 style="margin:30px">
+              {{ state.recommendStudyList[i - 1].name }}
+            </h2>
+            <h4>
+              모집 인원 :
+              {{ state.recommendStudyList[i - 1].joined_population }} /
+              {{ state.recommendStudyList[i - 1].population }}
+            </h4>
+            <h4>
+              관심 분야 :
+              {{ state.recommendStudyList[i - 1].interest.join(", ") }}
+            </h4>
+            <h4>마감 날짜 : {{ state.recommendStudyList[i - 1].deadline }}</h4>
+          </div>
+        </div>
+        <div style="margin-top:auto; margin-bottom:auto;">
+          <el-progress
+            type="dashboard"
+            :percentage="state.recommendStudyList[i - 1].temperature"
+            style="position:relative; z-index: 1;"
+          >
+          </el-progress>
+          <p style="position:relative; top:-90px; z-index: 2;">
+            {{ state.recommendStudyList[i - 1].temperature }}℃
+          </p>
+          <h4>열정도</h4>
+        </div>
+      </div>
+    </el-carousel-item>
+  </el-carousel>
+  <ul v-if="state.studyList.length !== 0" class="ul-class">
+    <li
+      v-for="i in state.studyList.length"
+      :key="i"
+      @click="onClickStudyList(i)"
+      class="li-class"
+    >
+      <study :studyData="state.studyList[i - 1]" style="width:100%" />
     </li>
   </ul>
-  <h2 v-else>데이터 없음
-    <el-alert
-      title="error alert"
-      type="error">
-    </el-alert>
-  </h2>
+  <el-alert
+    v-else
+    title="존재하는 스터디가 없습니다. 새롭게 스터디를 생성하시거나 다른 제목으로 스터디를 검색해주세요."
+    type="error"
+    center
+  >
+  </el-alert>
 </template>
-<style>
-.infinite-list {
-  padding-left: 0;
-  max-height: calc(100% - 35px);
+<style scoped>
+.ul-class {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
+  grid-gap: 16px;
+  justify-content: center;
+  padding: initial;
+}
+.li-class {
+  list-style-type: none;
+  padding: 5px;
+  width: 300px;
 }
 
-@media (min-width: 701px) and (max-width: 1269px) {
-  .infinite-list {
-    min-width: 700px;
-  }
+.img-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-@media (min-width: 1270px) {
-  .infinite-list {
-    min-width: 1021px;
-  }
+.base-color {
+  color: #c0c4cc;
 }
 
-.infinite-list .infinite-list-item {
-  min-width: 345px;
-  max-width: 25%;
-  display: inline-block;
-  cursor: pointer;
+.select-color {
+  color: black;
 }
 
-/* .btn-right {
+.search-bar {
   display: flex;
-  justify-content: right;
-} */
+}
 
-.el-button-group {
+.search-field {
+  width: 80%;
+}
+
+/* carousel */
+.el-carousel {
+  margin: 50px 0px;
+}
+
+.el-carousel__item h3 {
+  color: #d3dce6;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.el-progress {
+  position: relative;
+  line-height: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: flex-end;
-  /* float: right; */
-  margin: 10px;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
-
-.el-button-group > .el-button:first-child {
-  border-radius: 5px;
-  margin: 1px;
-}
-
-.el-button-group > .el-button:last-child {
-  border-radius: 5px;
-  margin: 1px;
-}
-
 </style>
 <script>
-import Conference from './components/conference'
-import { onMounted, reactive, computed, onBeforeUpdate,  watch} from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from "vuex"
+import Study from "./components/study";
+import StudyCarousel from "./components/studycarousel";
+import { onMounted, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { ElMessage } from "element-plus";
 
 export default {
-  name: 'Home',
+  name: "Home",
 
   components: {
-    Conference
+    Study,
+    StudyCarousel
   },
 
-  setup () {
-    const store = useStore()
-    const router = useRouter()
+  setup(props, { emit }) {
+    const store = useStore();
+    const router = useRouter();
     const state = reactive({
-      conference_category: '',
-      page: 0,
-      size: 20,
-      title: computed(() => store.getters["root/getTitle"]),
-      isSortTime: "basic",    //  기본 - 시간 정렬 없음
-      isSortTitle: "basic",   //  기본 - 제목 정렬 없음
-      sortType: '',   // 토글하기 위해 sortTime과 sortTitle을 분리하지 않음
-      order: false,
-      responseConference: [], // 컨퍼런스 목록 조회 응답
-      errorMessage: "존재하는 컨퍼런스가 없습니다. 새롭게 컨퍼런스를 생성하시거나 다른 제목으로 컨퍼런스를 검색해주세요.",
-      errTest: [],
-      isLastPage: false,
-    })
-    watch(()=>state.title,(title) =>{
-      console.log("watch",state.title);
-      state.page = 0;
-      getConferenceList()
-    })
-
-    const load = function () {
-      if (!state.isLastPage) {
-        console.log("로드 실행")
-        state.page += 1
-        addConferenceList()
-        console.log('페이지 카운트 증가', state.page)
-      }
-    }
-
-    const clickConference = function (id) {
-      router.push({
-        name: 'conference-detail',
-        params: {
-          conferenceId: state.responseConference[id - 1].id
+      isLoggedIn: computed(() => store.getters["root/isLoggedIn"]),
+      studyList: [],
+      recommendStudyList: [],
+      searchValue: "",
+      searchType: "",
+      isCardClick: true,
+      likeStudy: false,
+      label: "선택",
+      selectColor: "base-color",
+      options: [
+        {
+          value: 1,
+          label: "방 번호"
+        },
+        {
+          value: 2,
+          label: "방 이름"
+        },
+        {
+          value: 3,
+          label: "해시태그"
         }
-      })
-    }
+      ],
+      uri: [],
+      studyData: ""
+    });
+
+    const onClickRecommendStudyList = id => {
+      const selectStudy = state.recommendStudyList[id - 1];
+      emit("openStudydetailDialog", selectStudy);
+    };
+
+    const onClickStudyList = id => {
+      const selectStudy = state.studyList[id - 1];
+      emit("openStudydetailDialog", selectStudy);
+    };
 
     // 방 목록 리스트 가져오기
-    const getConferenceList = function () {
-     // state.title = store.getters["root/getTitle"]  // 검색한 문자열 업데이트
-      console.log("getConferenceList")
-      console.log("title",state.title)
-      console.log("titlecheck",state.title_check)
+    const getStudyList = function() {
       store
-        .dispatch('root/requestConferenceList', {
-          conference_category: state.conference_category,
-          page: state.page,
-          size: state.size,
-          title: state.title,
-          sortType: state.sortType,
-          order: state.order
-        })
+        .dispatch("root/requestStudyList", {})
         .then(function(res) {
-          state.responseConference = res.data.content
-          console.log('컨퍼런스 목록 받아오기', state.responseConference)
+          state.studyList = res.data.studyResult;
         })
         .catch(function(err) {
-          console.log(err)
+          ElMessage({
+            type: "error",
+            message: err.message
+          })
+        });
+    };
+
+    // 추천 리스트 가져오기
+    const getRecommendStudyList = function() {
+      store
+        .dispatch("root/requestRecommendStudyList", {})
+        .then(function(res) {
+          state.recommendStudyList = res.data.studyResult;
         })
-    }
+        .catch(function(err) {
+          ElMessage({
+            type: "error",
+            message: err.message
+          })
+        });
+    };
 
     onMounted(() => {
-      getConferenceList()
-    })
+      if (state.isLoggedIn) {
+        getRecommendStudyList();
+      }
+      getStudyList();
+    });
 
-    // Infinite Scroll
-    const addConferenceList = function () {
-      store
-        .dispatch('root/requestConferenceList', {
-          conference_category: state.conference_category,
-          page: state.page,
-          size: state.size,
-          title: state.title,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // 마지막 페이지 체크
-          if (res.data.content.length < 20) {
-            state.isLastPage = true
-          }
+    const onClickSearchType = option => {
+      state.label = option.label;
+      state.searchType = option.value;
+      state.selectColor = "select-color";
+    };
 
-          for (let val of res.data.content) {
-            // Object.assign(state.responseConference, val)
-            let number = state.responseConference.length
-            state.responseConference[number] = val
-          }
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
+    // 검색한 내용으로 스터디 목록 가져오기
+    const searchStudy = function() {
+      let cleanValue = state.searchValue.trim();
+      if (cleanValue !== "") {
+        if (!state.searchType) {
+          ElMessage({
+            type: "info",
+            message: "검색하려는 분야를 선택해주세요."
+          });
+        }
+        else {
+          store
+            .dispatch("root/requestSearchStudyList", {
+              option: state.searchType,
+              searchValue: cleanValue
+            })
+            .then(function(res) {
+              state.studyList = res.data.studyResult;
+            })
+            .catch(function(err) {
+              ElMessage({
+                type: "error",
+                message: err.message
+              })
+            });
+        }
+      } else {
+        state.searchValue = "";
+      }
+    };
 
-    // 처음 "시간 정렬"을 클릭 했을 경우
-    const clickFirstTimeSort = function() {
-      state.isSortTime = true
-      state.isSortTitle = 'basic'
-      state.sortType = 'timeSort'
-      state.order = true
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,  // Infinite Scroll로 받아온 데이터까지 같이 정렬하는 건지? -> 현재는 Front 데이터 받아오는 문제가 있음
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 시간 정렬', res)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    // 처음 이후 "시간 정렬" 클릭 시
-    const clickTimeSort = function() {
-      state.isSortTime = !state.isSortTime
-      state.isSortTitle = 'basic'
-      state.sortType = 'timeSort'
-      state.order = !state.order
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 이후 시간 정렬', res.data.content)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    // 처음 "제목 정렬"을 클릭 했을 경우
-    const clickFirstTitleSort = function() {
-      state.isSortTitle = true
-      state.isSortTime = 'basic'
-      state.sortType = 'titleSort'
-      state.order = true
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 제목 정렬', res.data.content)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    // 처음 이후 "제목 정렬" 클릭 시
-    const clickTitleSort = function() {
-      state.isSortTitle = !state.isSortTitle
-      state.isSortTime = 'basic'
-      state.sortType = 'titleSort'
-      state.order = !state.order
-      store
-        .dispatch('root/requestSortConferenceList', {
-          conference_category: state.conference_category,
-          page: 0,
-          // page: state.page,
-          size: state.size,
-          sortType: state.sortType,
-          order: state.order
-        })
-        .then(function(res) {
-          // console.log('처음 이후 제목 정렬', res.data.content)
-          state.responseConference = res.data.content
-        })
-        .catch(function(err) {
-          console.log(err)
-        })
-    }
-
-    return { state, load, clickConference, clickFirstTimeSort, clickTimeSort, clickFirstTitleSort, clickTitleSort, addConferenceList }
+    return {
+      state,
+      onClickStudyList,
+      onClickRecommendStudyList,
+      searchStudy,
+      onClickSearchType
+    };
   }
-}
+};
 </script>

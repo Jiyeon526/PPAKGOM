@@ -1,40 +1,68 @@
 <template>
   <el-dialog
-    custom-class="login-dialog"
-    title="로그인"
+    custom-class="answerworkbook-dialog"
+    title="문제집 만들기"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-    <el-form
-      :model="state.form"
-      :rules="state.rules"
-      ref="loginForm"
-      :label-position="state.form.align"
-    >
-      <el-form-item
-        prop="id"
-        label="아이디"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.id" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item
-        prop="password"
-        label="비밀번호"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input
-          v-model="state.form.password"
-          autocomplete="off"
-          show-password
-        ></el-input>
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="clickLogin">로그인</el-button>
-      </span>
-    </template>
+  <el-row :gutters="24">
+    <el-col>
+      <el-form
+        :model="answerbookForm"
+        :rules="rules"
+        ref="answerbookForm">
+        <el-form-item label="제목" prop="title">
+          <el-input v-model="state.form.title" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item
+          label="파일 업로드"
+          prop="uploading"
+        >
+          <el-upload
+            action="https://jsonplaceholder.typicode.com/posts/"
+            accept=".pdf"
+            :on-change="fileChange"
+            :auto-upload="false"
+            limit="1"
+            ref="pdfUpload"
+            :on-remove="handleRemove"
+          >
+          <el-button plain type="success">Upload</el-button>
+          </el-upload>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="addRow" plain type="success"><i class="el-icon-circle-plus-outline"></i> Add</el-button>
+
+          <el-table
+            style="margin-top: 10px"
+            height="400"
+            :data="state.tableData">
+            <el-table-column
+              label="NO."
+              type="index">
+            </el-table-column>
+            <el-table-column prop="answer" label="Answer">
+              <template #default="scope">
+                  <el-input size="small"
+                    placeholder="답을 입력하세요. EX) 1"
+                    style="text-align:center"
+                    v-model="scope.row.answer" controls-position="right"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column align='right' width="50" >
+              <template #default="scope">
+                <el-button icon="el-icon-circle-close" @click="deleteRow(scope.$index, scope.row)" type="text" size="small">
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item align='right'>
+          <el-button plain type="success" @click="handleClick" >만들기</el-button>
+        </el-form-item>
+      </el-form>
+    </el-col>
+  </el-row>
   </el-dialog>
 </template>
 <script>
@@ -42,8 +70,14 @@ import { reactive, computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import VuePdfEmbed from 'vue-pdf-embed';
+
 export default {
-  name: "login-dialog",
+  name: "answerworkbook-dialog",
+
+  components: {
+      VuePdfEmbed,
+    },
 
   props: {
     open: {
@@ -55,7 +89,9 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
-    const loginForm = ref(null);
+    const answerbookForm = ref(null);
+    const pdfUpload = ref(null);
+    const pdfRef = ref(null);
     const router = useRouter();
     /*
       // Element UI Validator
@@ -64,45 +100,19 @@ export default {
     */
     const state = reactive({
       form: {
-        id: "",
-        password: "",
+        title: "",
+        uploading: [],
         align: "left"
       },
-      rules: {
-        id: [
-          { required: true, message: "필수 입력 항목입니다", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              if (value.length > 16) {
-                error = ["최대 16자까지 입력 가능합니다."];
-              }
-              return error;
-            }
-          }
-        ],
-        password: [
-          { required: true, message: "필수 입력 항목입니다.", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              var number = value.search(/[0-9]/g);
-              var english = value.search(/[a-z]/gi);
-              var special = value.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
-              if (value.length < 9) {
-                error = ["최소 9글자를 입력해야 합니다."];
-              } else if (value.length > 16) {
-                error = ["최대 16 글자까지 입력가능합니다."];
-              } else if (number < 0 || english < 0 || special < 0) {
-                error = ["비밀번호는 영문, 숫자, 특수문자가 조합되어야합나다."];
-              }
-              return error;
-            }
-          }
-        ]
-      },
+      src: "https://cdn.rawgit.com/mozilla/pdf.js/c6e8ca86/test/pdfs/freeculture.pdf",
       dialogVisible: computed(() => props.open),
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      page: 1,
+      pageCount: 1,
+      tableCount: 0,
+      tableData: [],
+      // answerTable: ["1",],
+      userpk: computed(() => store.getters["root/getUserpk"]),
     });
 
     const isDisabled = function() {
@@ -110,55 +120,100 @@ export default {
     };
 
     onMounted(() => {
+      // state.pagecount = pdfRef.value.pagecount
       // console.log(loginForm.value)
     });
 
-    const clickLogin = function() {
-      // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
-      loginForm.value.validate(valid => {
-        if (valid) {
-          console.log("submit");
-          store
-            .dispatch("root/requestLogin", {
-              id: state.form.id,
-              password: state.form.password
-            })
-            .then(function(result) {
-              //alert("accessToken: " + result.data.accessToken);
-              localStorage.setItem("accessToken", result.data.accessToken);
-              localStorage.setItem("userId", state.form.id);
-              ElMessage({
-                message: "로그인 성공",
-                type: "success"
-              });
-              handleClose();
-              //console.log(store.getters['root/isLoggedIn'])
-              loginsuccess();
-            })
-            .catch(function(err) {
-              alert(err.message);
-            });
-          this.$store.state.loading = true;
-        } else {
-          alert("Validate error!");
-        }
-      });
-    };
-
-    const loginsuccess = function() {
-      store.commit("root/setAccessToken");
-      router.push({
-        name: "home"
-      });
-    };
-
     const handleClose = function() {
-      state.form.id = "";
-      state.form.password = "";
+      state.tableCount = 0
+      state.tableData = []
+      state.form.title = ""
+      state.form.uploading = []
       emit("closeAnswerWorkbookDialog");
     };
 
-    return { loginForm, state, clickLogin, handleClose };
+    const fileChange = function(file) {
+      const necessary = []
+      necessary.push(file['name'])
+      necessary.push(file['size'])
+      state.form.uploading = necessary
+      state.form.uploading = file.raw
+      console.log('111', file)
+      console.log('222', state.form.uploading)
+    }
+
+
+    const handleRemove = function(file, fileList) {
+        console.log(file, fileList)
+    }
+
+    const handleRender = function() {
+      state.pageCount = pdfRef.value.pageCount
+    }
+
+    const addRow = function() {
+      const newRow = {}
+      state.tableData = [...state.tableData,newRow]
+      ++ state.tableCount
+      console.log("click!",state.tableCount)
+      console.log("click2!",state.tableData)
+
+    }
+    const deleteRow = function(index,row) {
+        state.tableData.splice(index, 1);
+        if(state.tableCount > 0)
+          -- state.tableCount;
+    }
+
+    const handleClick = function() {
+      console.log(state.tableData)
+      const newtab = []
+      for(let val in state.tableData) {
+        console.log([state.tableData[val]["answer"]])
+        newtab.push(state.tableData[val]["answer"])
+      }
+
+      let body = new FormData()
+      body.append("test.userId",state.userpk)
+      body.append("test.title",state.form.title)
+      body.append("study_thumbnail",state.form.uploading)
+      body.append("answer",newtab)
+      store.dispatch('root/requestMakeWorkbook',body)
+      .then(function(res) {
+        console.log(res)
+        pdfUpload.value.submit()
+        ElMessage({
+          message: "문제집 생성 완료",
+          type: "success"
+        })
+        store.dispatch('root/requestWorkbookList')
+        .then(function(res) {
+          store.commit('root/setWorkbookList', res.data)
+        })
+        handleClose()
+
+      })
+      .catch(function(err) {
+        console.log(err)
+      })
+    }
+
+    return { answerbookForm, pdfUpload, pdfRef, state, handleClose, handleRender, addRow, deleteRow, fileChange, handleClick };
   }
 };
 </script>
+
+<style>
+.answerworkbook-dialog {
+  height: 800px;
+  width: 400px;
+}
+/* .numbering {
+  height: 400px;
+  border: solid;
+} */
+.pdfCol {
+  height: 700px;
+  border: solid
+}
+</style>

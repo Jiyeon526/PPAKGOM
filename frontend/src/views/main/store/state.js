@@ -2,7 +2,9 @@
 const menuData = require('@/views/main/menu.json')
 const accessToken = localStorage.getItem('accessToken') ? localStorage.getItem('accessToken') : ''
 const userId = localStorage.getItem('userId') ? localStorage.getItem('userId') : ''
-
+const naveraccessToken = localStorage.getItem('naveraccessToken') ? localStorage.getItem('naveraccessToken') : ''
+const userPk = localStorage.getItem('userPk') ? localStorage.getItem('userPk') : 0
+const studypk = localStorage.getItem('studypk') ? localStorage.getItem('studypk') : 0
 /**
  * 플랫폼 관련 정보로 데스크탑인지, 모바일인지 판별 - 하이브리드 앱 대비
  */
@@ -37,5 +39,19 @@ export default {
   menus: menuData,
   accessToken: accessToken,
   userId: userId,
-  searchData: ''
+  searchData: '',
+  naveraccessToken: naveraccessToken,
+  googlelogin: false,
+  kakaologin: false,
+  userpk: userPk,
+  studypk: studypk,
+  selectOption: '',
+  testpk: 0,
+  reload: false,
+  joinStudyList:[],
+  evaluateMemberList: [],
+  isevaluate: false,
+  inviteSendList: [],
+  workbookList: [],
+  problemCnt: 0,
 }

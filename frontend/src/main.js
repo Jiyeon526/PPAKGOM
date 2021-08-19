@@ -8,6 +8,7 @@ import VueAxios from './common/lib/axios'
 import axios from './common/lib/axios'
 import i18n from './common/lib/i18n'
 import router from './common/lib/vue-router'
+import VCalendar from 'v-calendar'
 
 import 'element-plus/packages/theme-chalk/src/base.scss'
 
@@ -99,6 +100,9 @@ import {
   ElMessageBox,
   ElNotification,
 } from 'element-plus';
+
+ import VueChartkick from 'vue-chartkick'
+ import 'chartkick/chart.js'
 
 const components = [
   ElAlert,
@@ -200,7 +204,8 @@ app.use(VueAxios, axios)
 app.use(store)
 app.use(i18n)
 app.use(router)
-
+app.use(VueChartkick)
+app.use(VCalendar, {})
 components.forEach(component => {
   app.component(component.name, component)
 })
@@ -210,3 +215,4 @@ plugins.forEach(plugin => {
 })
 
 app.mount('#app')
+window.Kakao.init("16779f8dbe71d8f1328f92353c78c796");

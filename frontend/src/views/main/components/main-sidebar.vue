@@ -1,12 +1,27 @@
 <template>
-  <el-row class="main-sidebar" :gutter="10" :style="{ width: width }">
+  <el-row class="main-sidebar" :gutter="10" :style="{ width: state.width }">
     <div class="hide-on-small">
       <el-menu
+        :collapse="state.isCollapse"
         :default-active="String(state.activeIndex)"
         active-text-color="#ffd04b"
         class="el-menu-vertical-demo"
         @select="menuSelect"
       >
+        <div v-if="!state.isCollapse">
+          <el-menu-item
+            style="display: flex; justify-content:flex-end; align-items:center"
+            @click="onCollapse"
+            ><i class="el-icon-d-arrow-left"></i
+          ></el-menu-item>
+        </div>
+        <div v-else>
+          <el-menu-item
+            style="display: flex; justify-content:flex-end; align-items:center"
+            @click="onCollapse"
+            ><i class="el-icon-d-arrow-right"></i
+          ></el-menu-item>
+        </div>
         <el-menu-item
           v-for="(item, index) in state.menuItems"
           :key="index"
@@ -21,14 +36,20 @@
             <span>Mypage</span>
           </template>
           <el-menu-item-group title="">
-            <el-menu-item index="3">가입한 스터디</el-menu-item>
-            <el-menu-item index="4">찜한 스터디</el-menu-item>
-            <el-menu-item index="5">방관리</el-menu-item>
+            <el-menu-item index="3"
+              ><i class="el-icon-reading"></i>가입한 스터디</el-menu-item
+            >
+            <el-menu-item index="4"
+              ><i class="el-icon-star-on"></i>찜한 스터디</el-menu-item
+            >
+            <el-menu-item index="5"
+              ><i class="el-icon-s-management"></i>가입/초대</el-menu-item
+            >
+            <el-menu-item index="6"
+              ><i class="el-icon-s-promotion"></i>스터디원 평가</el-menu-item
+            >
           </el-menu-item-group>
         </el-submenu>
-        <el-menu-item v-if="state.isLoggedIn">
-          <span @click="clickLogout">로그아웃</span>
-        </el-menu-item>
       </el-menu>
     </div>
   </el-row>
@@ -60,12 +81,12 @@ import { useRouter } from "vue-router";
 export default {
   name: "main-header",
 
-  props: {
-    width: {
-      type: String,
-      default: "240px"
-    }
-  },
+  // props: {
+  //   width: {
+  //     type: String,
+  //     default: "180px"
+  //   }
+  // },
   setup() {
     const store = useStore();
     const router = useRouter();
@@ -80,13 +101,16 @@ export default {
         let menuArray = [];
         if (!isLoggedIn) {
           let menuObject = {};
+          menuObject.icon = MenuItems["main"].icon;
+          menuObject.title = MenuItems["main"].name;
+          menuArray.push(menuObject);
+          menuObject = {};
           menuObject.icon = MenuItems["home"].icon;
           menuObject.title = MenuItems["home"].name;
           menuArray.push(menuObject);
-
           return menuArray;
         }
-        for (let i = 0; i < keys.length - 3; ++i) {
+        for (let i = 0; i < keys.length - 4; ++i) {
           let menuObject = {};
           menuObject.icon = MenuItems[keys[i]].icon;
           menuObject.title = MenuItems[keys[i]].name;
@@ -94,7 +118,9 @@ export default {
         }
         return menuArray;
       }),
-      activeIndex: computed(() => store.getters["root/getActiveMenuIndex"])
+      activeIndex: computed(() => store.getters["root/getActiveMenuIndex"]),
+      isCollapse: false,
+      width: "200px"
     });
 
     if (state.activeIndex === -1) {
@@ -104,9 +130,12 @@ export default {
 
     const menuSelect = function(param) {
       console.log("param", param);
+      store.commit("root/setStudypk", 0);
+      localStorage.removeItem('studypk')
       store.commit("root/setMenuActive", param);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
+      console.log(keys[param]);
       router.push({
         name: keys[param]
       });
@@ -119,7 +148,17 @@ export default {
         name: "home"
       });
     };
-    return { state, menuSelect, clickLogout };
+
+    const onCollapse = function() {
+      state.isCollapse = !state.isCollapse;
+      if (state.isCollapse) {
+        state.width = "70px";
+      } else {
+        state.width = "200px";
+      }
+    };
+
+    return { state, menuSelect, clickLogout, onCollapse };
   }
 };
 </script>

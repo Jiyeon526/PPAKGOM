@@ -1,164 +1,195 @@
 <template>
   <el-dialog
-    custom-class="login-dialog"
-    title="로그인"
+    custom-class="makeworkbook-dialog"
+    :title="workbookInfo.title"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-    <el-form
-      :model="state.form"
-      :rules="state.rules"
-      ref="loginForm"
-      :label-position="state.form.align"
-    >
-      <el-form-item
-        prop="id"
-        label="아이디"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.id" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item
-        prop="password"
-        label="비밀번호"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input
-          v-model="state.form.password"
-          autocomplete="off"
-          show-password
-        ></el-input>
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="clickLogin">로그인</el-button>
-      </span>
-    </template>
+    <el-row :gutters="24">
+      <el-col :span="13" class="pdfCol">
+        <button :disabled="state.page <= 1" @click="state.page--">❮</button>
+        {{ state.page }} / {{ state.pageCount }}
+      <button :disabled="state.page >= state.pageCount" @click="state.page++">❯</button>
+
+      <vue-pdf-embed
+        style="height:80%"
+        ref="pdfRef"
+        :page = state.page
+        :source= "state.uri"
+        @rendered="handleRender" />
+    </el-col>
+    <el-col :span="1"></el-col>
+    <el-col :span="10">
+      <el-table
+        height="600"
+        :data="state.tableData">
+        <el-table-column
+          label="NO."
+          type="index">
+        </el-table-column>
+        <el-table-column prop="answer" label="Answer">
+          <template #default="scope">
+              <el-input size="small"
+                v-model="scope.row.answer" controls-position="right"></el-input>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-button style="margin: 10px 0px 10px 10px; display: block; float: right;" plain type="success" @click="handleClick">제출하기</el-button>
+    </el-col>
+  </el-row>
   </el-dialog>
 </template>
 <script>
-import { reactive, computed, ref, onMounted } from "vue";
+import { reactive, computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import VuePdfEmbed from "vue-pdf-embed";
+import axios from "axios";
+
 export default {
-  name: "login-dialog",
+  name: "makeworkbook-dialog",
+
+  components: {
+    VuePdfEmbed
+  },
 
   props: {
     open: {
       type: Boolean,
       default: false
+    },
+    workbookInfo: {
+      type: Object
+    },
+    problemCnt: {
+      type: Number
     }
   },
 
   setup(props, { emit }) {
     const store = useStore();
-    // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
-    const loginForm = ref(null);
+    const answerbookForm = ref(null);
+    const pdfUpload = ref(null);
+    const pdfRef = ref(null);
     const router = useRouter();
-    /*
-      // Element UI Validator
-      // rules의 객체 키 값과 form의 객체 키 값이 같아야 매칭되어 적용됨
-      //
-    */
+
     const state = reactive({
       form: {
-        id: "",
-        password: "",
+        title: "",
         align: "left"
       },
-      rules: {
-        id: [
-          { required: true, message: "필수 입력 항목입니다", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              if (value.length > 16) {
-                error = ["최대 16자까지 입력 가능합니다."];
-              }
-              return error;
-            }
-          }
-        ],
-        password: [
-          { required: true, message: "필수 입력 항목입니다.", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              var number = value.search(/[0-9]/g);
-              var english = value.search(/[a-z]/gi);
-              var special = value.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
-              if (value.length < 9) {
-                error = ["최소 9글자를 입력해야 합니다."];
-              } else if (value.length > 16) {
-                error = ["최대 16 글자까지 입력가능합니다."];
-              } else if (number < 0 || english < 0 || special < 0) {
-                error = ["비밀번호는 영문, 숫자, 특수문자가 조합되어야합나다."];
-              }
-              return error;
-            }
-          }
-        ]
-      },
       dialogVisible: computed(() => props.open),
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      page: 1,
+      pageCount: 1,
+      tableCount: 0,
+      tableData: computed(() => store.getters["root/getproblemCnt"]),
+      uri: "",
+      studyData: ""
     });
+
+    watch(()=>props.problemCnt,()=>{
+      store.commit('root/setproblemCnt', props.problemCnt)
+      // for (let i=0; i < props.problemCnt; i++ ){
+      //   state.tableData.push({'answer': ""})
+      // }
+    })
+
+    watch(()=>props.workbookInfo,()=>{
+      console.log(props.workbookInfo)
+      state.studyData = props.workbookInfo.test_url;
+
+      console.log(state.studyData);
+      var name;
+      if (
+        state.studyData.split("\\").length > state.studyData.split("/").length
+      ) {
+        name = state.studyData.split("\\");
+      } else {
+        name = state.studyData.split("/");
+      }
+    }
+    );
+
 
     const isDisabled = function() {
       return "disabled";
     };
 
     onMounted(() => {
-      // console.log(loginForm.value)
+      // state.pagecount = pdfRef.value.pagecount
+      console.log(props.problemCnt);
     });
 
-    const clickLogin = function() {
-      // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
-      loginForm.value.validate(valid => {
-        if (valid) {
-          console.log("submit");
-          store
-            .dispatch("root/requestLogin", {
-              id: state.form.id,
-              password: state.form.password
-            })
-            .then(function(result) {
-              //alert("accessToken: " + result.data.accessToken);
-              localStorage.setItem("accessToken", result.data.accessToken);
-              localStorage.setItem("userId", state.form.id);
-              ElMessage({
-                message: "로그인 성공",
-                type: "success"
-              });
-              handleClose();
-              //console.log(store.getters['root/isLoggedIn'])
-              loginsuccess();
-            })
-            .catch(function(err) {
-              alert(err.message);
-            });
-          this.$store.state.loading = true;
-        } else {
-          alert("Validate error!");
-        }
-      });
-    };
-
-    const loginsuccess = function() {
-      store.commit("root/setAccessToken");
-      router.push({
-        name: "home"
-      });
-    };
-
     const handleClose = function() {
-      state.form.id = "";
-      state.form.password = "";
+      console.log(props.problemCnt)
+      console.log(state.tableData)
+      props.problemCnt = 0,
+      console.log(props.problemCnt)
+      state.page = 1,
+      state.pageCount = 1,
+      state.tableData = [],
       emit("closeMakeworkbookDialog");
     };
 
-    return { loginForm, state, clickLogin, handleClose };
+    const handleRender = function() {
+      state.pageCount = pdfRef.value.pageCount;
+    };
+
+    const handleClick = function() {
+      console.log(state.tableData)
+      const newtab = []
+      for(let val in state.tableData) {
+        newtab.push(state.tableData[val]["answer"])
+      }
+      store.commit('root/setTestpk', props.workbookInfo.id)
+      store.dispatch('root/requestSubmitAnswer', {
+        answer: newtab
+      })
+      .then(function(res) {
+        ElMessage({
+          message: "문제 수: " + res.data["number"]+', ' + "맞은 문제 개수:" + res.data["correct"],
+          type: "success"
+        })
+        .then(function(res) {
+          console.log(res);
+          ElMessage({
+            message: res.data,
+            type: "success"
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    })
+    }
+
+    return {
+      answerbookForm,
+      pdfUpload,
+      pdfRef,
+      state,
+      handleClose,
+      handleRender,
+      handleClick
+    };
   }
-};
+}
 </script>
+
+<style>
+.makeworkbook-dialog {
+  height: 800px;
+  width: 800px;
+}
+.numbering {
+  height: 400px;
+  border: solid;
+}
+.pdfCol {
+  height: 700px;
+  border: solid;
+}
+</style>

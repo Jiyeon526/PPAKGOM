@@ -26,3 +26,64 @@ export function getTitle(state) {
   console.log(state.searchData);
   return state.searchData
 }
+
+export function getNaverAccessToken(state) {
+  return state.naveraccessToken;
+}
+
+export function isNaverLoggedIn(state) {
+  if (state.naveraccessToken) return true;
+  return false;
+}
+
+export function getKakaoIsLoggedIn(state) {
+  return state.kakaologin;
+}
+
+export function getGoogleIsLoggedIn(state) {
+  return state.googlelogin;
+}
+
+export function getUserpk(state) {
+  return state.userpk;
+}
+
+export function getStudypk(state) {
+  return state.studypk;
+}
+
+export function getSelectOption(state) {
+  return state.selectOption;
+}
+
+export function getReload(state) {
+  return state.reload;
+}
+
+export function getJoinStudyList(state) {
+  return state.joinStudyList;
+}
+
+export function getEvaluateMemberList(state) {
+  return state.evaluateMemberList
+}
+
+export function getIsevaluate(state) {
+  return state.isevaluate
+}
+
+export function getSendInviteMemberList(state) {
+  return state.inviteSendList
+}
+
+export function getWorkbookList(state) {
+  return state.workbookList
+}
+
+export function getproblemCnt(state) {
+  const sendTable = []
+  for (let i=0; i < state.problemCnt; i++ ){
+    sendTable.push({'answer': ""})
+  }
+  return sendTable
+}

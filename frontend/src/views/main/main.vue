@@ -1,5 +1,11 @@
 <template>
-  <el-container class="main-wrapper" v-loading="loading">
+  <el-container
+    class="main-wrapper"
+    v-loading="loading"
+    element-loading-text="Loading..."
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255, 255, 255, 0.5)"
+  >
     <main-header
       :height="`70px`"
       @openLoginDialog="onOpenLoginDialog"
@@ -9,22 +15,28 @@
       @openInviteDialog="onOpenInviteDialog"
       @openMakeworkbookDialog="onOpenMakeworkbookDialog"
       @openOtherpeopleDialog="onOpenOtherpeopleDialog"
-      @openStudydetailDialog="onOpenStudydetailDialog"
-      @openStduyscheduleDialog="onOpenStudyscheduleDialog"
     />
     <el-container class="main-container">
-      <el-aside class="hide-on-small" width="240px">
-        <main-sidebar :width="`240px`" />
-      </el-aside>
+      <!-- <el-aside class="hide-on-small" > -->
+      <main-sidebar />
+      <!-- </el-aside> -->
       <el-main>
-        <router-view></router-view>
+        <router-view
+          @openStudyscheduleDialog="onOpenStudyscheduleDialog"
+          @openStudydetailDialog="onOpenStudydetailDialog"
+          @openAnswerworkbookDialog="onOpenAnswerWorkbookDialog"
+          @openMakeworkbookDialog="onOpenMakeworkbookDialog"
+          @openOtherpeopleDialog="onOpenOtherpeopleDialog"
+          @openInviteDialog="onOpenInviteDialog"
+        ></router-view>
       </el-main>
     </el-container>
-    <main-footer :height="`80px`" />
+    <main-footer :height="`50px`" />
   </el-container>
   <login-dialog
     :open="loginDialogOpen"
     @closeLoginDialog="onCloseLoginDialog"
+    @openRegisterDialog="onOpenRegisterDialog"
   />
   <register-dialog
     :open="registerDialogOpen"
@@ -41,18 +53,23 @@
   />
   <makeworkbook-dialog
     :open="makeworkbookDialogOpen"
+    :workbookInfo="workbookInfo"
+    :problemCnt="problemCnt"
     @closeMakeworkbookDialog="onCloseMakeworkbookDialog"
   />
   <otherpeople-dialog
     :open="otherpeopleDialogOpen"
-    @closeOtherpeopleDialg="onCloseOtherpeopleDialog"
+    :userData="profileData"
+    :studyData="studyData"
+    @closeOtherpeopleDialog="onCloseOtherpeopleDialog"
   />
   <studydetail-dialog
     :open="studydetailDialogOpen"
+    :selectStudy="selectStudyDetail"
     @closeStudydetailDialog="onCloseStudydetailDialog"
   />
   <studyschedule-dialog
-    :open="stduyscheduleDialogOpen"
+    :open="studyscheduleDialogOpen"
     @closeStudyscheduleDialog="onCloseStudyscheduleDialog"
   />
   <room-dialog :open="roomDialogOpen" @closeRoomDialog="onCloseRoomDialog" />
@@ -74,7 +91,7 @@ import InviteDialog from "./components/invite-dialog";
 import AnswerworkbookDialog from "./components/answerworkbook-dialog";
 import MakeworkbookDialog from "./components/makeworkbook-dialog";
 import OtherpeopleDialog from "./components/otherpeople-dialog";
-import StudydetailDialog from "./components/stduydetail-dialog";
+import StudydetailDialog from "./components/studydetail-dialog";
 import StudyscheduleDialog from "./components/studyschedule-dialog";
 
 // 컴포넌트 추가
@@ -106,33 +123,43 @@ export default {
       makeworkbookDialogOpen: false,
       otherpeopleDialogOpen: false,
       studydetailDialogOpen: false,
-      stduyscheduleDialogOpen: false
+      selectStudyDetail: [],
+      studyscheduleDialogOpen: false,
+      profileData: [],
+      studyData: [],
+      workbookInfo: [],
+      problemCnt: 0,
     };
   },
   methods: {
     onOpenStudyscheduleDialog() {
-      this.stduyscheduleDialogOpen = true;
+      this.studyscheduleDialogOpen = true;
     },
     onCloseStudyscheduleDialog() {
-      this.stduyscheduleDialogOpen = false;
+      this.studyscheduleDialogOpen = false;
     },
 
-    onOpenStudydetailDialog() {
+    onOpenStudydetailDialog(selectStudy) {
       this.studydetailDialogOpen = true;
+      this.selectStudyDetail = selectStudy;
     },
     onCloseStudydetailDialog() {
       this.studydetailDialogOpen = false;
     },
 
-    onOpenOtherpeopleDialog() {
+    onOpenOtherpeopleDialog(userProfile,studyData) {
       this.otherpeopleDialogOpen = true;
+      this.profileData = userProfile
+      this.studyData = studyData
     },
     onCloseOtherpeopleDialog() {
       this.otherpeopleDialogOpen = false;
     },
 
-    onOpenMakeworkbookDialog() {
+    onOpenMakeworkbookDialog(workbookInfo,problemCnt) {
       this.makeworkbookDialogOpen = true;
+      this.workbookInfo = workbookInfo
+      this.problemCnt = problemCnt
     },
     onCloseMakeworkbookDialog() {
       this.makeworkbookDialogOpen = false;

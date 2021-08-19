@@ -1,164 +1,179 @@
 <template>
   <el-dialog
-    custom-class="login-dialog"
-    title="로그인"
+    custom-class="otherpeople-dialog"
+    title="프로필"
     v-model="state.dialogVisible"
     @close="handleClose"
   >
-    <el-form
-      :model="state.form"
-      :rules="state.rules"
-      ref="loginForm"
-      :label-position="state.form.align"
-    >
-      <el-form-item
-        prop="id"
-        label="아이디"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input v-model="state.form.id" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item
-        prop="password"
-        label="비밀번호"
-        :label-width="state.formLabelWidth"
-      >
-        <el-input
-          v-model="state.form.password"
-          autocomplete="off"
-          show-password
-        ></el-input>
-      </el-form-item>
-    </el-form>
+    <el-row :gutter="24">
+      <el-col :span="10">
+        <div style="display: inline-block">
+          <el-progress
+            type="dashboard"
+            :percentage="userData.temperature"
+            :color="state.colors"
+            :width="180"
+            status="success"
+          >
+            <!-- <el-avatar :src="'https://localhost:8443/' + userData.profile_thumbnail" :fit="fill" :size="120"></el-avatar> -->
+            <el-avatar :src="state.uri" :fit="fill" :size="150"></el-avatar>
+            <!-- <p>{{userData.temperature}}</p> -->
+          </el-progress>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <p style="font-size: 30px; font-weight: bold; margin: 5px">
+          {{ userData.name }}
+        </p>
+        <p style="font-size: 20px; font-weight: bold">
+          열정도: {{ userData.temperature }}°C
+        </p>
+        <!-- <el-image style="width: 100px; height: 100px"
+        :src="'https://localhost:8443/' + userData.profile_thumbnail"
+        :fit="fit"
+        >
+        </el-image> -->
+      </el-col>
+    </el-row>
+    <el-divider style="margin: 5px;"></el-divider>
+    <el-row>
+      <h3>가입한 스터디({{studyData.length}}개)</h3>
+      <el-col>
+        <div>
+          <el-scrollbar height="80px" always>
+            <li v-for="std in studyData">
+              {{ std }}
+            </li>
+          </el-scrollbar>
+        </div>
+      </el-col>
+    </el-row>
     <template #footer>
-      <span class="dialog-footer">
-        <el-button type="primary" @click="clickLogin">로그인</el-button>
-      </span>
+      <span>관심분야: </span>
+      <span v-for="interest in userData.interest">#{{ interest }} </span>
     </template>
   </el-dialog>
 </template>
+<style>
+.otherpeople-dialog {
+  width: 500px !important;
+  height: 500px;
+}
+.otherpeople-dialog .el-dialog__headerbtn {
+  float: right;
+}
+.otherpeople-dialog .el-dialog__body {
+  height: 330px;
+}
+.otherpeople-dialog .el-dialog__footer {
+  border: solid;
+  text-align: left;
+  padding: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+</style>
 <script>
-import { reactive, computed, ref, onMounted } from "vue";
+import { reactive, computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import axios from "axios";
 import { ElMessage } from "element-plus";
 export default {
-  name: "login-dialog",
+  name: "otherpeople-dialog",
 
   props: {
     open: {
       type: Boolean,
       default: false
+    },
+    userData: {
+      type: Object
+    },
+    studyData: {
+      type: Object
     }
   },
 
   setup(props, { emit }) {
     const store = useStore();
-    // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
-    const loginForm = ref(null);
+    const otherpeopleForm = ref(null);
     const router = useRouter();
-    /*
-      // Element UI Validator
-      // rules의 객체 키 값과 form의 객체 키 값이 같아야 매칭되어 적용됨
-      //
-    */
+
     const state = reactive({
-      form: {
-        id: "",
-        password: "",
-        align: "left"
-      },
-      rules: {
-        id: [
-          { required: true, message: "필수 입력 항목입니다", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              if (value.length > 16) {
-                error = ["최대 16자까지 입력 가능합니다."];
-              }
-              return error;
-            }
-          }
-        ],
-        password: [
-          { required: true, message: "필수 입력 항목입니다.", trigger: "blur" },
-          {
-            validator(rule, value) {
-              var error = [];
-              var number = value.search(/[0-9]/g);
-              var english = value.search(/[a-z]/gi);
-              var special = value.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
-              if (value.length < 9) {
-                error = ["최소 9글자를 입력해야 합니다."];
-              } else if (value.length > 16) {
-                error = ["최대 16 글자까지 입력가능합니다."];
-              } else if (number < 0 || english < 0 || special < 0) {
-                error = ["비밀번호는 영문, 숫자, 특수문자가 조합되어야합나다."];
-              }
-              return error;
-            }
-          }
-        ]
-      },
       dialogVisible: computed(() => props.open),
-      formLabelWidth: "120px"
+      formLabelWidth: "120px",
+      passion: 50,
+      colors: [
+        {color: '#f56c6c', percentage: 20},
+        {color: '#e6a23c', percentage: 30},
+        {color: '#5cb87a', percentage: 40},
+        {color: '#1989fa', percentage: 50},
+        {color: '#6f7ad3', percentage: 70}
+      ],
+      circleUrl:
+        "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+      uri: "",
+      studyData: ""
     });
 
-    const isDisabled = function() {
-      return "disabled";
-    };
+    watch(
+      () => props.userData,
+      () => {
+        console.log(props.userData);
+        state.studyData = props.userData.profile_thumbnail;
+
+      console.log(state.studyData);
+      var name;
+      if (!state.studyData) {
+        state.studyData = "default.png/default.png/default.png"
+      }
+      if (
+        state.studyData.split("\\").length > state.studyData.split("/").length
+      ) {
+        name = state.studyData.split("\\");
+      } else {
+        name = state.studyData.split("/");
+      }
+
+        console.log(name);
+        axios({
+          url: `https://localhost:8443/api/v1/users/profile/${name[2]}/download`,
+          method: "GET",
+          responseType: "blob"
+        }).then(res => {
+          state.uri = URL.createObjectURL(res.data);
+        });
+      }
+    );
 
     onMounted(() => {
-      // console.log(loginForm.value)
+      // console.log(props.userData)
+      // state.studyData = props.userData.profile_thumbnail;
+      // console.log(state.studyData);
+      // var name;
+      // if (
+      //   state.studyData.split("\\").length > state.studyData.split("/").length
+      // ) {
+      //   name = state.studyData.split("\\");
+      // } else {
+      //   name = state.studyData.split("/");
+      // }
+      // console.log(name);
+      // axios({
+      //   url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+      //   method: "GET",
+      //   responseType: "blob"
+      // }).then(res => {
+      //   state.uri = URL.createObjectURL(res.data);
+      // })
     });
 
-    const clickLogin = function() {
-      // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
-      loginForm.value.validate(valid => {
-        if (valid) {
-          console.log("submit");
-          store
-            .dispatch("root/requestLogin", {
-              id: state.form.id,
-              password: state.form.password
-            })
-            .then(function(result) {
-              //alert("accessToken: " + result.data.accessToken);
-              localStorage.setItem("accessToken", result.data.accessToken);
-              localStorage.setItem("userId", state.form.id);
-              ElMessage({
-                message: "로그인 성공",
-                type: "success"
-              });
-              handleClose();
-              //console.log(store.getters['root/isLoggedIn'])
-              loginsuccess();
-            })
-            .catch(function(err) {
-              alert(err.message);
-            });
-          this.$store.state.loading = true;
-        } else {
-          alert("Validate error!");
-        }
-      });
-    };
-
-    const loginsuccess = function() {
-      store.commit("root/setAccessToken");
-      router.push({
-        name: "home"
-      });
-    };
-
     const handleClose = function() {
-      state.form.id = "";
-      state.form.password = "";
-      emit("closeOtherpeopleDialg");
+      emit("closeOtherpeopleDialog");
     };
 
-    return { loginForm, state, clickLogin, handleClose };
+    return { otherpeopleForm, state, handleClose };
   }
 };
 </script>
