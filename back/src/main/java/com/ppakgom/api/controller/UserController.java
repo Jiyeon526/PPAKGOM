@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -244,9 +245,12 @@ public class UserController {
 		SsafyUserDetails userDetails = (SsafyUserDetails) authentication.getDetails();
 		Long authUserId = userDetails.getUser().getId();
 
-		if (user == null || authUserId != user.getId()) // 사용자가 없는 경우 or 로그인한 사용자와 현재 사용자가 다른 경우
+		if (user == null || authUserId == null || user.getId() == null) // 사용자가 없는 경우 or 로그인한 사용자와 현재 사용자가 다른 경우
 			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
-
+		
+		if(authUserId != user.getId())
+			return ResponseEntity.status(400).body(BaseResponseBody.of(400, "다시 시도해 주세요."));
+		
 		String res = userService.modifyUserInfo(user, userReq, file);
 		if("ok".equals(res)) {
 			return ResponseEntity.status(200).body(BaseResponseBody.of(200, "회원 정보 수정 완료"));
@@ -311,8 +315,13 @@ public class UserController {
 		try {
 
 			User user = userService.getUserById(userId);
-			Study study = studyService.getStudyById(studyId).get();
-
+			Optional<Study> studyTmp = studyService.getStudyById(studyId);
+			Study study = null;
+			if(studyTmp.isPresent())
+				study = studyTmp.get();
+			if(study == null)
+				return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+			
 			userService.likeStudy(user, study);
 
 			return ResponseEntity.ok(new BaseResponseBody(200, "찜하기 완료"));
@@ -331,7 +340,13 @@ public class UserController {
 
 		try {
 			User user = userService.getUserById(userId);
-			Study study = studyService.getStudyById(studyId).get();
+			Optional<Study> studyTmp = studyService.getStudyById(studyId);
+			Study study = null;
+			if(studyTmp.isPresent())
+				study = studyTmp.get();
+			if(study == null) {
+				return ResponseEntity.status(400).body(new BaseResponseBody(400, "다시 시도해 주세요."));
+			}
 			userService.unlikeStudy(user, study);
 
 			return ResponseEntity.ok(new BaseResponseBody(200, "찜하기 취소 완료"));
