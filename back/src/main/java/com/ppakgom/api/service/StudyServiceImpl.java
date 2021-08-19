@@ -257,7 +257,11 @@ public class StudyServiceImpl implements StudyService {
 	public void rateStudy(User user, StudyRatePostReq rateInfo) {
 
 //		스터디 ID로 스터디 찾고
-		Study study = studyRepository.findById(rateInfo.getStudyId()).get();
+		Optional<Study> studyTmp = studyRepository.findById(rateInfo.getStudyId());
+		Study study = null;
+		if(studyTmp.isPresent())
+			study = studyTmp.get();
+			
 //		멤버 ID로 멤버 찾기
 		User member = userRepository.findUserById(rateInfo.getStudyMemberId());
 //		평가 점수로 열정도 업데이트 로직
@@ -329,9 +333,6 @@ public class StudyServiceImpl implements StudyService {
 			
 			// 스터디 일정 객체 생성
 			StudyPlan studyPlan = new StudyPlan(req.getTitle(), date, study.get(), req.getColor());
-			// 객체 생성 안되면 false
-			if (studyPlan == null)
-				return false;
 
 			// DB에 저장
 			studyPlan = studyPlanRepository.save(studyPlan);
@@ -469,9 +470,10 @@ public class StudyServiceImpl implements StudyService {
 		if (origin != null) {// 원래 점수가 있던 사람
 			origin.setScore(cCnt);
 			studyScoreRepository.save(origin);
-		} else
+		} else {
 			studyScoreRepository.save(score);
-
+		}
+		
 		return res;
 	}
 
