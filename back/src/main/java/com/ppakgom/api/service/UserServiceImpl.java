@@ -216,7 +216,7 @@ public class UserServiceImpl implements UserService {
 		
 		for(String s : interestReq) {
 			if(s.length() == 0) continue;
-			s = s.replaceAll(" ", ""); // 해시태그 공백제거
+			s = s.replace(" ", ""); // 해시태그 공백제거
 			Interest exist = interestRepository.findByInterest(s); // 해당 단어가 관심사 테이블에 있는지 확인
 			if(exist == null) { // 만약 관심사가 존재안한다면
 				Interest interest = new Interest(s);

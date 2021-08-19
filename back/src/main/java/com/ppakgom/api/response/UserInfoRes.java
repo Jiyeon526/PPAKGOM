@@ -41,7 +41,7 @@ public class UserInfoRes {
 		res.setProfile_thumbnail(user.getProfile_thumbnail());
 		res.setInterest(interest);
 		res.setTemperature(user.getTemperature());
-	
+
 		return res;
 	}
 }
