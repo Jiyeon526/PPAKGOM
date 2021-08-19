@@ -209,7 +209,8 @@ export default {
         }
       ],
       uri: [],
-      studyData: ""
+      studyData: [],
+      temp: []
     });
 
     const onClickRecommendStudyList = id => {
@@ -277,19 +278,23 @@ export default {
         }
         else {
           store
-            .dispatch("root/requestSearchStudyList", {
-              option: state.searchType,
-              searchValue: cleanValue
-            })
-            .then(function(res) {
-              state.studyList = res.data.studyResult;
-            })
-            .catch(function(err) {
-              ElMessage({
-                type: "error",
-                message: err.message
-              })
+          .dispatch("root/requestSearchStudyList", {
+            option: state.searchType,
+            searchValue: cleanValue
+          })
+          .then(function(res) {
+            state.studyList = [];
+            state.temp = res.data.studyResult;
+          })
+          .then(() => {
+            state.studyList = state.temp;
+          })
+          .catch(function(err) {
+            ElMessage({
+              type: "error",
+              message: err.message
             });
+          });
         }
       } else {
         state.searchValue = "";
