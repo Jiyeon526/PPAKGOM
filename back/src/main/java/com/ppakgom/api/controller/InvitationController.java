@@ -172,23 +172,26 @@ public class InvitationController {
 //		DB에서 삭제
 		try {
 			studyApplyService.agreeInvitation(req, userId);
-			Study study = studyService.getStudyById(req.getStudyId()).get();
+			Optional<Study> study = studyService.getStudyById(req.getStudyId());
 		
-			
+//			제대로 된스터디 값인지 확인
+			if(!study.isPresent())
+				return ResponseEntity.ok(new BaseResponseBody(201,"존재하지 않는 스터디 입니다."));
+			Study s = study.get();
+
 //		population vs 현재 인원 확인 -> 마감시 알려주기.
-			List<UserStudy> userStudy = userStudyService.getCurrentMember(study.getId());
-			if (study.getPopulation() <= userStudy.size()) {
+			List<UserStudy> userStudy = userStudyService.getCurrentMember(s.getId());
+			if (s.getPopulation() <= userStudy.size()) {
 				return ResponseEntity.status(400).body(new BaseResponseBody(400, "이미 마감된 스터디입니다."));
 			}
 
 //		평가 목록에 추가
 //		내가 다른 스터디원을 평가해야 하고, 다른스터디원들이 나를 평가해야 함
 			User newUser = userService.getUserById(userId);
-			System.out.println("뉴비 정보 "+newUser);
-			studyRateService.addRating(study, userStudy, newUser);
+			studyRateService.addRating(s, userStudy, newUser);
 			
 //		스터디-회원 테이블에 추가
-			userStudyService.addMember(study, newUser);
+			userStudyService.addMember(s, newUser);
 			return ResponseEntity.ok(new BaseResponseBody(200,"초대 승인 완료"));
 
 		} catch (Exception e) {

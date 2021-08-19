@@ -446,8 +446,7 @@ public class UserController {
 	    response.setContentType("application/octet-stream; charset=UTF-8");// 이번 응답은 html이 아니라 파일이다.
 	    response.setHeader("Content-Disposition", "attachment; filename=\""+reFileNm+"\"");
 	    response.setHeader("Content-Transfer-Encoding", "binary");
-	    try {
-	        FileInputStream is = new FileInputStream(path);// 서버에 저장된 파일 읽어서
+	    try (FileInputStream is =new FileInputStream(path); ){
 	        
 	        ServletOutputStream os = response.getOutputStream();
 	        
