@@ -53,7 +53,6 @@ export default {
     onMounted(() => {
       state.studypk = store.getters["root/getStudypk"];
       store.dispatch("root/requestStudyAttend", state.studypk).then(res => {
-        console.log(res.data);
         state.results = res.data;
         res.data.forEach(e => {
           let ss = [];
@@ -63,14 +62,12 @@ export default {
           state.color.push("#" + Math.floor(Math.random() * 1000));
         });
         converse();
-        console.log(state.cdata);
       });
     });
 
     const converse = function() {
       state.cdata = state.temp;
       state.tcolor = state.color;
-      console.log(state.tcolor);
     };
     return { state };
   }

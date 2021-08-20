@@ -381,7 +381,6 @@ export default {
       store
         .dispatch("root/requestCheckDuplicate", { id: state.form.id })
         .then(function(result) {
-          console.log(result);
           state.duplicationCheck = 1; // 성공하면 초록색
           ElMessage({
             message: "아이디 중복 검증 성공",
@@ -422,9 +421,6 @@ export default {
           body.append("name", state.form.name);
           body.append("password", state.form.password);
           body.append("userId", state.form.id);
-          console.log(body);
-          console.log(state.uploading);
-          console.log(state.dynamicTags);
 
           store
             .dispatch("root/requestRegister", body)
@@ -508,7 +504,6 @@ export default {
       store
         .dispatch("root/requestCheckDuplicate", { name: state.form.name })
         .then(function(result) {
-          console.log(result);
           state.duplicationCheck = 1; // 성공하면 초록색
           ElMessage({
             message: "유일한 닉네임!",

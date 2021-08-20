@@ -591,6 +591,18 @@ public class StudyServiceImpl implements StudyService {
 				Long spId = sp.getId();
 				StudyAttend at = studyAttendRepository.findByUserIdAndStudyPlanId(mId, spId);
 				attendRes.setAttend(at.isAttend());
+					try
+				{
+				    if (at.isAttend())
+				    {
+				        //DoSomething
+				    }
+				}
+				catch (Exception e)
+				{
+					at = new StudyAttend() ;
+					at.setAttend(false);
+				}
 //				출석하면 +1
 				attended += at.isAttend() ? 1 : 0;
 				attendRes.setStudy_plan_id(spId);

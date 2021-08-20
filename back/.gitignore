@@ -142,8 +142,4 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-<<<<<<< HEAD
-email.properties
-=======
->>>>>>> feature/FE/study_recruit_display
 # End of https://www.toptal.com/developers/gitignore/api/gradle

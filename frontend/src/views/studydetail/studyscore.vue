@@ -61,26 +61,23 @@ export default {
           console.log(element);
           let data = "{";
           element.data.forEach(e => {
-            console.log("문제점수", e);
             let test = e.test_title;
             data += `"${test}":"${e.score}",`;
           });
           data = data.slice(0, -1);
           data += "}";
           // data = '{"test":"20"}';
-          console.log("모인데이터", data);
+
           let cdata = JSON.parse(data);
           state.scoredata.push({
             name: element.name,
             data: cdata
           });
           // state.scoredata = JSON.parse(state.scoredata);
-          console.log("결과물", state.scoredata);
-          console.log("비교물", state.data);
+
           conver();
         });
       });
-      console.log("확인", state.scoredata);
     });
     const conver = function() {
       state.cdata = state.scoredata;

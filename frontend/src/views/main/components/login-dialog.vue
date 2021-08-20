@@ -36,38 +36,40 @@
     </el-form>
     <template #footer>
       <!-- <span> -->
-        <div class="dialog-footer">
-          <el-button type="success" @click="clickLogin" plain>로그인</el-button>
-        </div>
-        <br />
-        <div style="display: inline-block;">
-          <p style="margin:0px;">
-            아직 회원이 아니신가요? &nbsp; &nbsp;
+      <div class="dialog-footer">
+        <el-button type="success" @click="clickLogin" plain>로그인</el-button>
+      </div>
+      <br />
+      <div style="display: inline-block;">
+        <p style="margin:0px;">
+          아직 회원이 아니신가요? &nbsp; &nbsp;
 
-            <el-button
-              type="text"
-              @click="clickRegister"
-              style="display:inline-block; color:green; float: rigth;"
-              >회원가입</el-button
-            >
-          </p>
-        </div>
+          <el-button
+            type="text"
+            @click="clickRegister"
+            style="display:inline-block; color:green; float: rigth;"
+            >회원가입</el-button
+          >
+        </p>
+      </div>
 
-        <div style="text-align: center;">
-          <h3>간편 로그인</h3>
-        </div>
+      <div style="text-align: center;">
+        <h3>간편 로그인</h3>
+      </div>
 
-        <div style="display:flex; justify-content:center; align-items:center; width:100%;">
-          <span class="google-logo-wrapper" id="google-signin-btn"></span>
-          &nbsp; &nbsp;
-          <span class="kakao-logo-wrapper" @click="kakaoLogin"></span>
+      <div
+        style="display:flex; justify-content:center; align-items:center; width:100%;"
+      >
+        <span class="google-logo-wrapper" id="google-signin-btn"></span>
+        &nbsp; &nbsp;
+        <span class="kakao-logo-wrapper" @click="kakaoLogin"></span>
 
-          <span
-            class="naver-logo-wrapper"
-            id="naverIdLogin"
-            @click="naverlogin"
-          ></span>
-        </div>
+        <span
+          class="naver-logo-wrapper"
+          id="naverIdLogin"
+          @click="naverlogin"
+        ></span>
+      </div>
 
       <!-- </span> -->
       <!-- <NaverLogin
@@ -262,7 +264,7 @@ export default {
           if (naverLogin.accessToken.accessToken) {
           }
         } else {
-          console.log("callback 처리에 실패하였습니다.");
+          // console.log("callback 처리에 실패하였습니다.");
         }
       });
       window.gapi.signin2.render("google-signin-btn", {
@@ -320,12 +322,10 @@ export default {
       // console.log("Email: " + profile.getEmail());
 
       const id_token = googleUser.getAuthResponse().id_token;
-      console.log("ID Token: " + id_token);
-      console.log("전", store.getters["root/getGoogleIsLoggedIn"]);
+
       store.commit("root/setGoogleLogin", {
         login: true
       });
-      console.log("후", store.getters["root/getGoogleIsLoggedIn"]);
 
       store
         .dispatch("root/requestSocialLogin", profile.getEmail())
@@ -364,12 +364,10 @@ export default {
               localStorage.setItem("userPk", result.data.id);
               store.commit("root/setUserpk", result.data.id);
               store.commit("root/setUserId", state.form.id);
-              console.log("로그인정보", result.data);
-              console.log("기본키", store.getters["root/getUserpk"]);
+
               store
                 .dispatch("root/requestJoinStudyList")
                 .then(function(res) {
-                  console.log("가입한 스터디 목록 가져오기", res.data);
                   store.commit("root/setJoinStudyList", res.data.studyResult);
                   ElMessage({
                     message: "로그인 성공",
@@ -418,20 +416,11 @@ export default {
           const nickname = kakao_account.profile.nickname; //카카오 닉네임
           const email = kakao_account.email; //카카오 이메일
           let kakaoid = email.split("@");
-          console.log("nickname", nickname);
-          console.log("email", email);
-          //로그인 처리 구현
-          console.log(kakao_account);
-          console.log(window.Kakao.Auth.getAccessToken());
 
-          console.log("submit");
-          console.log("파싱 아이디결과", kakaoid[0]);
-
-          console.log("전", store.getters["root/getKakaoIsLoggedIn"]);
           store.commit("root/setkakaologin", {
             login: true
           });
-          console.log("후", store.getters["root/getKakaoIsLoggedIn"]);
+
           store
             .dispatch("root/requestSocialLogin", email)
             .then(function(result) {

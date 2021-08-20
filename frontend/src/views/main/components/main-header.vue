@@ -236,82 +236,78 @@ export default {
       if (state.Client) state.Client.disconnect();
     });
 
-    watch(
-      () => state.joinlist,
-      () => {
-        console.log("state.joinlist", state.joinlist);
-        let line = state.joinlist;
+    // watch(
+    //   () => state.joinlist,
+    //   () => {
+    //     let line = state.joinlist;
 
-        for (let i = 0; i < line.length; i++) {
-          console.log("원소", line[i]);
-          state.tempid.add(line[i].study_id);
-        }
-        console.log("확인", state.tempid);
+    //     for (let i = 0; i < line.length; i++) {
+    //       state.tempid.add(line[i].study_id);
+    //     }
 
-        //const serverURL = "https://i5b306.p.ssafy.io/api/v1/ws";
-        const serverURL = "https://i5b306.p.ssafy.io/api/v1/ws";
-        var socket = new SockJS(serverURL);
-        state.stompClient = Stomp.over(socket);
+    //     //const serverURL = "https://i5b306.p.ssafy.io/api/v1/ws";
+    //     const serverURL = "https://i5b306.p.ssafy.io/api/v1/ws";
+    //     var socket = new SockJS(serverURL);
+    //     state.stompClient = Stomp.over(socket);
 
-        state.stompClient.connect(
-          {},
-          frame => {
-            // 소켓 연결 성공
-            state.connected = true;
-            console.log("소켓 연결 성공", frame);
-            state.Client = state.stompClient;
-            // 서버의 메시지 전송 endpoint를 구독합니다.
-            // 이런형태를 pub sub 구조라고 합니다.
+    //     state.stompClient.connect(
+    //       {},
+    //       frame => {
+    //         // 소켓 연결 성공
+    //         state.connected = true;
 
-            var sendurl = "/publish/conferences/join";
-            //var temp = "/subscribe";
-            state.tempid.forEach(e => {
-              if (!state.subcribelist.has(e)) {
-                state.subcribelist.add(e);
-                console.log("구독 방번호", e);
-                var temp = "/subscribe/" + "conferences/" + e;
-                state.stompClient.subscribe(temp, res => {
-                  console.log("구독으로 받은 메시지 입니다.", res.body);
-                  let temp = JSON.parse(res.body);
-                  // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
-                  state.recvList.push(temp);
-                  if (!state.visible && !(temp.writer == state.userId))
-                    state.length += 1;
-                });
+    //         state.Client = state.stompClient;
+    //         // 서버의 메시지 전송 endpoint를 구독합니다.
+    //         // 이런형태를 pub sub 구조라고 합니다.
 
-                const msg = {
-                  conference_id: e,
-                  writer: state.userId,
-                  message: state.message
-                };
-                state.Client.send(
-                  "/publish/conferences/join",
-                  JSON.stringify(msg),
-                  {}
-                );
-              }
-            });
+    //         var sendurl = "/publish/conferences/join";
+    //         //var temp = "/subscribe";
+    //         state.tempid.forEach(e => {
+    //           if (!state.subcribelist.has(e)) {
+    //             state.subcribelist.add(e);
 
-            // for (let i = 0; i < state.tempid.length; i++) {
-            //   var temp = "/subscribe/" + "conferences/" + state.tempid[i];
-            //   state.stompClient.subscribe(temp, res => {
-            //     console.log("구독으로 받은 메시지 입니다.", res.body);
-            //     let temp = JSON.parse(res.body);
-            //     // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
-            //     state.recvList.push(temp);
-            //     if (!state.visible && temp.writer != state.userId)
-            //       state.length++;
-            //   });
-            // }
-          },
-          error => {
-            // 소켓 연결 실패
-            console.log("소켓 연결 실패", error);
-            state.connected = false;
-          }
-        );
-      }
-    );
+    //             var temp = "/subscribe/" + "conferences/" + e;
+    //             state.stompClient.subscribe(temp, res => {
+    //               let temp = JSON.parse(res.body);
+    //               // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
+    //               state.recvList.push(temp);
+    //               if (!state.visible && !(temp.writer == state.userId))
+    //                 state.length += 1;
+    //             });
+
+    //             const msg = {
+    //               conference_id: e,
+    //               writer: state.userId,
+    //               message: state.message
+    //             };
+    //             state.Client.send(
+    //               "/publish/conferences/join",
+    //               JSON.stringify(msg),
+    //               {}
+    //             );
+    //           }
+    //         });
+
+    //         // for (let i = 0; i < state.tempid.length; i++) {
+    //         //   var temp = "/subscribe/" + "conferences/" + state.tempid[i];
+    //         //   state.stompClient.subscribe(temp, res => {
+    //         //     console.log("구독으로 받은 메시지 입니다.", res.body);
+    //         //     let temp = JSON.parse(res.body);
+    //         //     // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
+    //         //     state.recvList.push(temp);
+    //         //     if (!state.visible && temp.writer != state.userId)
+    //         //       state.length++;
+    //         //   });
+    //         // }
+    //       },
+    //       error => {
+    //         // 소켓 연결 실패
+    //         console.log("소켓 연결 실패", error);
+    //         state.connected = false;
+    //       }
+    //     );
+    //   }
+    // );
 
     watch(
       () => state.value,
@@ -350,7 +346,7 @@ export default {
       store.commit("root/setMenuActive", param);
       const MenuItems = store.getters["root/getMenus"];
       let keys = Object.keys(MenuItems);
-      console.log("여기역이경", keys, param);
+
       router.push({
         name: keys[param]
       });
@@ -393,13 +389,11 @@ export default {
 
       if (state.isNaverLoggedIn) {
         const accessToken = state.naverToken;
-        console.log("logout accessToken", accessToken);
+
         const url = `https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=2skX9k2csf4rw6XBSD_S&client_secret=MFJnBhWD3K&access_token=${accessToken}&service_provider=NAVER`;
         axios.get(url).then(res => {
-          console.log("결과", res.data);
           store.dispatch("root/requestNaverLogout");
           store.commit("root/deleteNaverToken");
-          console.log(state.isNaverLoggedIn);
         });
       }
 
@@ -410,8 +404,6 @@ export default {
         }
         window.Kakao.Auth.logout(response => {
           //로그아웃
-          console.log("access token:", window.Kakao.Auth.getAccessToken());
-          console.log("log out:", response);
         });
         store.commit("root/setkakaologin", {
           login: false
@@ -473,13 +465,9 @@ export default {
     };
 
     const sendMessagePub = function(e) {
-      console.log(state.userId);
-      console.log(state.message);
       if (e.keyCode === 13 && state.userId !== "" && state.message !== "") {
         //send();
-        console.log("Send message:" + state.message);
-        console.log(state.Client);
-        console.log(state.connected);
+
         if (state.Client && state.connected) {
           const msg = {
             conference_id: 1,
@@ -487,7 +475,6 @@ export default {
             message: state.message
           };
 
-          console.log(msg);
           state.Client.send(
             "/publish/conferences/send",
             JSON.stringify(msg),

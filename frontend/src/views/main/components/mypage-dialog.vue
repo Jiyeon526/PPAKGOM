@@ -175,7 +175,6 @@ export default {
       store
         .dispatch("root/requestReadMyInfo")
         .then(function(result) {
-          console.log(result);
           state.form.id = result.data.userId;
           state.form.name = result.data.name;
           state.form.department = result.data.department;
@@ -187,10 +186,8 @@ export default {
     };
 
     const clickUpdate = function() {
-      console.log(editForm);
       editForm.value.validate(valid => {
         if (valid) {
-          console.log("submit");
           store
             .dispatch("root/requestUpdateMyInfo", {
               name: state.form.name,

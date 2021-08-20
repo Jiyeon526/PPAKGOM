@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/home/home'
-import ConferencesDetail from '@/views/conferences/conference-detail'
 import History from '@/views/history/history'
 import Mypage from '@/views/mypage/mypage'
 import Mainpage from '@/views/mainpage'
@@ -45,11 +44,7 @@ function makeRoutesFromMenu() {
   // 로그아웃 파싱한 부분 제거
   routes = routes.filter(item => item)
   // menu 자체에는 나오지 않는 페이지 라우터에 추가(방 상세보기)
-  routes.push({
-    path: '/conferences/:conferenceId',
-    name: 'conference-detail',
-    component: ConferencesDetail
-  },
+  routes.push(
     {
       path: '/:userId',
       name: 'mypage',
@@ -104,7 +99,7 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-  console.log(to)
+ // console.log(to)
 })
 
 export default router

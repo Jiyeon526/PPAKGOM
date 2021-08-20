@@ -262,9 +262,8 @@ export default {
       necessary.push(file["name"]);
       necessary.push(file["size"]);
       state.form.thumbnail = necessary;
-      console.log(state.form.passion);
       state.uploading = file.raw;
-    }
+    };
 
     const clickCreateRoom = function() {
       roomForm.value.validate(valid => {
@@ -297,14 +296,14 @@ export default {
     };
 
     const handleClose = function() {
-      state.form.title = ""
-      state.form.description = ""
-      state.form.thumbnail = []
-      state.form.dynamicTags = []
-      state.form.passion = 36.5
-      state.form.num = 1
-      state.form.deadline = ""
-      router.push({ name: "home" })
+      state.form.title = "";
+      state.form.description = "";
+      state.form.thumbnail = [];
+      state.form.dynamicTags = [];
+      state.form.passion = 36.5;
+      state.form.num = 1;
+      state.form.deadline = "";
+      router.push({ name: "home" });
     };
 
     const handleTagClose = function(tag) {
@@ -327,8 +326,7 @@ export default {
       state.inputValue = "";
     };
 
-    const handleRemove = function(file, fileList) {
-    };
+    const handleRemove = function(file, fileList) {};
 
     return {
       roomForm,

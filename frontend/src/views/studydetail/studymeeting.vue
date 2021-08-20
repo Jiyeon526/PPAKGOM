@@ -344,9 +344,9 @@ export default {
     onMounted(() => {
       state.studypk = store.getters["root/getStudypk"];
       state.userpk = store.getters["root/getUserpk"];
-      console.log("방번호", state.studypk);
+
       state.mySessionId = "room" + state.studypk;
-      console.log("방이름", state.mySessionId);
+
       store
         .dispatch("root/requestReadMyInfo")
         .then(function(result) {
@@ -424,7 +424,6 @@ export default {
     };
 
     const widthreverse = function() {
-      console.log(state.visible);
       state.visible = !state.visible;
       if (state.visible) {
         state.messagelength = 0;
@@ -458,14 +457,10 @@ export default {
 
       // On every new Stream received...
       state.session.on("publisherStartSpeaking", event => {
-        console.log(
-          "User " + event.connection.connectionId + " start speaking"
-        );
         state.isSpeakList.push(event.connection.connectionId);
       });
 
       state.session.on("publisherStopSpeaking", event => {
-        console.log("User " + event.connection.connectionId + " stop speaking");
         let temp = state.isSpeakList;
         let index = temp.indexOf(event.connection.connectionId, 0);
         if (index >= 0) {
@@ -587,7 +582,7 @@ export default {
 
     const updateMainVideoStreamManager = function(stream) {
       if (state.mainStreamManager === stream) return;
-      console.log(stream);
+
       state.mainStreamManager = stream;
     };
     const audioOnOOff = function() {

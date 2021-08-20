@@ -94,7 +94,7 @@ export default {
       () => props.memberData,
       () => {
         state.studyData = props.memberData.profile_thumbnail;
-        console.log(state.studyData);
+
         var name;
         if (!state.studyData) {
           state.studyData = "default.png/default.png/default.png";
@@ -106,7 +106,7 @@ export default {
         } else {
           name = state.studyData.split("/");
         }
-        console.log(name);
+
         axios({
           url: `https://i5b306.p.ssafy.io/api/v1/users/profile/${name[2]}/download`,
           method: "GET",
@@ -119,7 +119,7 @@ export default {
 
     onMounted(() => {
       state.studyData = props.memberData.profile_thumbnail;
-      console.log(state.studyData);
+
       var name;
       if (!state.studyData) {
         state.studyData = "default.png/default.png/default.png";
@@ -131,7 +131,7 @@ export default {
       } else {
         name = state.studyData.split("/");
       }
-      console.log(name);
+
       axios({
         url: `https://i5b306.p.ssafy.io/api/v1/users/profile/${name[2]}/download`,
         method: "GET",
@@ -150,7 +150,6 @@ export default {
       store
         .dispatch("root/requestSendMemberRating", body)
         .then(function(res) {
-          console.log(res);
           ElMessage({
             message: "평가완료",
             type: "success"
