@@ -50,7 +50,7 @@ public class StudyTestServiceImpl implements StudyTestService {
 	@Autowired
 	StudyTestRepository studyTestRepository;
 
-	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\test\\";
+	String BASE_PATH = System.getProperty("user.dir") + "test/";
 
 //    String test_url;
 

@@ -423,11 +423,10 @@ public class UserController {
 	@GetMapping("profile/{file}/download")
 	@ApiOperation(value = "파일 경로", notes = "<strong>이미지</strong>를 다운로드 한다.")
 	public void downloadProfile(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws UnsupportedEncodingException {
-	    System.err.println(file);
 	    
-	    String path = "/image/";
-	    if(!"default.png".equals(file))
-	    	path += "user/";
+	    String path = "/image/user/";
+//	    if(!"default.png".equals(file))
+//	    	path += "user/";
 	    path += file;
 	    
 	    String fileNm = file;

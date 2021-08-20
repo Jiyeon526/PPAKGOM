@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
-	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image";
+	String BASE_PATH = System.getProperty("user.dir") + "image/user/";
 	
 	@Autowired
 	UserLikeStudyRepository userLikeStudyRepository;
@@ -73,11 +73,11 @@ public class UserServiceImpl implements UserService {
 			 */
 			if(thumbnail == null) { // 프로필 사진 입력 안함
 				//프로필 이미지 저장 (기본 이미지) 
-				String filePath = BASE_PATH + "\\default.png";
+				String filePath = BASE_PATH + "default.png";
 				user.setProfile_thumbnail(filePath);
 				
 			} else { // 프로필 사진 입력함 
-				String filePath = BASE_PATH + "\\user\\" + userId + "-" + thumbnail.getOriginalFilename();
+				String filePath = BASE_PATH + userId + "-" + thumbnail.getOriginalFilename();
 				File dest = new File(filePath);
 				thumbnail.transferTo(dest);
 
@@ -167,10 +167,10 @@ public class UserServiceImpl implements UserService {
 			
 			// 원래 이미지 삭제
 			// default 이미지면 삭제안하기
-			if(user.getProfile_thumbnail().equals(BASE_PATH + "\\default.png")) {
+			if(user.getProfile_thumbnail().equals(BASE_PATH + "default.png")) {
 				if(file != null) { // 입력 파일이 있을 경우 넣어주기
 					// 이미지 삽입
-					String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + file.getOriginalFilename();
+					String filePath = BASE_PATH + user.getId() + "-" + file.getOriginalFilename();
 					File dest = new File(filePath);
 					file.transferTo(dest);
 					
@@ -186,11 +186,11 @@ public class UserServiceImpl implements UserService {
 				Files.deleteIfExists(deleteFilePath);
 				
 				if(file == null) { // 입력 파일이 없다면 기본 파일 넣어주기
-					String filePath = BASE_PATH + "\\default.png";
+					String filePath = BASE_PATH + "default.png";
 					user.setProfile_thumbnail(filePath);
 				} else {
 					// 이미지 삽입
-					String filePath = BASE_PATH + "\\user\\" + user.getId() + "-" + file.getOriginalFilename();
+					String filePath = BASE_PATH + user.getId() + "-" + file.getOriginalFilename();
 					File dest = new File(filePath);
 					file.transferTo(dest);
 					
@@ -298,7 +298,7 @@ public class UserServiceImpl implements UserService {
 		
 		
 		//프로필 이미지 저장 (기본 이미지) 
-		String filePath = BASE_PATH + "\\default.png";
+		String filePath = BASE_PATH + "default.png";
 		user.setProfile_thumbnail(filePath);
 		
 		userRepository.save(user); // DB 저장

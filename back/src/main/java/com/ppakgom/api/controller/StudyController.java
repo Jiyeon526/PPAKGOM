@@ -641,15 +641,13 @@ public class StudyController {
 	@GetMapping("/{file}/download")
 	@ApiOperation(value = "파일 경로", notes = "<strong>이미지</strong>를 다운로드 한다.")
 	public void download(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws IOException {
-	    System.err.println(file);
 	    //String path = file;
-	    String path = "/image/";
+	    String path = "/image/study/";
 	    
-	    if(!"default.png".equals(file))
-	    	path += "study/";
+//	    if(!"default.png".equals(file))
+//	    	path += "study/";
 
 	    path += file;
-	    
 	    String fileNm = file;
 	    StringBuffer sb = new StringBuffer(); 
 	    for (int i = 0; i < fileNm.length(); i++) 
@@ -686,7 +684,7 @@ public class StudyController {
 	@GetMapping("test/{file}/download")
 	@ApiOperation(value = "파일 경로", notes = "<strong>이미지</strong>를 다운로드 한다.")
 	public void downloadTest(@PathVariable(value = "file") @ApiParam(value = "파일경로", required = true) String file, HttpServletResponse response) throws IOException {
-	    System.err.println(file);
+	 
 	    //String path = file;
 	    String path = "/test/" + file;
 	    String fileNm = file;

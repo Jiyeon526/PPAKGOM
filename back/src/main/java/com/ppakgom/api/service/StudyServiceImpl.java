@@ -94,7 +94,7 @@ public class StudyServiceImpl implements StudyService {
 	@Autowired
 	StudyAttendRepository studyAttendRepository; 
 
-	String BASE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\image\\";
+	String BASE_PATH = System.getProperty("user.dir") + "image/study/";
 
 	@Autowired
 	UserLikeStudyRepository userLikeStudyRepository;
@@ -131,7 +131,7 @@ public class StudyServiceImpl implements StudyService {
 			path += "default.png";
 		}
 		else {
-			path +="study\\"+studyId + "-" + studyThumbnail.getOriginalFilename();
+			path += studyId + "-" + studyThumbnail.getOriginalFilename();
 			File dest = new File(path);
 			studyThumbnail.transferTo(dest);
 		}
@@ -514,7 +514,7 @@ public class StudyServiceImpl implements StudyService {
 //		만약 원래 썸네일이 존재하는 상태였다면, 그 사진부터 삭제해야 한다. 원래 디폴트 일 경우 제외..
 		if(!isDefault(study.getStudy_thumbnail())) {
 //			삭제해야 하는 파일(풀경로)
-			Path filePath =  Paths.get(System.getProperty("user.dir") + "\\src\\main\\resources\\"+study.getStudy_thumbnail());
+			Path filePath =  Paths.get(System.getProperty("user.dir") + study.getStudy_thumbnail());
 			Files.deleteIfExists(filePath);
 		}
 		
@@ -526,7 +526,7 @@ public class StudyServiceImpl implements StudyService {
 			path += "default.png";
 		}
 		else {
-			path +="study\\"+study.getId() + "-" + studyThumbnail.getOriginalFilename();
+			path += study.getId() + "-" + studyThumbnail.getOriginalFilename();
 			File dest = new File(path);
 			studyThumbnail.transferTo(dest);
 		}
