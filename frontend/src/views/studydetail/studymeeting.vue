@@ -351,7 +351,7 @@ export default {
         .dispatch("root/requestReadMyInfo")
         .then(function(result) {
           state.myUserName = result.data.name + Math.floor(Math.random() * 100);
-
+          //state.myUserName = result.data.name
           navigator.getUserMedia =
             navigator.getUserMedia ||
             navigator.webkitGetUserMedia ||

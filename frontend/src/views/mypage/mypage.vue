@@ -50,19 +50,21 @@
           clearable
         ></el-input>
       </el-form-item>
-    <div v-if="!state.editMode">
-      <el-form-item
-        prop="thumbnail"
-        label="프로필 사진"
-        :label-width="state.formLabelWidth"
-      >
-        <el-image style="width: 100%; height: 200px"
-          :src="state.uri"
-          :fit="fill">
-        </el-image>
-      </el-form-item>
-    </div>
-    <!-- <div v-else>
+      <div v-if="!state.editMode">
+        <el-form-item
+          prop="thumbnail"
+          label="프로필 사진"
+          :label-width="state.formLabelWidth"
+        >
+          <el-image
+            style="width: 100%; height: 200px"
+            :src="state.uri"
+            :fit="fill"
+          >
+          </el-image>
+        </el-form-item>
+      </div>
+      <!-- <div v-else>
       <el-form-item
         label="프로필 사진"
         prop="changing"
@@ -133,37 +135,39 @@ export default {
         align: "left"
       },
       rules: {
-        name: [{ validator: validateName, trigger: "blur" }],
+        name: [{ validator: validateName, trigger: "blur" }]
       },
       editMode: false,
       formLabelWidth: "120px",
       uri: "",
-      studyData: "",
+      studyData: ""
     });
 
-    watch(()=>state.form.thumbnail,()=>{
-      state.studyData = state.form.thumbnail;
-      var name;
-      if (!state.studyData) {
-        state.studyData = "default.png/default.png/default.png"
-      }
-      if (
-        state.studyData.split("\\").length > state.studyData.split("/").length
-      ) {
-        name = state.studyData.split("\\");
-      } else {
-        name = state.studyData.split("/");
-      }
+    watch(
+      () => state.form.thumbnail,
+      () => {
+        state.studyData = state.form.thumbnail;
+        var name;
+        if (!state.studyData) {
+          state.studyData = "default.png/default.png/default.png";
+        }
+        if (
+          state.studyData.split("\\").length > state.studyData.split("/").length
+        ) {
+          name = state.studyData.split("\\");
+        } else {
+          name = state.studyData.split("/");
+        }
 
-      axios({
-        url: `https://localhost:8443/api/v1/users/profile/${name[2]}/download`,
-        method: "GET",
-        responseType: "blob"
-      }).then(res => {
-        state.uri = URL.createObjectURL(res.data);
-      })
-    })
-
+        axios({
+          url: `https://i5b306.p.ssafy.io/api/v1/users/profile/${name[2]}/download`,
+          method: "GET",
+          responseType: "blob"
+        }).then(res => {
+          state.uri = URL.createObjectURL(res.data);
+        });
+      }
+    );
 
     const validateName = (rule, value, callback) => {
       if (value === "") {
@@ -183,15 +187,15 @@ export default {
           state.form.email = result.data.email;
           state.form.name = result.data.name;
           state.form.interest = result.data.interest;
-          const origin_url = result.data.profile_thumbnail
-          const need_from = origin_url.indexOf('image')
-          const url_length = origin_url.length
-          state.form.thumbnail = origin_url.substring(need_from,url_length)
+          const origin_url = result.data.profile_thumbnail;
+          const need_from = origin_url.indexOf("image");
+          const url_length = origin_url.length;
+          state.form.thumbnail = origin_url.substring(need_from, url_length);
         })
         .catch(function(err) {
-          ElMessage.error(err)
-        })
-    }
+          ElMessage.error(err);
+        });
+    };
 
     const clickUpdate = function() {
       editForm.value.validate(valid => {
@@ -200,7 +204,7 @@ export default {
             .dispatch("root/requestUpdateMyInfo", {
               name: state.form.name,
               interest: state.form.interest,
-              thumbnail: state.form.changing,
+              thumbnail: state.form.changing
             })
             .then(function(res) {
               ElMessage({
@@ -208,52 +212,52 @@ export default {
                 type: "success"
               });
               state.editMode = !state.editMode;
-              state.form.thumbnail = state.form.changing
-              state.form.changing = ""
+              state.form.thumbnail = state.form.changing;
+              state.form.changing = "";
             })
             .catch(function(err) {
               console.log(err);
             });
         } else {
-          ElMessage.error("Validate error!")
+          ElMessage.error("Validate error!");
         }
-      })
-    }
+      });
+    };
 
     const clickDelete = function() {
       store
         .dispatch("root/requestDeleteMyInfo")
         .then(function(result) {
-          store.dispatch("root/requestLogout")
-          store.commit("root/deleteToken")
+          store.dispatch("root/requestLogout");
+          store.commit("root/deleteToken");
           router.push({
             name: "home"
-          })
+          });
 
           ElMessage({
             message: "회원탈퇴가 정상적으로 완료되었습니다.",
             type: "success"
-          })
+          });
         })
         .catch(function(err) {
-          console.log(err)
-        })
-    }
+          console.log(err);
+        });
+    };
 
     const prevUpload = function(file) {
-      const necessary = []
-      necessary.push(file["name"])
-      necessary.push(file["size"])
-      state.form.changing = necessary
+      const necessary = [];
+      necessary.push(file["name"]);
+      necessary.push(file["size"]);
+      state.form.changing = necessary;
 
-      state.uploading = file
-    }
+      state.uploading = file;
+    };
 
     onBeforeMount(() => {
       getUserInfo();
-    })
+    });
 
-    return { editForm, toUpload, state, clickUpdate, clickDelete, prevUpload }
+    return { editForm, toUpload, state, clickUpdate, clickDelete, prevUpload };
   }
 };
 </script>

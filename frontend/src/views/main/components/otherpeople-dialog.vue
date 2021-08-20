@@ -31,7 +31,7 @@
     </el-row>
     <el-divider style="margin: 5px;"></el-divider>
     <el-row>
-      <h3>가입한 스터디({{studyData.length}}개)</h3>
+      <h3>가입한 스터디({{ studyData.length }}개)</h3>
       <el-col>
         <div>
           <el-scrollbar height="80px" always>
@@ -44,7 +44,9 @@
     </el-row>
     <template #footer>
       <span>관심분야: </span>
-      <span v-for="interest in userData.interest" :key="interest">#{{ interest }} </span>
+      <span v-for="interest in userData.interest" :key="interest"
+        >#{{ interest }}
+      </span>
     </template>
   </el-dialog>
 </template>
@@ -98,11 +100,11 @@ export default {
       formLabelWidth: "120px",
       passion: 50,
       colors: [
-        {color: '#f56c6c', percentage: 20},
-        {color: '#e6a23c', percentage: 30},
-        {color: '#5cb87a', percentage: 40},
-        {color: '#1989fa', percentage: 50},
-        {color: '#6f7ad3', percentage: 70}
+        { color: "#f56c6c", percentage: 20 },
+        { color: "#e6a23c", percentage: 30 },
+        { color: "#5cb87a", percentage: 40 },
+        { color: "#1989fa", percentage: 50 },
+        { color: "#6f7ad3", percentage: 70 }
       ],
       uri: "",
       studyData: ""
@@ -111,27 +113,27 @@ export default {
     watch(
       () => props.userData,
       () => {
-        state.studyData = props.userData.profile_thumbnail
+        state.studyData = props.userData.profile_thumbnail;
         var name;
         if (!state.studyData) {
-          state.studyData = "default.png/default.png/default.png"
+          state.studyData = "default.png/default.png/default.png";
         }
         if (
           state.studyData.split("\\").length > state.studyData.split("/").length
         ) {
-          name = state.studyData.split("\\")
+          name = state.studyData.split("\\");
         } else {
-          name = state.studyData.split("/")
+          name = state.studyData.split("/");
         }
         axios({
-          url: `https://localhost:8443/api/v1/users/profile/${name[2]}/download`,
+          url: `https://i5b306.p.ssafy.io/api/v1/users/profile/${name[2]}/download`,
           method: "GET",
           responseType: "blob"
         }).then(res => {
-          state.uri = URL.createObjectURL(res.data)
-        })
-        }
-      )
+          state.uri = URL.createObjectURL(res.data);
+        });
+      }
+    );
 
     const handleClose = function() {
       emit("closeOtherpeopleDialog");

@@ -67,6 +67,7 @@
         <div style="margin-top:auto; margin-bottom:auto;">
           <el-progress
             type="dashboard"
+            :show-text="false"
             :percentage="state.recommendStudyList[i - 1].temperature"
             style="position:relative; z-index: 1;"
           >
@@ -234,7 +235,7 @@ export default {
           ElMessage({
             type: "error",
             message: err.message
-          })
+          });
         });
     };
 
@@ -249,7 +250,7 @@ export default {
           ElMessage({
             type: "error",
             message: err.message
-          })
+          });
         });
     };
 
@@ -275,26 +276,25 @@ export default {
             type: "info",
             message: "검색하려는 분야를 선택해주세요."
           });
-        }
-        else {
+        } else {
           store
-          .dispatch("root/requestSearchStudyList", {
-            option: state.searchType,
-            searchValue: cleanValue
-          })
-          .then(function(res) {
-            state.studyList = [];
-            state.temp = res.data.studyResult;
-          })
-          .then(() => {
-            state.studyList = state.temp;
-          })
-          .catch(function(err) {
-            ElMessage({
-              type: "error",
-              message: err.message
+            .dispatch("root/requestSearchStudyList", {
+              option: state.searchType,
+              searchValue: cleanValue
+            })
+            .then(function(res) {
+              state.studyList = [];
+              state.temp = res.data.studyResult;
+            })
+            .then(() => {
+              state.studyList = state.temp;
+            })
+            .catch(function(err) {
+              ElMessage({
+                type: "error",
+                message: err.message
+              });
             });
-          });
         }
       } else {
         state.searchValue = "";
