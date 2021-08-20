@@ -1,10 +1,5 @@
 <template>
-  <el-image
-    class="img-center"
-    :src="state.uri"
-    :fit="fit"
-  >
-  </el-image>
+  <el-image class="img-center" :src="state.uri" :fit="fit"> </el-image>
 </template>
 <style scoped>
 .img-center:hover {
@@ -18,7 +13,6 @@
   margin-right: auto;
   border-radius: 15px;
 }
-
 </style>
 <script>
 import { onMounted, reactive } from "vue";
@@ -39,11 +33,11 @@ export default {
     const store = useStore();
     const router = useRouter();
     const state = reactive({
-      uri: '',
-      studyData: "",
+      uri: "",
+      studyData: ""
     });
 
-     onMounted(() => {
+    onMounted(() => {
       state.studyData = props.studyData.study_thumbnail;
       var name;
       if (
@@ -54,7 +48,7 @@ export default {
         name = state.studyData.split("/");
       }
       axios({
-        url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+        url: `https://i5b306.p.ssafy.io/api/v1/study/${name[2]}/download`,
         method: "GET",
         responseType: "blob"
       }).then(res => {

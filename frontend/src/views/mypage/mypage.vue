@@ -50,23 +50,21 @@
           clearable
         ></el-input>
       </el-form-item>
-    <div v-if="!state.editMode">
-      <el-form-item
-        prop="thumbnail"
-        label="프로필 사진"
-        :label-width="state.formLabelWidth"
-      >
-        <!-- <el-image style="width: 100%; height: 200px"
-          :src="'https://localhost:8443/' + state.form.thumbnail"
-          :fit="fill">
-        </el-image> -->
-        <el-image style="width: 100%; height: 200px"
-          :src="state.uri"
-          :fit="fill">
-        </el-image>
-      </el-form-item>
-    </div>
-    <!-- <div v-else>
+      <div v-if="!state.editMode">
+        <el-form-item
+          prop="thumbnail"
+          label="프로필 사진"
+          :label-width="state.formLabelWidth"
+        >
+          <el-image
+            style="width: 100%; height: 200px"
+            :src="state.uri"
+            :fit="fill"
+          >
+          </el-image>
+        </el-form-item>
+      </div>
+      <!-- <div v-else>
       <el-form-item
         label="프로필 사진"
         prop="changing"
@@ -89,7 +87,6 @@
         </el-upload>
       </el-form-item>
     </div> -->
-
     </el-form>
   </el-container>
   <!-- <div v-if="!state.editMode">
@@ -138,42 +135,39 @@ export default {
         align: "left"
       },
       rules: {
-        name: [{ validator: validateName, trigger: "blur" }],
-        // department: [{ validator: validateDepartment, trigger: "blur" }],
-        // position: [{ validator: validatePosition, trigger: "blur" }]
+        name: [{ validator: validateName, trigger: "blur" }]
       },
       editMode: false,
       formLabelWidth: "120px",
       uri: "",
-      studyData: "",
+      studyData: ""
     });
 
-    // 페이지 진입시 불리는 훅
-    watch(()=>state.form.thumbnail,()=>{
-      state.studyData = state.form.thumbnail;
-      console.log(state.studyData)
-      var name;
-      if (!state.studyData) {
-        state.studyData = "default.png/default.png/default.png"
-      }
-      console.log(name)
-      if (
-        state.studyData.split("\\").length > state.studyData.split("/").length
-      ) {
-        name = state.studyData.split("\\");
-      } else {
-        name = state.studyData.split("/");
-      }
+    watch(
+      () => state.form.thumbnail,
+      () => {
+        state.studyData = state.form.thumbnail;
+        var name;
+        if (!state.studyData) {
+          state.studyData = "default.png/default.png/default.png";
+        }
+        if (
+          state.studyData.split("\\").length > state.studyData.split("/").length
+        ) {
+          name = state.studyData.split("\\");
+        } else {
+          name = state.studyData.split("/");
+        }
 
-      axios({
-        url: `https://localhost:8443/api/v1/users/profile/${name[2]}/download`,
-        method: "GET",
-        responseType: "blob"
-      }).then(res => {
-        state.uri = URL.createObjectURL(res.data);
-      })
-    })
-
+        axios({
+          url: `https://i5b306.p.ssafy.io/api/v1/users/profile/${name[2]}/download`,
+          method: "GET",
+          responseType: "blob"
+        }).then(res => {
+          state.uri = URL.createObjectURL(res.data);
+        });
+      }
+    );
 
     const validateName = (rule, value, callback) => {
       if (value === "") {
@@ -185,64 +179,41 @@ export default {
       }
     };
 
-    const validateDepartment = (rule, value, callback) => {
-      if (value.length > 30) {
-        callback(new Error("You can enter up to 30 characters"));
-      } else {
-        callback();
-      }
-    };
-
-    const validatePosition = (rule, value, callback) => {
-      if (value.length > 30) {
-        callback(new Error("You can enter up to 30 characters"));
-      } else {
-        callback();
-      }
-    };
-
     const getUserInfo = () => {
       store
         .dispatch("root/requestReadMyInfo")
         .then(function(result) {
-          console.log(result);
           state.form.id = result.data.user_id;
           state.form.email = result.data.email;
           state.form.name = result.data.name;
           state.form.interest = result.data.interest;
-          // 필요한 url부분만 잘라내기
-          const origin_url = result.data.profile_thumbnail
-          const need_from = origin_url.indexOf('image')
-          const url_length = origin_url.length
-          state.form.thumbnail = origin_url.substring(need_from,url_length)
+          const origin_url = result.data.profile_thumbnail;
+          const need_from = origin_url.indexOf("image");
+          const url_length = origin_url.length;
+          state.form.thumbnail = origin_url.substring(need_from, url_length);
         })
         .catch(function(err) {
-          ElMessage.error(err)
-        })
-    }
+          ElMessage.error(err);
+        });
+    };
 
     const clickUpdate = function() {
-      console.log("확인용",state.form.changing,state.form.thumbnail)
-      console.log(editForm);
       editForm.value.validate(valid => {
         if (valid) {
-          console.log("submit")
           store
             .dispatch("root/requestUpdateMyInfo", {
               name: state.form.name,
               interest: state.form.interest,
-              thumbnail: state.form.changing,
+              thumbnail: state.form.changing
             })
             .then(function(res) {
               ElMessage({
                 message: "수정이 완료되었습니다.",
                 type: "success"
               });
-              // toUpload.value.submit();
               state.editMode = !state.editMode;
-              state.form.thumbnail = state.form.changing
-              console.log("확인용",state.form.changing,state.form.thumbnail)
-              state.form.changing = ""
+              state.form.thumbnail = state.form.changing;
+              state.form.changing = "";
             })
             .catch(function(err) {
               console.log(err);
@@ -257,7 +228,7 @@ export default {
       store
         .dispatch("root/requestDeleteMyInfo")
         .then(function(result) {
-          store.dispatch("root/requestLogout"); // 로그아웃
+          store.dispatch("root/requestLogout");
           store.commit("root/deleteToken");
           router.push({
             name: "home"
@@ -280,19 +251,13 @@ export default {
       state.form.changing = necessary;
 
       state.uploading = file;
-      console.log(
-        "111",
-        file,
-        state.form.changing,
-        typeof state.form.changing
-      );
     };
-    // 페이지 진입시 불리는 훅
+
     onBeforeMount(() => {
       getUserInfo();
     });
 
-    return { editForm, toUpload, state, clickUpdate, clickDelete, prevUpload }
+    return { editForm, toUpload, state, clickUpdate, clickDelete, prevUpload };
   }
 };
 </script>

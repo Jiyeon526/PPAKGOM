@@ -25,18 +25,19 @@
             :auto-upload="false"
             limit="1"
             ref="pdfUpload"
-            :on-remove="handleRemove"
           >
           <el-button plain type="success">Upload</el-button>
           </el-upload>
         </el-form-item>
         <el-form-item>
-          <el-button @click="addRow" plain type="success"><i class="el-icon-circle-plus-outline"></i> Add</el-button>
-
+          <el-button @click="addRow" plain type="success"><i class="el-icon-circle-plus-outline"></i>  Add</el-button>
           <el-table
             style="margin-top: 10px"
             height="400"
             :data="state.tableData">
+            <template #empty>
+              <h3>"Add" 버튼을 누르고 답안을 작성해주세요!</h3>
+            </template>
             <el-table-column
               label="NO."
               type="index">
@@ -88,40 +89,27 @@ export default {
 
   setup(props, { emit }) {
     const store = useStore();
-    // 마운드 이후 바인딩 될 예정 - 컨텍스트에 노출시켜야함. <return>
     const answerbookForm = ref(null);
     const pdfUpload = ref(null);
     const pdfRef = ref(null);
     const router = useRouter();
-    /*
-      // Element UI Validator
-      // rules의 객체 키 값과 form의 객체 키 값이 같아야 매칭되어 적용됨
-      //
-    */
+
     const state = reactive({
       form: {
         title: "",
         uploading: [],
         align: "left"
       },
-      src: "https://cdn.rawgit.com/mozilla/pdf.js/c6e8ca86/test/pdfs/freeculture.pdf",
       dialogVisible: computed(() => props.open),
       formLabelWidth: "120px",
       page: 1,
       pageCount: 1,
       tableCount: 0,
       tableData: [],
-      // answerTable: ["1",],
       userpk: computed(() => store.getters["root/getUserpk"]),
     });
 
-    const isDisabled = function() {
-      return "disabled";
-    };
-
     onMounted(() => {
-      // state.pagecount = pdfRef.value.pagecount
-      // console.log(loginForm.value)
     });
 
     const handleClose = function() {
@@ -129,7 +117,7 @@ export default {
       state.tableData = []
       state.form.title = ""
       state.form.uploading = []
-      emit("closeAnswerWorkbookDialog");
+      emit("closeAnswerWorkbookDialog")
     };
 
     const fileChange = function(file) {
@@ -138,13 +126,6 @@ export default {
       necessary.push(file['size'])
       state.form.uploading = necessary
       state.form.uploading = file.raw
-      console.log('111', file)
-      console.log('222', state.form.uploading)
-    }
-
-
-    const handleRemove = function(file, fileList) {
-        console.log(file, fileList)
     }
 
     const handleRender = function() {
@@ -155,10 +136,8 @@ export default {
       const newRow = {}
       state.tableData = [...state.tableData,newRow]
       ++ state.tableCount
-      console.log("click!",state.tableCount)
-      console.log("click2!",state.tableData)
-
     }
+
     const deleteRow = function(index,row) {
         state.tableData.splice(index, 1);
         if(state.tableCount > 0)
@@ -166,10 +145,8 @@ export default {
     }
 
     const handleClick = function() {
-      console.log(state.tableData)
       const newtab = []
       for(let val in state.tableData) {
-        console.log([state.tableData[val]["answer"]])
         newtab.push(state.tableData[val]["answer"])
       }
 
@@ -180,7 +157,6 @@ export default {
       body.append("answer",newtab)
       store.dispatch('root/requestMakeWorkbook',body)
       .then(function(res) {
-        console.log(res)
         pdfUpload.value.submit()
         ElMessage({
           message: "문제집 생성 완료",
@@ -208,10 +184,6 @@ export default {
   height: 800px;
   width: 400px;
 }
-/* .numbering {
-  height: 400px;
-  border: solid;
-} */
 .pdfCol {
   height: 700px;
   border: solid

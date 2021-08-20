@@ -62,7 +62,6 @@
               @click="showInput"
               >+ New Tag</el-button
             >
-            <!-- <el-input v-model="state.form.tag" autocomplete="off"></el-input> -->
           </el-form-item>
 
           <el-form-item
@@ -142,7 +141,6 @@
               ref="toUpload"
               :on-remove="handleRemove"
             >
-              <!-- <el-button type="success" plain>Upload</el-button> -->
               <i class="el-icon-upload"></i>
               <div>
                 스터디 썸네일을 올려주세요!
@@ -219,26 +217,21 @@ export default {
           },
           {
             validator(rule, value) {
-              console.log("11", value);
               const file_size = value[1];
               const file_name = value[0];
               const file_length = file_name.length;
-              console.log(file_name, file_length);
               const dot = file_name.lastIndexOf(".");
               const file_extension = file_name
                 .substring(dot, file_length)
                 .toLowerCase();
               const extension_only = [".png", ".jpg", ".jpeg", ".gif"];
-              console.log(file_extension);
               var error = [];
-              if (file_size > 1024 * 500) {
-                error = ["500KB 이하만 가능합니다."];
-                console.log(error);
+              if (file_size > 1024 * 1025) {
+                error = ["1GB 이하만 가능합니다."];
               } else if (!extension_only.includes(file_extension)) {
                 error = [
                   "업로드 가능한 파일의 확장자는 png, jpg, jpeg, gif 입니다."
                 ];
-                console.log(error);
               }
               return error;
             }
@@ -262,7 +255,6 @@ export default {
 
     onMounted(() => {
       store.commit("root/setMenuActiveMenuName", "create");
-      // console.log(toUpload.value)
     });
 
     const prevUpload = function(file) {
@@ -272,21 +264,11 @@ export default {
       state.form.thumbnail = necessary;
       console.log(state.form.passion);
       state.uploading = file.raw;
-      console.log(
-        "111",
-        file,
-        state.form.thumbnail,
-        typeof state.form.thumbnail
-      );
-    };
+    }
 
     const clickCreateRoom = function() {
-      console.log("check", state.uploading);
-      console.log("check2", state.form.deadline);
       roomForm.value.validate(valid => {
-        console.log("!!!", valid);
         if (valid) {
-          console.log("submit");
           let body = new FormData();
           body.append("name", state.form.title);
           body.append("content", state.form.description);
@@ -295,11 +277,9 @@ export default {
           body.append("deadline", state.form.deadline);
           body.append("population", state.form.num);
           body.append("study_thumbnail", state.uploading);
-          console.log("여기까지 확인!");
           store
             .dispatch("root/requestCreateRoom", body)
             .then(function(result) {
-              console.log(result);
               toUpload.value.submit();
               ElMessage({
                 message: "새 방이 생성되었습니다.",
@@ -317,14 +297,14 @@ export default {
     };
 
     const handleClose = function() {
-      state.form.title = "";
-      state.form.description = "";
-      (state.form.thumbnail = []),
-        (state.form.dynamicTags = []),
-        (state.form.passion = 36.5),
-        (state.form.num = 1),
-        (state.form.deadline = ""),
-        router.push({ name: "home" });
+      state.form.title = ""
+      state.form.description = ""
+      state.form.thumbnail = []
+      state.form.dynamicTags = []
+      state.form.passion = 36.5
+      state.form.num = 1
+      state.form.deadline = ""
+      router.push({ name: "home" })
     };
 
     const handleTagClose = function(tag) {
@@ -348,7 +328,6 @@ export default {
     };
 
     const handleRemove = function(file, fileList) {
-      console.log(file, fileList);
     };
 
     return {

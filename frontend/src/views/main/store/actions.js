@@ -175,6 +175,14 @@ export function requestCancelJoin({state}, payload ) {
   return $axios.delete(url, { headers: headers, params:params })
 }
 
+// 가입 신청 거절 확인
+export function requestCheckJoinReject({state}, payload ) {
+  const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰
+  const url = `/join/response/reject/${state.userpk}`
+  const params = payload
+  return $axios.delete(url, { headers: headers, params:params })
+}
+
 // 스터디 방 상세정보 가져오기
 export function requestStudyInfoDetail({state},payload) {
   const headers = { 'Authorization': state.accessToken ? `Bearer ${state.accessToken}` : '' } // 토큰

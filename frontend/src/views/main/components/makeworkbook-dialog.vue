@@ -4,44 +4,52 @@
     :title="workbookInfo.title"
     v-model="state.dialogVisible"
     @close="handleClose"
+    top="5vh"
   >
     <el-row :gutters="24">
       <el-col :span="13" class="pdfCol">
         <button :disabled="state.page <= 1" @click="state.page--">❮</button>
         {{ state.page }} / {{ state.pageCount }}
-      <button :disabled="state.page >= state.pageCount" @click="state.page++">❯</button>
+        <button :disabled="state.page >= state.pageCount" @click="state.page++">
+          ❯
+        </button>
 
-      <vue-pdf-embed
-        style="height:80%"
-        ref="pdfRef"
-        :page = state.page
-        :source= "state.uri"
-        @rendered="handleRender" />
-    </el-col>
-    <el-col :span="1"></el-col>
-    <el-col :span="10">
-      <el-table
-        height="600"
-        :data="state.tableData">
-        <el-table-column
-          label="NO."
-          type="index">
-        </el-table-column>
-        <el-table-column prop="answer" label="Answer">
-          <template #default="scope">
-              <el-input size="small"
-                v-model="scope.row.answer" controls-position="right"></el-input>
-          </template>
-        </el-table-column>
-      </el-table>
+        <vue-pdf-embed
+          style="height:95%"
+          ref="pdfRef"
+          :page="state.page"
+          :source="state.uri"
+          @rendered="handleRender"
+        />
+      </el-col>
+      <el-col :span="1"></el-col>
+      <el-col :span="10">
+        <el-table height="600" :data="state.tableData">
+          <el-table-column label="NO." type="index"> </el-table-column>
+          <el-table-column prop="answer" label="Answer">
+            <template #default="scope">
+              <el-input
+                size="small"
+                v-model="scope.row.answer"
+                controls-position="right"
+              ></el-input>
+            </template>
+          </el-table-column>
+        </el-table>
 
-      <el-button style="margin: 10px 0px 10px 10px; display: block; float: right;" plain type="success" @click="handleClick">제출하기</el-button>
-    </el-col>
-  </el-row>
+        <el-button
+          style="margin: 10px 0px 10px 10px; display: block; float: right;"
+          plain
+          type="success"
+          @click="handleClick"
+          >제출하기</el-button
+        >
+      </el-col>
+    </el-row>
   </el-dialog>
 </template>
 <script>
-import { reactive, computed, ref, onMounted, watch } from "vue";
+import { reactive, computed, ref, watch, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
@@ -90,47 +98,43 @@ export default {
       studyData: ""
     });
 
-    watch(()=>props.problemCnt,()=>{
-      store.commit('root/setproblemCnt', props.problemCnt)
-      // for (let i=0; i < props.problemCnt; i++ ){
-      //   state.tableData.push({'answer': ""})
-      // }
-    })
-
-    watch(()=>props.workbookInfo,()=>{
-      console.log(props.workbookInfo)
-      state.studyData = props.workbookInfo.test_url;
-
-      console.log(state.studyData);
-      var name;
-      if (
-        state.studyData.split("\\").length > state.studyData.split("/").length
-      ) {
-        name = state.studyData.split("\\");
-      } else {
-        name = state.studyData.split("/");
-      }
-    }
-    );
-
-
-    const isDisabled = function() {
-      return "disabled";
-    };
-
     onMounted(() => {
-      // state.pagecount = pdfRef.value.pagecount
-      console.log(props.problemCnt);
+      store.commit("root/setproblemCnt", props.problemCnt);
     });
 
+    watch(
+      () => props.problemCnt,
+      () => {
+        store.commit("root/setproblemCnt", props.problemCnt);
+      }
+    );
+
+    watch(
+      () => props.workbookInfo,
+      () => {
+        state.studyData = props.workbookInfo.test_url;
+        var name;
+        if (
+          state.studyData.split("\\").length > state.studyData.split("/").length
+        ) {
+          name = state.studyData.split("\\");
+        } else {
+          name = state.studyData.split("/");
+        }
+        axios({
+          url: `https://i5b306.p.ssafy.io/api/v1/study/test/${name[1]}/download`,
+          method: "GET",
+          responseType: "blob"
+        }).then(res => {
+          state.uri = URL.createObjectURL(res.data);
+        });
+      }
+    );
+
     const handleClose = function() {
-      console.log(props.problemCnt)
-      console.log(state.tableData)
-      props.problemCnt = 0,
-      console.log(props.problemCnt)
-      state.page = 1,
-      state.pageCount = 1,
-      state.tableData = [],
+      state.tableData = computed(() => store.getters["root/getproblemCnt"]);
+      state.page = 1;
+      state.pageCount = 1;
       emit("closeMakeworkbookDialog");
     };
 
@@ -139,32 +143,30 @@ export default {
     };
 
     const handleClick = function() {
-      console.log(state.tableData)
-      const newtab = []
-      for(let val in state.tableData) {
-        newtab.push(state.tableData[val]["answer"])
+      const newtab = [];
+      for (let val in state.tableData) {
+        newtab.push(state.tableData[val]["answer"]);
       }
-      store.commit('root/setTestpk', props.workbookInfo.id)
-      store.dispatch('root/requestSubmitAnswer', {
-        answer: newtab
-      })
-      .then(function(res) {
-        ElMessage({
-          message: "문제 수: " + res.data["number"]+', ' + "맞은 문제 개수:" + res.data["correct"],
-          type: "success"
+      store.commit("root/setTestpk", props.workbookInfo.id);
+      store
+        .dispatch("root/requestSubmitAnswer", {
+          answer: newtab
         })
         .then(function(res) {
-          console.log(res);
           ElMessage({
-            message: res.data,
+            message:
+              "문제 수: " +
+              res.data["number"] +
+              ", " +
+              "맞은 문제 개수:" +
+              res.data["correct"],
             type: "success"
           });
         })
         .catch(function(err) {
           console.log(err);
         });
-    })
-    }
+    };
 
     return {
       answerbookForm,
@@ -176,13 +178,13 @@ export default {
       handleClick
     };
   }
-}
+};
 </script>
 
 <style>
 .makeworkbook-dialog {
-  height: 800px;
-  width: 800px;
+  height: 900px;
+  width: 900px;
 }
 .numbering {
   height: 400px;

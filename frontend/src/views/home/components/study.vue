@@ -131,7 +131,7 @@ export default {
         name = state.studyData.split("/");
       }
       axios({
-        url: `https://localhost:8443/api/v1/study/${name[2]}/download`,
+        url: `https://i5b306.p.ssafy.io/api/v1/study/${name[2]}/download`,
         method: "GET",
         responseType: "blob"
       }).then(res => {

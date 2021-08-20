@@ -22,7 +22,10 @@
                   state.isNaverLoggedIn
               "
             >
-              <span style="display:inline-block;  " v-if="state.studyPk">
+              <span
+                style="display:inline-block; margin: 8px;  "
+                v-if="state.studyPk"
+              >
                 <el-dropdown trigger="click" Button>
                   <span>
                     <el-button class="el-dropdown-link" plain type="success">
@@ -43,7 +46,7 @@
                   </template>
                 </el-dropdown>
               </span>
-              <span style="display:inline-block;">
+              <!-- <span style="display:inline-block;">
                 <el-popover
                   placement="bottom"
                   :width="300"
@@ -69,11 +72,7 @@
                     </div>
                   </template>
                   <div style="height:300px; overflow:scroll;">
-                    <!-- <input
-                      v-model="state.message"
-                      type="text"
-                      @keyup="sendMessagePub"
-                    /> -->
+
                     <div v-for="(item, idx) in state.recvList" :key="idx">
                       <div v-if="item.writer != state.userId">
                         <span class="otherchatbox">
@@ -83,7 +82,7 @@
                     </div>
                   </div>
                 </el-popover>
-              </span>
+              </span> -->
               <el-button type="success" plain @click="clickMypage"
                 ><i class="el-icon-s-custom"></i> 프로필</el-button
               >
@@ -250,7 +249,7 @@ export default {
         console.log("확인", state.tempid);
 
         //const serverURL = "https://i5b306.p.ssafy.io/api/v1/ws";
-        const serverURL = "https://localhost:8443/api/v1/ws";
+        const serverURL = "https://i5b306.p.ssafy.io/api/v1/ws";
         var socket = new SockJS(serverURL);
         state.stompClient = Stomp.over(socket);
 
