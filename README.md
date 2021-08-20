@@ -66,7 +66,7 @@
 
 **데이터베이스**
 
- ![image-20210820012701972](README.assets/image-20210820012701972.png)
+![image-20210820012701972](README.assets/image-20210820012701972.png)
 
 <br>
 
@@ -128,19 +128,20 @@ npm run build
 
 <br>
 
-#### 배포
+# 배포
 
-- nginx 설치후
-  /etc/sites-availble/default 변경
+## nginx
 
-  -server {
-  listen 80 default_server;
-  listen [::]:80 default_server;
-  server_name i5b306.p.ssafy.io;
+/etc/sites-availble/default 변경
+
+-server {
+listen 80 default_server;
+listen [::]:80 default_server;
+server_name i5b306.p.ssafy.io;
 
             return 301 https://$server_name$request_uri;
 
-  }
+}
 
 server {
 listen 443 ssl;
@@ -148,21 +149,21 @@ listen [::]:443 ssl;
 
         root /home/ubuntu/nginx/dist;
         index index.html index.htm index.nginx-debian.html;
-    
+
         server_name i5b306.p.ssafy.io;
-    
+
         ssl_certificate /etc/letsencrypt/live/i5b306.p.ssafy.io/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/i5b306.p.ssafy.io/privkey.pem;
-    
+
         location / {
                 try_files $uri $uri/ /index.html;
         }
-    
+
         location /api/v1 {
                 proxy_pass https://i5b306.p.ssafy.io:8443;
                 proxy_redirect off;
                 charset utf-8;
-    
+
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto $scheme;
@@ -175,7 +176,7 @@ listen [::]:443 ssl;
                 proxy_pass https://i5b306.p.ssafy.io:8443;
                 proxy_redirect off;
                 charset utf-8;
-    
+
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto $scheme;
@@ -226,8 +227,6 @@ listen [::]:443 ssl;
     grant all privileges on *.*to'ppakgom'@'%';
 
 <br>
-
-# 배포
 
 ## Openvidu deployment
 
@@ -311,11 +310,11 @@ listen [::]:443 ssl;
 
       ```json
       DOMAIN_OR_PUBLIC_IP=i5a306.p.ssafy.io
-      
+
       CERTIFICATE_TYPE=letsencrypt
-      
+
       OPENVIDU_SECRET=GOM_SECRET
-      
+
       LETSENCRYPT_EMAIL=<<유효한 이메일>>
       ```
 
@@ -326,6 +325,3 @@ listen [::]:443 ssl;
     ```bash
     $ ./openvidu start
     ```
-
-
-
