@@ -28,7 +28,13 @@
 
 <br>
 
-### :heavy_check_mark: 주요 기능
+# :tv: 시연 영상
+
+[![Video Label](https://img.youtube.com/vi/OkFVDs6xKVY/0.jpg)](https://youtu.be/OkFVDs6xKVY?t=0s)
+
+
+
+# :heavy_check_mark: 주요 기능
 
 **스터디 검색**
 
@@ -68,7 +74,7 @@
 
 <br>
 
-### 🎈 기획
+# 🎈 기획
 
 ##### API 명세서
 
@@ -84,13 +90,13 @@
 
 <br>
 
-### 🎨 아키텍쳐
+# 🎨 아키텍쳐
 
 ![아키텍쳐](README.assets/아키텍쳐.png)
 
 <br>
 
-### :gear: 개발 환경
+# :gear: 개발 환경
 
 #### Frontend
 
