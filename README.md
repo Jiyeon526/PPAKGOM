@@ -62,11 +62,11 @@
 
 **스터디원 평가**
 
-![스터디원 평가](README.assets/스터디원 평가.gif)
+![스터디원 평가](README.assets/스터디원%20평가.gif)
 
 **문제집 생성**
 
-![문제집 생성](README.assets/문제집 생성.gif)
+![문제집 생성](README.assets/문제집%20생성.gif)
 
 **문제풀기&결과**
 
