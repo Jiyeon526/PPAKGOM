@@ -17,12 +17,6 @@ public class ChatMessageController {
     public ChatMessageController(SimpMessagingTemplate template) {
         this.template = template;
     }
-
-//    @MessageMapping("/{conference_id}/join")
-//    public void join(@PathVariable Long conference_id, ChatMessage message) {
-//        message.setMessage(message.getWriter() + "님이 입장하셨습니다.");
-//        template.convertAndSend("/subscribe/" + Long.toString(message.getConference_id()), message);
-//    }
     
     @MessageMapping("/conferences/join")
     public void join(ChatMessage message) {
@@ -30,11 +24,6 @@ public class ChatMessageController {
         System.out.println("/chat/join");
         template.convertAndSend("/subscribe/conferences/" + Long.toString(message.getConference_id()), message);
     }
-
-//    @MessageMapping("/{conference_id}/send")
-//    public void message(@PathVariable Long conference_id, ChatMessage message) {
-//        template.convertAndSend("/subscribe/" + Long.toString(message.getConference_id()), message);
-//    }
     
     @MessageMapping("/conferences/send")
     public void message(ChatMessage message) {
